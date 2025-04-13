@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.data.db
+package com.lass.yomiyomi.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

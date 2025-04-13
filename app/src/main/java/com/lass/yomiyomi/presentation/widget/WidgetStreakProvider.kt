@@ -10,7 +10,7 @@ import android.widget.RemoteViews
 import com.lass.yomiyomi.MainActivity
 import com.lass.yomiyomi.R
 import com.lass.yomiyomi.data.model.StudyStatus
-import com.lass.yomiyomi.data.repository.StudyRepositoryImpl
+import com.lass.yomiyomi.data.repository.StudyRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ class WidgetStreakProvider : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val repo = StudyRepositoryImpl(context)
+            val repo = StudyRepository(context)
             val records = repo.getRecentRecords()
             val streak = repo.getCurrentStreak()
 
