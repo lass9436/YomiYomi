@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.data.db
+package com.lass.yomiyomi.data.database
 
 import androidx.room.TypeConverter
 import com.lass.yomiyomi.data.model.StudyStatus

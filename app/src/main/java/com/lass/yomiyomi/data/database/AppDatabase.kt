@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.data.db
+package com.lass.yomiyomi.data.database
 
 import android.content.Context
 import androidx.room.Database
