@@ -37,29 +37,38 @@ fun KanjiScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(16.dp)
             ) {
-                // 랜덤 한자가 존재할 때 표시, 없을 때 로딩 인디케이터
-                if (randomKanji != null) {
-                    KanjiCard(randomKanji) // 랜덤 한자 카드 표시
-                    Spacer(modifier = Modifier.height(16.dp)) // 버튼 위의 여백 추가
-                } else {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
+                // 랜덤 한자 카드 (높이 더 키움)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(
+                            min = 200.dp,
+                            max = 500.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (randomKanji != null) {
+                        KanjiCard(randomKanji)
+                    } else {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
                 }
 
-                // 랜덤 한자 가져오는 버튼
+                Spacer(modifier = Modifier.weight(1f)) // 남은 공간을 활용해 버튼을 아래로 밀어냄
+
+                // 고정 위치의 랜덤 버튼
                 Button(
                     onClick = { kanjiViewModel.fetchRandomKanji() },
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp) // 좌우 여백 추가
                 ) {
                     Text("랜덤 한자 가져오기")
                 }
+                Spacer(modifier = Modifier.height(16.dp)) // 바닥과의 여백
             }
         }
     )
@@ -68,20 +77,22 @@ fun KanjiScreen(
 @Composable
 fun KanjiCard(kanji: com.lass.yomiyomi.data.model.Kanji) {
     Card(
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF5F5F5)
-        )
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 100.dp, max = 480.dp)
+            .padding(8.dp)
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // 한자
+            // 한자 (가운데 정렬)
             Text(
                 text = kanji.kanji,
                 fontSize = 48.sp,
@@ -90,18 +101,12 @@ fun KanjiCard(kanji: com.lass.yomiyomi.data.model.Kanji) {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // 음독
+            // 음독, 훈독, 뜻 표시
             InfoRow(label = "음독 :", value = kanji.onyomi)
-
-            // 훈독
             InfoRow(label = "훈독 :", value = kanji.kunyomi)
-
-            // 뜻
             InfoRow(label = "뜻 :", value = kanji.meaning)
-
-            // 수준(Level)
             InfoRow(label = "레벨 :", value = kanji.level)
         }
     }
