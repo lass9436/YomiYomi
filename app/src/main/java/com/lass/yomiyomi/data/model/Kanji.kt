@@ -3,7 +3,7 @@ package com.lass.yomiyomi.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "kanji_table")
+@Entity(tableName = "kanji")
 data class Kanji(
     @PrimaryKey val kanji: String,                 // 한자
     val onyomi: String,                           // 음독

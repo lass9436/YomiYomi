@@ -2,7 +2,7 @@ package com.lass.yomiyomi.data.repository
 
 import android.content.Context
 import com.lass.yomiyomi.data.database.KanjiDataImporter
-import com.lass.yomiyomi.data.db.AppDatabase // AppDatabase로 수정
+import com.lass.yomiyomi.data.database.AppDatabase // AppDatabase로 수정
 
 class KanjiRepository(private val context: Context) {
     private val kanjiDao = AppDatabase.getInstance(context).kanjiDao() // AppDatabase 사용
@@ -16,4 +16,7 @@ class KanjiRepository(private val context: Context) {
     }
 
     suspend fun getAllKanji() = kanjiDao.getAllKanji() // 전체 Kanji 조회
+
+    suspend fun getRandomKanji() = kanjiDao.getRandomKanji()
+
 }

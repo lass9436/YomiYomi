@@ -2,14 +2,18 @@ package com.lass.yomiyomi.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.lass.yomiyomi.data.model.Kanji
 
 @Dao
 interface KanjiDao {
-    @Insert
-    suspend fun insertAll(kanjiList: List<Kanji>) // Kanji 리스트 삽입
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(kanjiList: List<Kanji>) // 중복 데이터 대체
 
-    @Query("SELECT * FROM kanji_table")
+    @Query("SELECT * FROM kanji")
     suspend fun getAllKanji(): List<Kanji> // 전체 Kanji를 가져옴
+
+    @Query("SELECT * FROM kanji ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomKanji(): Kanji
 }

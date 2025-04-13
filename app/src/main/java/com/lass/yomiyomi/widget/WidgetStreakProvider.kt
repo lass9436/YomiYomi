@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.presentation.widget
+package com.lass.yomiyomi.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
