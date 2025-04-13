@@ -5,12 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.lass.yomiyomi.data.dao.DailyRecordDao
 import com.lass.yomiyomi.data.model.DailyRecord
+import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.data.dao.KanjiDao
 
-@Database(entities = [DailyRecord::class], version = 1)
+@Database(entities = [DailyRecord::class, Kanji::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dailyRecordDao(): DailyRecordDao
+    abstract fun kanjiDao(): KanjiDao // KanjiDao 추가
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
