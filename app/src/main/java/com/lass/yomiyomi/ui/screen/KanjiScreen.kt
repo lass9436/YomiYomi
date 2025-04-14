@@ -1,6 +1,5 @@
 package com.lass.yomiyomi.ui.screen
 
-import android.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,17 +10,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.ui.theme.LimeAccent
-import com.lass.yomiyomi.ui.theme.LimeGreen
 import com.lass.yomiyomi.ui.theme.SoftLimeBackground
-import com.lass.yomiyomi.viewmodel.KanjiViewModel
+import com.lass.yomiyomi.viewmodel.DummyKanjiViewModel
+import com.lass.yomiyomi.viewmodel.KanjiViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KanjiScreen(
-    kanjiViewModel: KanjiViewModel
+    kanjiViewModel: KanjiViewModelInterface
 ) {
     val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
 
@@ -146,4 +146,12 @@ fun InfoRow(label: String, value: String) {
             modifier = Modifier.fillMaxWidth() // 남은 공간 활용
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun KanjiScreenPreview() {
+    KanjiScreen(
+        kanjiViewModel = DummyKanjiViewModel() // 더미 뷰모델 주입
+    )
 }

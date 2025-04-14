@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class KanjiViewModel(private val repository: KanjiRepository) : ViewModel() {
+class KanjiViewModel(private val repository: KanjiRepository) : ViewModel(), KanjiViewModelInterface {
     private val _randomKanji = MutableStateFlow<Kanji?>(null)
-    val randomKanji: StateFlow<Kanji?> = _randomKanji
+    override val randomKanji: StateFlow<Kanji?> = _randomKanji
 
-    fun fetchRandomKanji() {
+    override fun fetchRandomKanji() {
         viewModelScope.launch {
             _randomKanji.value = repository.getRandomKanji()
         }
