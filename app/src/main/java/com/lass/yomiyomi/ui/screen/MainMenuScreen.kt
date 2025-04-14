@@ -30,7 +30,7 @@ fun MainMenuScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("메인 화면", color = LimeAccent) }, // 강조된 라임색 텍스트
+                title = { Text("YomiYomi", color = LimeAccent) }, // 강조된 라임색 텍스트
             )
         },
         content = { paddingValues ->
