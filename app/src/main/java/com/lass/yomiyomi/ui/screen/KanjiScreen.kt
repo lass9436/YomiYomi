@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.screen
 
+import android.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -12,6 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lass.yomiyomi.ui.theme.LimeAccent
+import com.lass.yomiyomi.ui.theme.LimeGreen
+import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 import com.lass.yomiyomi.viewmodel.KanjiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +33,13 @@ fun KanjiScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("랜덤 한자 카드") }
+                title = {
+                    Text(
+                        "랜덤 한자 카드",
+                        color = LimeAccent,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
             )
         },
         content = { innerPadding ->
@@ -45,7 +55,8 @@ fun KanjiScreen(
                         .fillMaxWidth()
                         .heightIn(
                             min = 200.dp,
-                            max = 500.dp),
+                            max = 500.dp
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     if (randomKanji != null) {
@@ -64,7 +75,11 @@ fun KanjiScreen(
                     onClick = { kanjiViewModel.fetchRandomKanji() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp) // 좌우 여백 추가
+                        .padding(horizontal = 16.dp), // 좌우 여백 추가
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = LimeAccent,
+                        contentColor = Color.White
+                    )
                 ) {
                     Text("랜덤 한자 가져오기")
                 }
@@ -80,7 +95,7 @@ fun KanjiCard(kanji: com.lass.yomiyomi.data.model.Kanji) {
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF5F5F5)
+            containerColor = SoftLimeBackground
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -97,7 +112,7 @@ fun KanjiCard(kanji: com.lass.yomiyomi.data.model.Kanji) {
                 text = kanji.kanji,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = LimeAccent,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -106,7 +121,7 @@ fun KanjiCard(kanji: com.lass.yomiyomi.data.model.Kanji) {
             // 음독, 훈독, 뜻 표시
             InfoRow(label = "음독 :", value = kanji.onyomi)
             InfoRow(label = "훈독 :", value = kanji.kunyomi)
-            InfoRow(label = "뜻 :", value = kanji.meaning)
+            InfoRow(label = "의미 :", value = kanji.meaning)
             InfoRow(label = "레벨 :", value = kanji.level)
         }
     }
@@ -117,18 +132,18 @@ fun InfoRow(label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
     ) {
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.width(50.dp) // label이 고정된 크기만 차지
         )
         Text(
             text = value,
             fontSize = 16.sp,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.fillMaxWidth() // 남은 공간 활용
         )
     }
 }
