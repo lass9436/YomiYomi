@@ -11,5 +11,6 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val LimeGreen = Color(0xFFB9FBC0)
+val LimeGreenLight = Color(0xFFAED581)
 val SoftLimeBackground = Color(0xFFF3FFE3)
 val LimeAccent = Color(0xFF81C784)

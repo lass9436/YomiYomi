@@ -4,14 +4,16 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.lass.yomiyomi.data.repository.KanjiRepository
-import com.lass.yomiyomi.ui.screen.KanjiScreen
+import com.lass.yomiyomi.ui.screen.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
+import com.lass.yomiyomi.viewmodel.KanjiQuizViewModel
+import com.lass.yomiyomi.viewmodel.KanjiQuizViewModelFactory
 import com.lass.yomiyomi.viewmodel.KanjiViewModel
 import com.lass.yomiyomi.viewmodel.KanjiViewModelFactory
 import kotlinx.coroutines.launch
@@ -29,15 +31,21 @@ class MainActivity : ComponentActivity() {
             kanjiRepository.initializeDatabase()
         }
 
-        // KanjiViewModel 초기화
-        val viewModelFactory = KanjiViewModelFactory(kanjiRepository)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(KanjiViewModel::class.java)
+        // KanjiViewModel 생성
+        val kanjiviewModel: KanjiViewModel by viewModels {
+            KanjiViewModelFactory(kanjiRepository)
+        }
+
+        // KanjiQuizViewModel 생성
+        val kanjiQuizViewModel: KanjiQuizViewModel by viewModels {
+            KanjiQuizViewModelFactory(kanjiRepository)
+        }
 
         // UI 설정
         setContent {
             YomiYomiTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    KanjiScreen(kanjiViewModel = viewModel) // ViewModel을 넘김
+                    MainScreen(kanjiviewModel, kanjiQuizViewModel)
                 }
             }
         }
