@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel
+package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
 import com.lass.yomiyomi.data.model.Kanji
 import com.lass.yomiyomi.domain.model.KanjiQuiz

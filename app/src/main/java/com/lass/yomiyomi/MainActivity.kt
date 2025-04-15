@@ -12,10 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.ui.screen.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.viewmodel.KanjiQuizViewModel
-import com.lass.yomiyomi.viewmodel.KanjiQuizViewModelFactory
-import com.lass.yomiyomi.viewmodel.KanjiViewModel
-import com.lass.yomiyomi.viewmodel.KanjiViewModelFactory
+import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModel
+import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelFactory
+import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomRandomViewModel
+import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +32,8 @@ class MainActivity : ComponentActivity() {
         }
 
         // KanjiViewModel 생성
-        val kanjiviewModel: KanjiViewModel by viewModels {
-            KanjiViewModelFactory(kanjiRepository)
+        val kanjiviewModel: KanjiRandomRandomViewModel by viewModels {
+            KanjiRandomViewModelFactory(kanjiRepository)
         }
 
         // KanjiQuizViewModel 생성

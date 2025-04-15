@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel
+package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

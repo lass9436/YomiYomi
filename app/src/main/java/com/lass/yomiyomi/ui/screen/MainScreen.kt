@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.ui.screen
 
 import androidx.compose.runtime.*
-import com.lass.yomiyomi.viewmodel.KanjiQuizViewModelInterface
-import com.lass.yomiyomi.viewmodel.KanjiViewModelInterface
+import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
+import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
 import androidx.activity.compose.BackHandler
 
 // MainScreen의 화면 상태 관리용 Enum
@@ -13,7 +13,7 @@ enum class Screen {
 }
 
 @Composable
-fun MainScreen(kanjiViewModel: KanjiViewModelInterface, kanjiQuizViewModel: KanjiQuizViewModelInterface) {
+fun MainScreen(kanjiViewModel: KanjiRandomViewModelInterface, kanjiQuizViewModel: KanjiQuizViewModelInterface) {
     var currentScreen by remember { mutableStateOf(Screen.Main) }
 
     // 뒤로가기에 대한 처리

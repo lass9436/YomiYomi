@@ -16,13 +16,13 @@ import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.data.model.Kanji
 import com.lass.yomiyomi.ui.theme.LimeAccent
 import com.lass.yomiyomi.ui.theme.SoftLimeBackground
-import com.lass.yomiyomi.viewmodel.DummyKanjiViewModel
-import com.lass.yomiyomi.viewmodel.KanjiViewModelInterface
+import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomRandomViewModel
+import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KanjiScreen(
-    kanjiViewModel: KanjiViewModelInterface,
+    kanjiViewModel: KanjiRandomViewModelInterface,
     onBack: () -> Unit
 ) {
     val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
@@ -154,7 +154,7 @@ fun InfoRow(label: String, value: String) {
 @Composable
 fun KanjiScreenPreview() {
     KanjiScreen(
-        kanjiViewModel = DummyKanjiViewModel(),
+        kanjiViewModel = DummyKanjiRandomRandomViewModel(),
         onBack = {}
     )
 }

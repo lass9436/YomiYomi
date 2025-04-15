@@ -1,10 +1,10 @@
-package com.lass.yomiyomi.viewmodel
+package com.lass.yomiyomi.viewmodel.kanjiRandom
 
 import com.lass.yomiyomi.data.model.Kanji
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class DummyKanjiViewModel : KanjiViewModelInterface {
+class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow(
         Kanji(
             kanji = "木",
