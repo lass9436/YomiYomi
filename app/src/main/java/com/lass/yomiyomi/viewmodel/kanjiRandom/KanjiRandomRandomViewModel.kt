@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel
+package com.lass.yomiyomi.viewmodel.kanjiRandom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class KanjiViewModel(private val repository: KanjiRepository) : ViewModel(), KanjiViewModelInterface {
+class KanjiRandomRandomViewModel(private val repository: KanjiRepository) : ViewModel(), KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow<Kanji?>(null)
     override val randomKanji: StateFlow<Kanji?> = _randomKanji
 

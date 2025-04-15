@@ -17,8 +17,8 @@ import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.ui.theme.LimeAccent
 import com.lass.yomiyomi.ui.theme.LimeGreenLight
 import com.lass.yomiyomi.ui.theme.SoftLimeBackground
-import com.lass.yomiyomi.viewmodel.DummyKanjiQuizViewModel
-import com.lass.yomiyomi.viewmodel.KanjiQuizViewModelInterface
+import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
+import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
