@@ -1,11 +1,17 @@
 package com.lass.yomiyomi.ui.screen
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +24,11 @@ import com.lass.yomiyomi.ui.theme.LimeAccent
 import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomRandomViewModel
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
+import androidx.core.net.toUri
+import androidx.compose.ui.platform.LocalContext
+import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.ui.theme.LimeGreen
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,10 +37,12 @@ fun KanjiScreen(
     onBack: () -> Unit
 ) {
     val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
+    var levelSelected by remember { mutableStateOf(Level.ALL) }
+
 
     // ViewModel의 fetchRandomKanji를 최초 한 번 호출
-    LaunchedEffect(Unit) {
-        kanjiViewModel.fetchRandomKanji()
+    LaunchedEffect(levelSelected) {
+        kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value)
     }
 
     Scaffold(
@@ -51,6 +64,39 @@ fun KanjiScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(2.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // 사용 가능한 모든 레벨
+                    val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
+                    levels.forEach {
+                            level ->
+                        Button(
+                            onClick = { levelSelected = level },
+                            colors = if (levelSelected == level) {
+                                // 선택된 버튼: 강조된 색상
+                                ButtonDefaults.buttonColors(
+                                    containerColor = LimeGreen, // 강조 색상
+                                    contentColor = Color.White // 텍스트를 더 잘 보이게 흰색
+                                )
+                            } else {
+                                // 선택되지 않은 버튼: 기본 색상
+                                ButtonDefaults.buttonColors(
+                                    containerColor = SoftLimeBackground, // 기본 배경색 (라임톤)
+                                    contentColor = LimeAccent // 기본 텍스트 색상
+                                )
+                            },
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier
+                                .size(50.dp, 30.dp),
+                            ) {
+                            Text(level.name)
+                        }
+                    }
+                }
                 // 랜덤 한자 카드 (높이 더 키움)
                 Box(
                     modifier = Modifier
@@ -74,7 +120,7 @@ fun KanjiScreen(
 
                 // 고정 위치의 랜덤 버튼
                 Button(
-                    onClick = { kanjiViewModel.fetchRandomKanji() },
+                    onClick = { kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp), // 좌우 여백 추가
@@ -93,6 +139,7 @@ fun KanjiScreen(
 
 @Composable
 fun KanjiCard(kanji: Kanji) {
+    val context = LocalContext.current
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
@@ -103,7 +150,12 @@ fun KanjiCard(kanji: Kanji) {
             .fillMaxWidth()
             .heightIn(min = 100.dp, max = 480.dp)
             .padding(8.dp)
-    ) {
+            .clickable {
+                val intent = Intent(Intent.ACTION_VIEW,
+                    "https://ja.dict.naver.com/#/search?range=word&query=${kanji.kanji}".toUri())
+                context.startActivity(intent)
+            },
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
