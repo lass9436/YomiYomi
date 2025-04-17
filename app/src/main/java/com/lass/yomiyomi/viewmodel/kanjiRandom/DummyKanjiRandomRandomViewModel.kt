@@ -19,4 +19,8 @@ class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
     override fun fetchRandomKanji() {
         // 실제로는 아무 동작하지 않음
     }
+
+    override fun fetchRandomKanjiByLevel(level: String?) {
+        // 실제로는 아무 동작하지 않음
+    }
 }

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.data.model.Level
 
 @Dao
 interface KanjiDao {
@@ -16,4 +17,8 @@ interface KanjiDao {
 
     @Query("SELECT * FROM kanji ORDER BY RANDOM() LIMIT 1")
     suspend fun getRandomKanji(): Kanji
+
+    @Query("SELECT * FROM kanji WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomKanjiByLevel(level: String?): List<Kanji>
+
 }
