@@ -1,5 +1,7 @@
 package com.lass.yomiyomi.ui.screen
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,6 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,6 +138,7 @@ fun KanjiQuizScreen(
 
 @Composable
 fun KanjiQuizCard(quiz: KanjiQuiz) {
+    val context = LocalContext.current
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
@@ -155,7 +160,15 @@ fun KanjiQuizCard(quiz: KanjiQuiz) {
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
                 color = LimeAccent,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            "https://ja.dict.naver.com/#/search?range=word&query=${quiz.kanji}".toUri()
+                        )
+                        context.startActivity(intent)
+                    }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
