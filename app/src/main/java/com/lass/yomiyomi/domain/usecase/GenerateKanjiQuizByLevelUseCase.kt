@@ -10,7 +10,7 @@ class GenerateKanjiQuizByLevelUseCase(
 ) {
     suspend operator fun invoke(level: Level): KanjiQuiz {
         // 1. 레포지토리에서 모든 한자 데이터 가져오기
-        val kanjiList = repository.getRandomKanjiByLevel(level.toString())
+        val kanjiList = repository.getAllKanjiByLevel(level.toString())
 
         // 2. 랜덤으로 정답 한자를 선택
         val correctKanji = kanjiList.random()

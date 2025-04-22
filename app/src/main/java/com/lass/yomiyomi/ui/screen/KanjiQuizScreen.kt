@@ -41,7 +41,7 @@ fun KanjiQuizScreen(
     var levelSelected by remember { mutableStateOf(Level.ALL) }
 
     // ViewModel의 loadQuiz를 최초 한 번 호출
-    LaunchedEffect(Unit) {
+    LaunchedEffect(levelSelected) {
         kanjiQuizViewModel.loadQuizByLevel(levelSelected) // 정답 속성을 음독으로 설정
     }
 
