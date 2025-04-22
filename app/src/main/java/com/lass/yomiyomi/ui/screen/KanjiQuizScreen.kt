@@ -38,6 +38,8 @@ fun KanjiQuizScreen(
 ) {
     val quizState = kanjiQuizViewModel.quizState.collectAsState()
     val isLoading = kanjiQuizViewModel.isLoading.collectAsState()
+    var answerResult by remember { mutableStateOf<String?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
     var levelSelected by remember { mutableStateOf(Level.ALL) }
 
     // ViewModel의 loadQuiz를 최초 한 번 호출
@@ -109,7 +111,18 @@ fun KanjiQuizScreen(
                             modifier = Modifier.size(48.dp)
                         )
                     } else if (quizState.value != null) {
-                        KanjiQuizCard(quizState.value!!)
+                        KanjiQuizCard(
+                            quizState.value!!,
+                            onAnswerChecked = { isCorrect ->
+                                if (isCorrect) {
+                                    answerResult = "정답입니다!"
+                                } else {
+                                    val correct = quizState.value!!
+                                    answerResult = "오답입니다!\n정답: ${correct.optionStrings[correct.correctIndex]}"
+                                }
+                                showDialog = true
+                            }
+                        )
                     } else {
                         Text(text = "퀴즈 로드 실패", fontSize = 18.sp, color = Color.Red)
                     }
@@ -131,13 +144,46 @@ fun KanjiQuizScreen(
                     Text("새 퀴즈 가져오기")
                 }
                 Spacer(modifier = Modifier.height(16.dp)) // 하단 여백 추가
+
+                if (showDialog && answerResult != null) {
+                    AlertDialog(
+                        onDismissRequest = { },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDialog = false
+                                    answerResult = null
+                                    kanjiQuizViewModel.loadQuizByLevel(levelSelected)
+                                },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = LimeGreen
+                                )
+                            ) {
+                                Text("다음 문제", fontWeight = FontWeight.Bold)
+                            }
+                        },
+                        containerColor = SoftLimeBackground,
+                        shape = RoundedCornerShape(16.dp),
+                        text = {
+                            Text(
+                                answerResult!!,
+                                color = LimeAccent,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    )
+                }
             }
         }
     )
 }
 
 @Composable
-fun KanjiQuizCard(quiz: KanjiQuiz) {
+fun KanjiQuizCard(
+    quiz: KanjiQuiz,
+    onAnswerChecked: (Boolean) -> Unit
+) {
     val context = LocalContext.current
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -154,7 +200,6 @@ fun KanjiQuizCard(quiz: KanjiQuiz) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // 퀴즈 질문(한자) 표시
             Text(
                 text = quiz.kanji,
                 fontSize = 48.sp,
@@ -173,33 +218,38 @@ fun KanjiQuizCard(quiz: KanjiQuiz) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 선택지 버튼 생성
             quiz.optionStrings.forEachIndexed { index, option ->
-                OptionButton(option, isCorrect = index == quiz.correctIndex)
+                OptionButton(
+                    option = option,
+                    isCorrect = index == quiz.correctIndex,
+                    onAnswerChecked = onAnswerChecked
+                )
             }
         }
     }
 }
 
+
 @Composable
-fun OptionButton(option: String, isCorrect: Boolean) {
+fun OptionButton(
+    option: String,
+    isCorrect: Boolean,
+    onAnswerChecked: (Boolean) -> Unit
+) {
     Button(
-        onClick = {
-            // 정답 여부 표시
-            val message = if (isCorrect) "정답!" else "오답!"
-            println(message) // 실제 앱에서는 Toast나 UI 변경 처리
-        },
+        onClick = { onAnswerChecked(isCorrect) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isCorrect) LimeGreenLight else LimeAccent,
+            containerColor = LimeAccent,
             contentColor = Color.White
         )
     ) {
         Text(option, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
