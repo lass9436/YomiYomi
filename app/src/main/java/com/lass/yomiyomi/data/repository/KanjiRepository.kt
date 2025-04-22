@@ -19,6 +19,8 @@ class KanjiRepository(private val context: Context) {
 
     suspend fun getAllKanji() = kanjiDao.getAllKanji() // 전체 Kanji 조회
 
+    suspend fun getAllKanjiByLevel(level: String?): List<Kanji> = kanjiDao.getAllKanjiByLevel(level)
+
     suspend fun getRandomKanji() = kanjiDao.getRandomKanji()
 
     suspend fun getRandomKanjiByLevel(level: String?): List<Kanji> = kanjiDao.getRandomKanjiByLevel(level)
