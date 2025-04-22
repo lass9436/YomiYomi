@@ -25,7 +25,6 @@ import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.ui.theme.LimeAccent
 import com.lass.yomiyomi.ui.theme.LimeGreen
-import com.lass.yomiyomi.ui.theme.LimeGreenLight
 import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
@@ -159,7 +158,10 @@ fun KanjiQuizScreen(
                                     contentColor = LimeGreen
                                 )
                             ) {
-                                Text("다음 문제", fontWeight = FontWeight.Bold)
+                                Text(
+                                    "다음 문제", fontWeight = FontWeight.Bold,
+                                    color = LimeAccent
+                                )
                             }
                         },
                         containerColor = SoftLimeBackground,
