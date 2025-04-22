@@ -15,6 +15,9 @@ interface KanjiDao {
     @Query("SELECT * FROM kanji")
     suspend fun getAllKanji(): List<Kanji> // 전체 Kanji를 가져옴
 
+    @Query("SELECT * FROM kanji WHERE (:level = 'ALL' OR level = :level) ORDER BY id ASC")
+    suspend fun getAllKanjiByLevel(level: String?): List<Kanji>
+
     @Query("SELECT * FROM kanji ORDER BY RANDOM() LIMIT 1")
     suspend fun getRandomKanji(): Kanji
 
