@@ -28,6 +28,7 @@ object KanjiDataImporter {
             if (parts.size >= 6) { // 데이터 유효성 검사 (6개 이상의 항목이 있어야 함)
                 kanjiList.add(
                     Kanji(
+                        id = Integer.parseInt(parts[0].trim()),
                         kanji = parts[1].trim(),
                         onyomi = parts[2].trim(),
                         kunyomi = parts[3].trim(),
