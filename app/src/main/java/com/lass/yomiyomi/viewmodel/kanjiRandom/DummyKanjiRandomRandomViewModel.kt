@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow(
         Kanji(
+            id = 1,
             kanji = "木",
             onyomi = "モク",
             kunyomi = "き",

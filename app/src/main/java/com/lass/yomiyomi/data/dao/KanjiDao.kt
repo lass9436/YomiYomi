@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.lass.yomiyomi.data.model.Kanji
-import com.lass.yomiyomi.data.model.Level
 
 @Dao
 interface KanjiDao {
