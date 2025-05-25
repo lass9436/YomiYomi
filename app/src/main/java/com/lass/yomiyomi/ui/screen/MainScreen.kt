@@ -4,7 +4,8 @@ import androidx.compose.runtime.*
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
 import androidx.activity.compose.BackHandler
-import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
+import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
+import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
 // MainScreen의 화면 상태 관리용 Enum
 enum class Screen {
@@ -12,13 +13,15 @@ enum class Screen {
     RandomKanji,
     KanjiQuiz,
     WordQuiz,
+    WordRandom
 }
 
 @Composable
 fun MainScreen(
     kanjiViewModel: KanjiRandomViewModelInterface,
     kanjiQuizViewModel: KanjiQuizViewModelInterface,
-    wordQuizViewModel: WordQuizViewModel
+    wordRandomViewModel: WordRandomViewModelInterface,
+    wordQuizViewModel: WordQuizViewModelInterface,
 ) {
     var currentScreen by remember { mutableStateOf(Screen.Main) }
 
@@ -31,7 +34,8 @@ fun MainScreen(
         Screen.Main -> MainMenuScreen(
             onNavigateToKanji = { currentScreen = Screen.RandomKanji },
             onNavigateToQuiz = { currentScreen = Screen.KanjiQuiz },
-            onNavigateToWordQuiz = { currentScreen = Screen.WordQuiz }
+            onNavigateToWordQuiz = { currentScreen = Screen.WordQuiz },
+            onNavigateToWordRandom = { currentScreen = Screen.WordRandom }
         )
 
         Screen.RandomKanji -> KanjiScreen(
@@ -44,6 +48,10 @@ fun MainScreen(
         )
         Screen.WordQuiz -> WordQuizScreen(
             wordQuizViewModel = wordQuizViewModel,
+            onBack = { currentScreen = Screen.Main }
+        )
+        Screen.WordRandom -> WordRandomScreen(
+            wordViewModel = wordRandomViewModel,
             onBack = { currentScreen = Screen.Main }
         )
     }

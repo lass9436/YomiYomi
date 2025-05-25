@@ -19,6 +19,8 @@ import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomRandomViewModel
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelFactory
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelFactory
+import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
+import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelFactory
 import kotlinx.coroutines.launch
 import kotlin.getValue
 
@@ -47,6 +49,10 @@ class MainActivity : ComponentActivity() {
             KanjiQuizViewModelFactory(kanjiRepository)
         }
 
+        val wordRandomViewModel: WordRandomViewModel by viewModels {
+            WordRandomViewModelFactory(wordRepository)
+        }
+
         val wordQuizViewModel: WordQuizViewModel by viewModels {
             WordQuizViewModelFactory(wordRepository)
         }
@@ -58,6 +64,7 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         kanjiviewModel,
                         kanjiQuizViewModel,
+                        wordRandomViewModel,
                         wordQuizViewModel
                     )
                 }

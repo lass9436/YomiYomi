@@ -20,6 +20,6 @@ interface WordDao {
     @Query("SELECT * FROM word ORDER BY RANDOM() LIMIT 1")
     suspend fun getRandomWord(): Word // 랜덤 단어 하나 조회
 
-    @Query("SELECT * FROM word WHERE level = :level ORDER BY RANDOM() LIMIT 1")
-    suspend fun getRandomWordByLevel(level: String): Word? // 특정 수준(Level)에서 랜덤 단어 하나 조회
+    @Query("SELECT * FROM word WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomWordByLevel(level: String?): Word? // 특정 수준(Level)에서 랜덤 단어 하나 조회
 }

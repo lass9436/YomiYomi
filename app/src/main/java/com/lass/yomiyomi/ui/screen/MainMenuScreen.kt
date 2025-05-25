@@ -26,7 +26,8 @@ import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 fun MainMenuScreen(
     onNavigateToKanji: () -> Unit,
     onNavigateToQuiz: () -> Unit,
-    onNavigateToWordQuiz: () -> Unit
+    onNavigateToWordQuiz: () -> Unit,
+    onNavigateToWordRandom: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -68,6 +69,17 @@ fun MainMenuScreen(
                         Text("한자 퀴즈 시작")
                     }
 
+                    // 세 번째 버튼 - 랜덤 단어
+                    Button(
+                        onClick = onNavigateToWordRandom,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LimeAccent,
+                            contentColor = LimeGreen
+                        )
+                    ) {
+                        Text("랜덤 단어 카드 보기")
+                    }
+
                     // 세 번째 버튼 - 단어 퀴즈
                     Button(
                         onClick = onNavigateToWordQuiz,
@@ -90,6 +102,7 @@ fun MainMenuScreenPreview() {
     MainMenuScreen(
         onNavigateToKanji = {},
         onNavigateToQuiz = {},
-        onNavigateToWordQuiz = {}
+        onNavigateToWordQuiz = {},
+        onNavigateToWordRandom = {}
     )
 }
