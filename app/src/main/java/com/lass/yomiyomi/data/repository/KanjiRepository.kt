@@ -4,7 +4,6 @@ import android.content.Context
 import com.lass.yomiyomi.data.database.KanjiDataImporter
 import com.lass.yomiyomi.data.database.AppDatabase // AppDatabase로 수정
 import com.lass.yomiyomi.data.model.Kanji
-import com.lass.yomiyomi.domain.model.KanjiQuiz
 
 class KanjiRepository(private val context: Context) {
     private val kanjiDao = AppDatabase.getInstance(context).kanjiDao() // AppDatabase 사용
