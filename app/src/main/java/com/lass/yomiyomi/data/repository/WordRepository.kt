@@ -23,5 +23,5 @@ class WordRepository(private val context: Context) {
 
     suspend fun getRandomWord() = wordDao.getRandomWord() // 랜덤 Word 하나 조회
 
-    suspend fun getRandomWordByLevel(level: String): Word? = wordDao.getRandomWordByLevel(level) // 특정 Level에서 랜덤 Word 조회
+    suspend fun getRandomWordByLevel(level: String?): Word? = wordDao.getRandomWordByLevel(level) // 특정 Level에서 랜덤 Word 조회
 }

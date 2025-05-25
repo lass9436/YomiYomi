@@ -21,6 +21,6 @@ interface KanjiDao {
     suspend fun getRandomKanji(): Kanji
 
     @Query("SELECT * FROM kanji WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
-    suspend fun getRandomKanjiByLevel(level: String?): List<Kanji>
+    suspend fun getRandomKanjiByLevel(level: String?): Kanji?
 
 }

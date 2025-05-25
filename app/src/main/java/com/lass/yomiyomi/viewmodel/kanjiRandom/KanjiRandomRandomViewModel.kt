@@ -20,7 +20,7 @@ class KanjiRandomRandomViewModel(private val repository: KanjiRepository) : View
 
     override fun fetchRandomKanjiByLevel(level: String?) {
         viewModelScope.launch {
-            _randomKanji.value = repository.getRandomKanjiByLevel(level).firstOrNull()
+            _randomKanji.value = repository.getRandomKanjiByLevel(level)
         }
     }
 }
