@@ -14,7 +14,7 @@ interface WordDao {
     @Query("SELECT * FROM word")
     suspend fun getAllWords(): List<Word> // 전체 단어 조회
 
-    @Query("SELECT * FROM word WHERE level = :level")
+    @Query("SELECT * FROM word WHERE (:level = 'ALL' OR level = :level)")
     suspend fun getAllWordsByLevel(level: String): List<Word> // 특정 수준(Level) 단어 조회
 
     @Query("SELECT * FROM word ORDER BY RANDOM() LIMIT 1")
