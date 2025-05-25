@@ -25,7 +25,8 @@ import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 @Composable
 fun MainMenuScreen(
     onNavigateToKanji: () -> Unit,
-    onNavigateToQuiz: () -> Unit
+    onNavigateToQuiz: () -> Unit,
+    onNavigateToWordQuiz: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -66,6 +67,17 @@ fun MainMenuScreen(
                     ) {
                         Text("한자 퀴즈 시작")
                     }
+
+                    // 세 번째 버튼 - 단어 퀴즈
+                    Button(
+                        onClick = onNavigateToWordQuiz,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LimeAccent,
+                            contentColor = LimeGreen
+                        )
+                    ) {
+                        Text("단어 퀴즈 시작")
+                    }
                 }
             }
         }
@@ -77,6 +89,7 @@ fun MainMenuScreen(
 fun MainMenuScreenPreview() {
     MainMenuScreen(
         onNavigateToKanji = {},
-        onNavigateToQuiz = {}
+        onNavigateToQuiz = {},
+        onNavigateToWordQuiz = {}
     )
 }
