@@ -265,7 +265,8 @@ fun WordQuizCard(
                             "https://ja.dict.naver.com/#/search?range=word&query=${searchQuery}".toUri()
                         )
                         context.startActivity(intent)
-                    }
+                    },
+                lineHeight = 36.sp,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
