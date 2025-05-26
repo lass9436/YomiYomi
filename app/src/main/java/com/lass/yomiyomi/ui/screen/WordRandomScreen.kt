@@ -74,7 +74,7 @@ fun WordRandomScreen(
                             onClick = { levelSelected = level },
                             colors = if (levelSelected == level) {
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeGreen,
+                                    containerColor = LimeAccent,
                                     contentColor = Color.White
                                 )
                             } else {

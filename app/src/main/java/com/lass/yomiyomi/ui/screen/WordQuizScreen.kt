@@ -82,7 +82,7 @@ fun WordQuizScreen(
                             onClick = { levelSelected = level },
                             colors = if (levelSelected == level) {
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeGreen,
+                                    containerColor = LimeAccent,
                                     contentColor = Color.White
                                 )
                             } else {
@@ -112,7 +112,7 @@ fun WordQuizScreen(
                         onClick = { quizTypeSelected = WordQuizType.WORD_TO_MEANING_READING },
                         colors = if (quizTypeSelected == WordQuizType.WORD_TO_MEANING_READING) {
                             ButtonDefaults.buttonColors(
-                                containerColor = LimeGreen,
+                                containerColor = LimeAccent,
                                 contentColor = Color.White
                             )
                         } else {
