@@ -80,7 +80,7 @@ fun KanjiQuizScreen(
                             colors = if (levelSelected == level) {
                                 // 선택된 버튼: 강조된 색상
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeGreen, // 강조 색상
+                                    containerColor = LimeAccent, // 강조 색상
                                     contentColor = Color.White // 텍스트를 더 잘 보이게 흰색
                                 )
                             } else {
