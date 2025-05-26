@@ -177,11 +177,13 @@ fun InfoRowWord(label: String, value: String) {
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
+            color = Color.Black,
             modifier = Modifier.width(50.dp)
         )
         Text(
             text = value,
             fontSize = 16.sp,
+            color = Color.Black,
             modifier = Modifier.fillMaxWidth()
         )
     }
