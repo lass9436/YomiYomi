@@ -192,11 +192,13 @@ fun InfoRow(label: String, value: String) {
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
+            color = Color.Black,
             modifier = Modifier.width(50.dp) // label이 고정된 크기만 차지
         )
         Text(
             text = value,
             fontSize = 16.sp,
+            color = Color.Black,
             modifier = Modifier.fillMaxWidth() // 남은 공간 활용
         )
     }
