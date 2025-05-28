@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.compose.ui.text.font.FontWeight
@@ -24,9 +23,6 @@ import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
-import com.lass.yomiyomi.ui.theme.LimeAccent
-import com.lass.yomiyomi.ui.theme.LimeGreen
-import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 import com.lass.yomiyomi.viewmodel.wordQuiz.DummyWordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
 
@@ -43,7 +39,6 @@ fun WordQuizScreen(
     var levelSelected by remember { mutableStateOf(Level.ALL) }
     var quizTypeSelected by remember { mutableStateOf(WordQuizType.WORD_TO_MEANING_READING) }
 
-    // ViewModel의 loadQuiz를 최초 한 번 호출
     LaunchedEffect(levelSelected, quizTypeSelected) {
         wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected)
     }
@@ -54,7 +49,7 @@ fun WordQuizScreen(
                 title = {
                     Text(
                         "단어 퀴즈",
-                        color = LimeAccent,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -67,28 +62,25 @@ fun WordQuizScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                // 레벨 선택 버튼들
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(2.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // 현재 N1 단어가 없어서 임시 주석 처리
-                    // val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
                     val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
                     levels.forEach { level ->
                         Button(
                             onClick = { levelSelected = level },
                             colors = if (levelSelected == level) {
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeAccent,
-                                    contentColor = Color.White
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary
                                 )
                             } else {
                                 ButtonDefaults.buttonColors(
-                                    containerColor = SoftLimeBackground,
-                                    contentColor = LimeAccent
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.tertiary
                                 )
                             },
                             contentPadding = PaddingValues(0.dp),
@@ -101,7 +93,6 @@ fun WordQuizScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 퀴즈 타입 선택 버튼들
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -112,13 +103,13 @@ fun WordQuizScreen(
                         onClick = { quizTypeSelected = WordQuizType.WORD_TO_MEANING_READING },
                         colors = if (quizTypeSelected == WordQuizType.WORD_TO_MEANING_READING) {
                             ButtonDefaults.buttonColors(
-                                containerColor = LimeAccent,
-                                contentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
                             )
                         } else {
                             ButtonDefaults.buttonColors(
-                                containerColor = SoftLimeBackground,
-                                contentColor = LimeAccent
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
                             )
                         },
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
@@ -130,13 +121,13 @@ fun WordQuizScreen(
                         onClick = { quizTypeSelected = WordQuizType.MEANING_READING_TO_WORD },
                         colors = if (quizTypeSelected == WordQuizType.MEANING_READING_TO_WORD) {
                             ButtonDefaults.buttonColors(
-                                containerColor = LimeGreen,
-                                contentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
                             )
                         } else {
                             ButtonDefaults.buttonColors(
-                                containerColor = SoftLimeBackground,
-                                contentColor = LimeAccent
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
                             )
                         },
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
@@ -147,7 +138,6 @@ fun WordQuizScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 퀴즈 카드 및 Loading Indicator
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -172,21 +162,24 @@ fun WordQuizScreen(
                             }
                         )
                     } else {
-                        Text(text = "퀴즈 로드 실패", fontSize = 18.sp, color = Color.Red)
+                        Text(
+                            text = "퀴즈 로드 실패",
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // 새 퀴즈 가져오기 버튼
                 Button(
                     onClick = { wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LimeAccent,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 ) {
                     Text("새 퀴즈 가져오기")
@@ -204,21 +197,22 @@ fun WordQuizScreen(
                                     wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected)
                                 },
                                 colors = ButtonDefaults.textButtonColors(
-                                    contentColor = LimeGreen
+                                    contentColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
                                 Text(
-                                    "다음 문제", fontWeight = FontWeight.Bold,
-                                    color = LimeAccent
+                                    "다음 문제",
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                         },
-                        containerColor = SoftLimeBackground,
+                        containerColor = MaterialTheme.colorScheme.background,
                         shape = RoundedCornerShape(16.dp),
                         text = {
                             Text(
                                 answerResult!!,
-                                color = LimeAccent,
+                                color = MaterialTheme.colorScheme.tertiary,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -240,7 +234,7 @@ fun WordQuizCard(
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = SoftLimeBackground
+            containerColor = MaterialTheme.colorScheme.background
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -255,7 +249,7 @@ fun WordQuizCard(
                 text = quiz.question,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = LimeAccent,
+                color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickable {
@@ -294,8 +288,8 @@ fun WordOptionButton(
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = LimeAccent,
-            contentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onTertiary
         )
     ) {
         Text(option, fontSize = 16.sp, fontWeight = FontWeight.Bold)

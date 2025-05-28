@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,9 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.Word
-import com.lass.yomiyomi.ui.theme.LimeAccent
-import com.lass.yomiyomi.ui.theme.LimeGreen
-import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 import com.lass.yomiyomi.viewmodel.wordRandom.DummyWordRandomViewModel
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
@@ -48,7 +44,7 @@ fun WordRandomScreen(
                 title = {
                     Text(
                         "랜덤 단어 카드",
-                        color = LimeAccent,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -67,20 +63,19 @@ fun WordRandomScreen(
                         .padding(2.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
                     val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
                     levels.forEach { level ->
                         Button(
                             onClick = { levelSelected = level },
                             colors = if (levelSelected == level) {
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeAccent,
-                                    contentColor = Color.White
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary
                                 )
                             } else {
                                 ButtonDefaults.buttonColors(
-                                    containerColor = SoftLimeBackground,
-                                    contentColor = LimeAccent
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.tertiary
                                 )
                             },
                             contentPadding = PaddingValues(0.dp),
@@ -112,8 +107,8 @@ fun WordRandomScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LimeAccent,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 ) {
                     Text("랜덤 단어 가져오기")
@@ -126,22 +121,15 @@ fun WordRandomScreen(
 
 @Composable
 fun WordCard(word: Word) {
-    val context = LocalContext.current
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SoftLimeBackground),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background
+        ),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 100.dp, max = 480.dp)
             .padding(8.dp)
-            .clickable {
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    "https://ja.dict.naver.com/#/search?range=word&query=${word.word}".toUri()
-                )
-                context.startActivity(intent)
-            },
     ) {
         Column(
             modifier = Modifier
@@ -152,7 +140,7 @@ fun WordCard(word: Word) {
                 text = word.word,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = LimeAccent,
+                color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -177,13 +165,13 @@ fun InfoRowWord(label: String, value: String) {
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.width(50.dp)
         )
         Text(
             text = value,
             fontSize = 16.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.fillMaxWidth()
         )
     }

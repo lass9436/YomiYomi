@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.compose.ui.text.font.FontWeight
@@ -23,9 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuiz
-import com.lass.yomiyomi.ui.theme.LimeAccent
-import com.lass.yomiyomi.ui.theme.LimeGreen
-import com.lass.yomiyomi.ui.theme.SoftLimeBackground
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 
@@ -41,9 +37,8 @@ fun KanjiQuizScreen(
     var showDialog by remember { mutableStateOf(false) }
     var levelSelected by remember { mutableStateOf(Level.ALL) }
 
-    // ViewModel의 loadQuiz를 최초 한 번 호출
     LaunchedEffect(levelSelected) {
-        kanjiQuizViewModel.loadQuizByLevel(levelSelected) // 정답 속성을 음독으로 설정
+        kanjiQuizViewModel.loadQuizByLevel(levelSelected)
     }
 
     Scaffold(
@@ -52,7 +47,7 @@ fun KanjiQuizScreen(
                 title = {
                     Text(
                         "한자 퀴즈",
-                        color = LimeAccent,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -71,34 +66,29 @@ fun KanjiQuizScreen(
                         .padding(2.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // 사용 가능한 모든 레벨
                     val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
-                    levels.forEach {
-                            level ->
+                    levels.forEach { level ->
                         Button(
                             onClick = { levelSelected = level },
                             colors = if (levelSelected == level) {
-                                // 선택된 버튼: 강조된 색상
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeAccent, // 강조 색상
-                                    contentColor = Color.White // 텍스트를 더 잘 보이게 흰색
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary
                                 )
                             } else {
-                                // 선택되지 않은 버튼: 기본 색상
                                 ButtonDefaults.buttonColors(
-                                    containerColor = SoftLimeBackground, // 기본 배경색 (라임톤)
-                                    contentColor = LimeAccent // 기본 텍스트 색상
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.tertiary
                                 )
                             },
                             contentPadding = PaddingValues(0.dp),
-                            modifier = Modifier
-                                .size(50.dp, 30.dp),
+                            modifier = Modifier.size(50.dp, 30.dp),
                         ) {
                             Text(level.name)
                         }
                     }
                 }
-                // 퀴즈 카드 및 Loading Indicator
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -123,26 +113,29 @@ fun KanjiQuizScreen(
                             }
                         )
                     } else {
-                        Text(text = "퀴즈 로드 실패", fontSize = 18.sp, color = Color.Red)
+                        Text(
+                            text = "퀴즈 로드 실패",
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.weight(1f)) // 남은 공간을 활용해 버튼을 아래로 배치
+                Spacer(modifier = Modifier.weight(1f))
 
-                // 랜덤 새 퀴즈 버튼
                 Button(
-                    onClick = { kanjiQuizViewModel.loadQuizByLevel(levelSelected)}, // 훈독 속성을 정답으로 사용
+                    onClick = { kanjiQuizViewModel.loadQuizByLevel(levelSelected) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LimeAccent,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 ) {
                     Text("새 퀴즈 가져오기")
                 }
-                Spacer(modifier = Modifier.height(16.dp)) // 하단 여백 추가
+                Spacer(modifier = Modifier.height(16.dp))
 
                 if (showDialog && answerResult != null) {
                     AlertDialog(
@@ -155,21 +148,22 @@ fun KanjiQuizScreen(
                                     kanjiQuizViewModel.loadQuizByLevel(levelSelected)
                                 },
                                 colors = ButtonDefaults.textButtonColors(
-                                    contentColor = LimeGreen
+                                    contentColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
                                 Text(
-                                    "다음 문제", fontWeight = FontWeight.Bold,
-                                    color = LimeAccent
+                                    "다음 문제",
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                         },
-                        containerColor = SoftLimeBackground,
+                        containerColor = MaterialTheme.colorScheme.background,
                         shape = RoundedCornerShape(16.dp),
                         text = {
                             Text(
                                 answerResult!!,
-                                color = LimeAccent,
+                                color = MaterialTheme.colorScheme.tertiary,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -191,7 +185,7 @@ fun KanjiQuizCard(
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = SoftLimeBackground
+            containerColor = MaterialTheme.colorScheme.background
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -206,7 +200,7 @@ fun KanjiQuizCard(
                 text = quiz.kanji,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = LimeAccent,
+                color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickable {
@@ -231,7 +225,6 @@ fun KanjiQuizCard(
     }
 }
 
-
 @Composable
 fun OptionButton(
     option: String,
@@ -244,14 +237,13 @@ fun OptionButton(
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = LimeAccent,
-            contentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onTertiary
         )
     ) {
         Text(option, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

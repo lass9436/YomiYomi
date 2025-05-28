@@ -14,21 +14,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.data.model.Kanji
-import com.lass.yomiyomi.ui.theme.LimeAccent
-import com.lass.yomiyomi.ui.theme.SoftLimeBackground
+import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomRandomViewModel
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
 import androidx.core.net.toUri
 import androidx.compose.ui.platform.LocalContext
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.ui.theme.LimeGreen
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,8 +34,6 @@ fun KanjiScreen(
     val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
     var levelSelected by remember { mutableStateOf(Level.ALL) }
 
-
-    // ViewModel의 fetchRandomKanji를 최초 한 번 호출
     LaunchedEffect(levelSelected) {
         kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value)
     }
@@ -51,7 +44,7 @@ fun KanjiScreen(
                 title = {
                     Text(
                         "랜덤 한자 카드",
-                        color = LimeAccent,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -70,41 +63,33 @@ fun KanjiScreen(
                         .padding(2.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // 사용 가능한 모든 레벨
                     val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
-                    levels.forEach {
-                            level ->
+                    levels.forEach { level ->
                         Button(
                             onClick = { levelSelected = level },
                             colors = if (levelSelected == level) {
-                                // 선택된 버튼: 강조된 색상
                                 ButtonDefaults.buttonColors(
-                                    containerColor = LimeAccent, // 강조 색상
-                                    contentColor = Color.White // 텍스트를 더 잘 보이게 흰색
+                                    containerColor = MaterialTheme.colorScheme.tertiary,
+                                    contentColor = MaterialTheme.colorScheme.onTertiary
                                 )
                             } else {
-                                // 선택되지 않은 버튼: 기본 색상
                                 ButtonDefaults.buttonColors(
-                                    containerColor = SoftLimeBackground, // 기본 배경색 (라임톤)
-                                    contentColor = LimeAccent // 기본 텍스트 색상
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.tertiary
                                 )
                             },
                             contentPadding = PaddingValues(0.dp),
-                            modifier = Modifier
-                                .size(50.dp, 30.dp),
-                            ) {
+                            modifier = Modifier.size(50.dp, 30.dp),
+                        ) {
                             Text(level.name)
                         }
                     }
                 }
-                // 랜덤 한자 카드 (높이 더 키움)
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(
-                            min = 200.dp,
-                            max = 500.dp
-                        ),
+                        .heightIn(min = 200.dp, max = 500.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (randomKanji != null) {
@@ -116,22 +101,21 @@ fun KanjiScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.weight(1f)) // 남은 공간을 활용해 버튼을 아래로 밀어냄
+                Spacer(modifier = Modifier.weight(1f))
 
-                // 고정 위치의 랜덤 버튼
                 Button(
                     onClick = { kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp), // 좌우 여백 추가
+                        .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LimeAccent,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 ) {
                     Text("랜덤 한자 가져오기")
                 }
-                Spacer(modifier = Modifier.height(16.dp)) // 바닥과의 여백
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     )
@@ -144,7 +128,7 @@ fun KanjiCard(kanji: Kanji) {
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = SoftLimeBackground
+            containerColor = MaterialTheme.colorScheme.background
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -166,7 +150,7 @@ fun KanjiCard(kanji: Kanji) {
                 text = kanji.kanji,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = LimeAccent,
+                color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -192,14 +176,14 @@ fun InfoRow(label: String, value: String) {
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.width(50.dp) // label이 고정된 크기만 차지
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.width(50.dp)
         )
         Text(
             text = value,
             fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.fillMaxWidth() // 남은 공간 활용
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
