@@ -8,7 +8,7 @@ import com.lass.yomiyomi.data.model.Word
 
 @Dao
 interface WordDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(words: List<Word>) // Word 데이터를 한번에 삽입
 
     @Query("SELECT * FROM word")

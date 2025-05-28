@@ -12,7 +12,9 @@ class DummyWordRandomViewModel : WordRandomViewModelInterface {
             reading = "がっこう",
             meaning = "학교",
             type = "명사",
-            level = "N5"
+            level = "N5",
+            learningWeight = 0.5f,
+            timestamp = 0L
         )
     )
     override val randomWord: StateFlow<Word?> = _randomWord

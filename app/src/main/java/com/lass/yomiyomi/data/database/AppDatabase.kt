@@ -12,7 +12,7 @@ import com.lass.yomiyomi.data.dao.KanjiDao
 import com.lass.yomiyomi.data.dao.WordDao
 import com.lass.yomiyomi.data.model.Word
 
-@Database(entities = [DailyRecord::class, Kanji::class, Word::class], version = 1)
+@Database(entities = [DailyRecord::class, Kanji::class, Word::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dailyRecordDao(): DailyRecordDao
