@@ -11,5 +11,7 @@ data class Kanji(
     val onyomi: String,                           // 음독
     val kunyomi: String,                          // 훈독
     val meaning: String,                          // 뜻
-    val level: String                             // 수준 (레벨)
+    val level: String,                            // 수준 (레벨)
+    val learningWeight: Float,                    // 가중치
+    val timestamp: Long
 )

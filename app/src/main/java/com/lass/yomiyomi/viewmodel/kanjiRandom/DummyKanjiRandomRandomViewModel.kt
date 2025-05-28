@@ -12,7 +12,9 @@ class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
             onyomi = "モク",
             kunyomi = "き",
             meaning = "나무",
-            level = "2"
+            level = "2",
+            learningWeight = 0.5f,
+            timestamp = 0L
         )
     )
     override val randomKanji: StateFlow<Kanji?> = _randomKanji

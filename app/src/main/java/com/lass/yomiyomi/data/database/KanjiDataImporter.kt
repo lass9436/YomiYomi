@@ -33,7 +33,9 @@ object KanjiDataImporter {
                         onyomi = parts[2].trim(),
                         kunyomi = parts[3].trim(),
                         meaning = parts[4].trim(),
-                        level = parts[5].trim()
+                        level = parts[5].trim(),
+                        learningWeight = 0.5f,
+                        timestamp = 0L
                     )
                 )
             }

@@ -11,5 +11,7 @@ data class Word (
     val reading: String,
     val type: String,
     val meaning: String,
-    val level: String
+    val level: String,
+    val learningWeight: Float,
+    val timestamp: Long
 )

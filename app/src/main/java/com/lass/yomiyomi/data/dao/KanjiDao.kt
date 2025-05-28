@@ -8,7 +8,7 @@ import com.lass.yomiyomi.data.model.Kanji
 
 @Dao
 interface KanjiDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(kanjiList: List<Kanji>) // 중복 데이터 대체
 
     @Query("SELECT * FROM kanji")

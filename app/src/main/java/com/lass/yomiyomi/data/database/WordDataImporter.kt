@@ -33,7 +33,9 @@ object WordDataImporter {
                         reading = parts[2].trim(), // 읽는법(발음)
                         type = parts[3].trim(), // 단어 유형
                         meaning = parts[4].trim(), // 뜻
-                        level = parts[5].trim() // 수준 (레벨)
+                        level = parts[5].trim(), // 수준 (레벨)
+                        learningWeight = 0.5f,
+                        timestamp = 0L
                     )
                 )
             }
