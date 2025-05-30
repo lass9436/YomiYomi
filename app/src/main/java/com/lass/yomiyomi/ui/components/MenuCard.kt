@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,12 +26,7 @@ fun MenuCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-            pressedElevation = 4.dp,
-            focusedElevation = 4.dp,
-            hoveredElevation = 3.dp
-        )
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary) // 테두리 추가
     ) {
         Column(
             modifier = Modifier
@@ -47,7 +43,7 @@ fun MenuCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
@@ -56,4 +52,4 @@ fun MenuCard(
             )
         }
     }
-} 
+}
