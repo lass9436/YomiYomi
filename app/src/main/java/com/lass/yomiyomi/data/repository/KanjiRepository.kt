@@ -22,7 +22,7 @@ class KanjiRepository(private val context: Context) {
 
     suspend fun getRandomKanji() = kanjiDao.getRandomKanji()
 
-    suspend fun getRandomKanjiByLevel(level: String): Kanji? = kanjiDao.getRandomKanjiByLevel(level)
+    suspend fun getRandomKanjiByLevel(level: String?): Kanji? = kanjiDao.getRandomKanjiByLevel(level)
 
     // 학습 모드용 데이터 조회
     suspend fun getKanjiForLearningMode(level: String): Pair<List<Kanji>, List<Kanji>> {
@@ -48,10 +48,4 @@ class KanjiRepository(private val context: Context) {
         
         kanjiDao.updateKanjiLearningStatus(kanjiId, clampedWeight, currentTimestamp)
     }
-
-    suspend fun getTopWeightKanji(level: String?, limit: Int): List<Kanji> =
-        kanjiDao.getTopWeightKanji(level, limit)
-
-    suspend fun getRandomKanjiForOptions(level: String?, excludeKanji: List<String>, limit: Int): List<Kanji> =
-        kanjiDao.getRandomKanjiForOptions(level, excludeKanji, limit)
 }

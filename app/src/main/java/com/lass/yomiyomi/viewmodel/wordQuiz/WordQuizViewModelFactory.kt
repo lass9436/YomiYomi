@@ -3,7 +3,8 @@ package com.lass.yomiyomi.viewmodel.wordQuiz
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.lass.yomiyomi.data.repository.WordRepository
-import com.lass.yomiyomi.domain.usecase.GenerateWordQuizByLevelUseCase
+import com.lass.yomiyomi.domain.usecase.GenerateWordQuizRandomModeUseCase
+import com.lass.yomiyomi.domain.usecase.GenerateWordQuizStudyModeUseCase
 
 class WordQuizViewModelFactory(
     private val repository: WordRepository
@@ -11,8 +12,9 @@ class WordQuizViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WordQuizViewModel::class.java)) {
-            val generateWordQuizByLevelUseCase = GenerateWordQuizByLevelUseCase(repository)
-            return WordQuizViewModel(generateWordQuizByLevelUseCase, repository) as T
+            val generateWordQuizRandomModeUseCase = GenerateWordQuizRandomModeUseCase(repository)
+            val generateWordQuizStudyModeUseCase = GenerateWordQuizStudyModeUseCase(repository)
+            return WordQuizViewModel(generateWordQuizRandomModeUseCase, generateWordQuizStudyModeUseCase, repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

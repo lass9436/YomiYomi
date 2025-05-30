@@ -6,14 +6,16 @@ import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
-import com.lass.yomiyomi.domain.usecase.GenerateWordQuizByLevelUseCase
+import com.lass.yomiyomi.domain.usecase.GenerateWordQuizRandomModeUseCase
+import com.lass.yomiyomi.domain.usecase.GenerateWordQuizStudyModeUseCase
 import com.lass.yomiyomi.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WordQuizViewModel(
-    private val generateWordQuizByLevelUseCase: GenerateWordQuizByLevelUseCase,
+    private val generateWordQuizRandomModeUseCase: GenerateWordQuizRandomModeUseCase,
+    private val generateWordQuizStudyModeUseCase: GenerateWordQuizStudyModeUseCase,
     private val repository: WordRepository
 ) : ViewModel(), WordQuizViewModelInterface {
 
@@ -38,14 +40,14 @@ class WordQuizViewModel(
                 
                 if (!isLearningMode) {
                     currentQuizWord = null
-                    val quiz = generateWordQuizByLevelUseCase(level, quizType, false)
+                    val quiz = generateWordQuizRandomModeUseCase(level, quizType)
                     _quizState.value = quiz
                     return@launch
                 }
 
                 // 학습 모드
                 if (priorityWordsInMemory.isEmpty() || currentPriorityIndex >= priorityWordsInMemory.size) {
-                    val (priorityWords, distractors) = generateWordQuizByLevelUseCase.loadLearningModeWords(level)
+                    val (priorityWords, distractors) = generateWordQuizStudyModeUseCase.loadLearningModeData(level)
                     priorityWordsInMemory = priorityWords
                     distractorsInMemory = distractors
                     currentPriorityIndex = 0
@@ -55,7 +57,7 @@ class WordQuizViewModel(
                 currentQuizWord = priorityWordsInMemory[currentPriorityIndex]
                 
                 // 퀴즈 생성
-                val quiz = generateWordQuizByLevelUseCase.generateQuizFromMemory(
+                val quiz = generateWordQuizStudyModeUseCase.generateQuiz(
                     currentQuizWord!!,
                     distractorsInMemory,
                     quizType

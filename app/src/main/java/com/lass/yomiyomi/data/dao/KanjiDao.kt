@@ -9,7 +9,7 @@ import com.lass.yomiyomi.data.model.Kanji
 @Dao
 interface KanjiDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(kanjiList: List<Kanji>)
+    suspend fun insertAll(kanjis: List<Kanji>)
 
     @Query("SELECT * FROM kanji")
     suspend fun getAllKanji(): List<Kanji>
@@ -21,7 +21,7 @@ interface KanjiDao {
     suspend fun getRandomKanji(): Kanji
 
     @Query("SELECT * FROM kanji WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
-    suspend fun getRandomKanjiByLevel(level: String): Kanji?
+    suspend fun getRandomKanjiByLevel(level: String?): Kanji?
 
     // 학습 모드용 - 가중치 상위 5개
     @Query("""
