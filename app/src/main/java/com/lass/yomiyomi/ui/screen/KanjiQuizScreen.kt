@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuiz
+import com.lass.yomiyomi.domain.model.KanjiQuizType
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 
@@ -36,9 +37,11 @@ fun KanjiQuizScreen(
     var answerResult by remember { mutableStateOf<String?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var levelSelected by remember { mutableStateOf(Level.ALL) }
+    var quizTypeSelected by remember { mutableStateOf(KanjiQuizType.KANJI_TO_READING_MEANING) }
+    var isLearningMode by remember { mutableStateOf(false) }
 
-    LaunchedEffect(levelSelected) {
-        kanjiQuizViewModel.loadQuizByLevel(levelSelected)
+    LaunchedEffect(levelSelected, quizTypeSelected, isLearningMode) {
+        kanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
     }
 
     Scaffold(
@@ -66,7 +69,7 @@ fun KanjiQuizScreen(
                         .padding(2.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
+                    val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
                     levels.forEach { level ->
                         Button(
                             onClick = { levelSelected = level },
@@ -89,6 +92,71 @@ fun KanjiQuizScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(2.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = { quizTypeSelected = KanjiQuizType.KANJI_TO_READING_MEANING },
+                        colors = if (quizTypeSelected == KanjiQuizType.KANJI_TO_READING_MEANING) {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    ) {
+                        Text("한자→읽기", fontSize = 12.sp)
+                    }
+
+                    Button(
+                        onClick = { quizTypeSelected = KanjiQuizType.READING_MEANING_TO_KANJI },
+                        colors = if (quizTypeSelected == KanjiQuizType.READING_MEANING_TO_KANJI) {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    ) {
+                        Text("읽기→한자", fontSize = 12.sp)
+                    }
+
+                    Button(
+                        onClick = { isLearningMode = !isLearningMode },
+                        colors = if (isLearningMode) {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    ) {
+                        Text("학습 모드", fontSize = 12.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,9 +175,13 @@ fun KanjiQuizScreen(
                                     answerResult = "정답입니다!"
                                 } else {
                                     val correct = quizState.value!!
-                                    answerResult = "오답입니다!\n정답: ${correct.optionStrings[correct.correctIndex]}"
+                                    answerResult = "오답입니다!\n정답: ${correct.answer}"
                                 }
                                 showDialog = true
+                                kanjiQuizViewModel.checkAnswer(
+                                    if (isCorrect) quizState.value!!.correctIndex else -1,
+                                    isLearningMode
+                                )
                             }
                         )
                     } else {
@@ -124,7 +196,7 @@ fun KanjiQuizScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button(
-                    onClick = { kanjiQuizViewModel.loadQuizByLevel(levelSelected) },
+                    onClick = { kanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -145,7 +217,7 @@ fun KanjiQuizScreen(
                                 onClick = {
                                     showDialog = false
                                     answerResult = null
-                                    kanjiQuizViewModel.loadQuizByLevel(levelSelected)
+                                    kanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
                                 },
                                 colors = ButtonDefaults.textButtonColors(
                                     contentColor = MaterialTheme.colorScheme.primary
@@ -197,25 +269,27 @@ fun KanjiQuizCard(
                 .padding(16.dp)
         ) {
             Text(
-                text = quiz.kanji,
-                fontSize = 48.sp,
+                text = quiz.question,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickable {
+                        val searchQuery = quiz.question
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://ja.dict.naver.com/#/search?range=word&query=${quiz.kanji}".toUri()
+                            "https://ja.dict.naver.com/#/search?range=kanji&query=${searchQuery}".toUri()
                         )
                         context.startActivity(intent)
-                    }
+                    },
+                lineHeight = 36.sp,
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            quiz.optionStrings.forEachIndexed { index, option ->
-                OptionButton(
+            quiz.options.forEachIndexed { index, option ->
+                KanjiOptionButton(
                     option = option,
                     isCorrect = index == quiz.correctIndex,
                     onAnswerChecked = onAnswerChecked
@@ -226,7 +300,7 @@ fun KanjiQuizCard(
 }
 
 @Composable
-fun OptionButton(
+fun KanjiOptionButton(
     option: String,
     isCorrect: Boolean,
     onAnswerChecked: (Boolean) -> Unit

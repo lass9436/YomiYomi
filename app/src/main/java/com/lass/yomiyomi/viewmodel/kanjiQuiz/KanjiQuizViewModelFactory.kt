@@ -6,13 +6,13 @@ import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.usecase.GenerateKanjiQuizByLevelUseCase
 
 class KanjiQuizViewModelFactory(
-    private val repository: KanjiRepository // KanjiRepository를 전달받음
+    private val repository: KanjiRepository
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(KanjiQuizViewModel::class.java)) {
             val generateKanjiQuizByLevelUseCase = GenerateKanjiQuizByLevelUseCase(repository)
-            return KanjiQuizViewModel(generateKanjiQuizByLevelUseCase) as T // 생성 후 전달
+            return KanjiQuizViewModel(generateKanjiQuizByLevelUseCase, repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

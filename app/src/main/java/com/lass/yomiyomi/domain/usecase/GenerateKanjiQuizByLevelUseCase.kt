@@ -8,38 +8,59 @@ import com.lass.yomiyomi.domain.model.KanjiQuiz
 class GenerateKanjiQuizByLevelUseCase(
     private val repository: KanjiRepository
 ) {
-    suspend operator fun invoke(level: Level): KanjiQuiz {
-        // 1. 레포지토리에서 모든 한자 데이터 가져오기
+    suspend operator fun invoke(level: Level, isLearningMode: Boolean = false): KanjiQuiz {
+        if (isLearningMode) {
+            throw IllegalStateException("Learning mode should use loadLearningModeWords and generateQuizFromMemory")
+        }
+
+        // 랜덤 모드: 기존 로직
         val kanjiList = repository.getAllKanjiByLevel(level.toString())
-
-        // 2. 랜덤으로 정답 한자를 선택
         val correctKanji = kanjiList.random()
-
-        // 3. 랜덤한 오답 선택지 3개를 추가
         val shuffledOptions = kanjiList
-            .filter { (it) != (correctKanji) } // 정답 제외
+            .filter { it != correctKanji }
             .shuffled()
             .take(3)
             .toMutableList()
 
-        // 4. 오답 선택지에 정답 추가
         if (!shuffledOptions.contains(correctKanji)) {
             shuffledOptions.add(correctKanji)
         }
-
-        // 5. 선택지 순서 섞기
         shuffledOptions.shuffle()
 
-        // 6. KanjiQuiz 객체 생성 및 반환
         return KanjiQuiz(
             kanji = correctKanji.kanji,
             correctString = select(correctKanji),
-            optionStrings = shuffledOptions.map{it -> select(it)},
+            optionStrings = shuffledOptions.map { select(it) },
             correctIndex = shuffledOptions.indexOf(correctKanji)
         )
     }
 
-    private fun select(kanji: Kanji) : String {
+    // 학습 모드용 데이터 로드
+    suspend fun loadLearningModeWords(level: Level): Pair<List<Kanji>, List<Kanji>> {
+        return repository.getKanjiForLearningMode(level.toString())
+    }
+
+    // 메모리에 있는 데이터로 퀴즈 생성
+    fun generateQuizFromMemory(
+        correctKanji: Kanji,
+        distractors: List<Kanji>,
+        isLearningMode: Boolean
+    ): KanjiQuiz {
+        // 오답 3개 선택 (매번 다르게)
+        val wrongOptions = distractors.shuffled().take(3)
+        
+        // 4개의 보기를 만들고 섞기
+        val allOptions = (wrongOptions + correctKanji).shuffled()
+        
+        return KanjiQuiz(
+            kanji = correctKanji.kanji,
+            correctString = select(correctKanji),
+            optionStrings = allOptions.map { select(it) },
+            correctIndex = allOptions.indexOf(correctKanji)
+        )
+    }
+
+    private fun select(kanji: Kanji): String {
         return "${kanji.kunyomi} / ${kanji.meaning}"
     }
 }
