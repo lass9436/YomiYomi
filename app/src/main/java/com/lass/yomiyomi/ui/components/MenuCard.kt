@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,10 +23,13 @@ fun MenuCard(
             .aspectRatio(1f)
             .padding(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
+            defaultElevation = 2.dp,
+            pressedElevation = 4.dp,
+            focusedElevation = 4.dp,
+            hoveredElevation = 3.dp
         )
     ) {
         Column(
@@ -40,7 +42,7 @@ fun MenuCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = MaterialTheme.colorScheme.tertiary,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -49,7 +51,7 @@ fun MenuCard(
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center
             )
         }
