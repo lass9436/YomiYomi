@@ -24,4 +24,29 @@ class WordRepository(private val context: Context) {
     suspend fun getRandomWord() = wordDao.getRandomWord() // 랜덤 Word 하나 조회
 
     suspend fun getRandomWordByLevel(level: String?): Word? = wordDao.getRandomWordByLevel(level) // 특정 Level에서 랜덤 Word 조회
+
+    // 학습 모드용 데이터 조회
+    suspend fun getWordsForLearningMode(level: String): Pair<List<Word>, List<Word>> {
+        return Pair(
+            wordDao.getTopPriorityWords(level),
+            wordDao.getRandomDistractors(level)
+        )
+    }
+
+    // 가중치 업데이트
+    suspend fun updateWordLearningStatus(wordId: Int, isCorrect: Boolean, currentWeight: Float) {
+        val newWeight = if (isCorrect) {
+            // 정답: w_new = w_old - (w_old * w_old) * 0.4
+            currentWeight - (currentWeight * currentWeight * 0.4f)
+        } else {
+            // 오답: w_new = w_old + ((1-w_old) * (1-w_old)) * 0.4
+            val inverseWeight = 1 - currentWeight
+            currentWeight + (inverseWeight * inverseWeight * 0.4f)
+        }
+        
+        val clampedWeight = newWeight.coerceIn(0f, 1f)
+        val currentTimestamp = System.currentTimeMillis()
+        
+        wordDao.updateWordLearningStatus(wordId, clampedWeight, currentTimestamp)
+    }
 }

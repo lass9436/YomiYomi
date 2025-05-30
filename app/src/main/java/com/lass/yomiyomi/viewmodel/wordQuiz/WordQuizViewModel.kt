@@ -3,15 +3,18 @@ package com.lass.yomiyomi.viewmodel.wordQuiz
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
 import com.lass.yomiyomi.domain.usecase.GenerateWordQuizByLevelUseCase
+import com.lass.yomiyomi.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WordQuizViewModel(
-    private val generateWordQuizByLevelUseCase: GenerateWordQuizByLevelUseCase
+    private val generateWordQuizByLevelUseCase: GenerateWordQuizByLevelUseCase,
+    private val repository: WordRepository
 ) : ViewModel(), WordQuizViewModelInterface {
 
     // StateFlow로 퀴즈 데이터를 관리
@@ -22,18 +25,64 @@ class WordQuizViewModel(
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> get() = _isLoading
 
-    override fun loadQuizByLevel(level: Level, quizType: WordQuizType) {
-        // 비동기 작업을 viewModelScope에서 실행
+    // 학습 모드를 위한 메모리 상태 관리
+    private var priorityWordsInMemory: List<Word> = emptyList()
+    private var distractorsInMemory: List<Word> = emptyList()
+    private var currentPriorityIndex = 0
+    private var currentQuizWord: Word? = null
+
+    override fun loadQuizByLevel(level: Level, quizType: WordQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {
             try {
-                _isLoading.value = true // 로딩 시작
-                val quiz = generateWordQuizByLevelUseCase(level, quizType) // UseCase 호출
-                _quizState.value = quiz // 퀴즈 데이터 업데이트
+                _isLoading.value = true
+                
+                if (!isLearningMode) {
+                    currentQuizWord = null
+                    val quiz = generateWordQuizByLevelUseCase(level, quizType, false)
+                    _quizState.value = quiz
+                    return@launch
+                }
+
+                // 학습 모드
+                if (priorityWordsInMemory.isEmpty() || currentPriorityIndex >= priorityWordsInMemory.size) {
+                    val (priorityWords, distractors) = generateWordQuizByLevelUseCase.loadLearningModeWords(level)
+                    priorityWordsInMemory = priorityWords
+                    distractorsInMemory = distractors
+                    currentPriorityIndex = 0
+                }
+
+                // 현재 단어 저장
+                currentQuizWord = priorityWordsInMemory[currentPriorityIndex]
+                
+                // 퀴즈 생성
+                val quiz = generateWordQuizByLevelUseCase.generateQuizFromMemory(
+                    currentQuizWord!!,
+                    distractorsInMemory,
+                    quizType
+                )
+                currentPriorityIndex++
+                _quizState.value = quiz
+                
             } catch (e: Exception) {
-                // 오류 처리: 로그 출력 또는 UI와 연결
                 e.printStackTrace()
             } finally {
-                _isLoading.value = false // 로딩 종료
+                _isLoading.value = false
+            }
+        }
+    }
+
+    override fun checkAnswer(selectedIndex: Int, isLearningMode: Boolean) {
+        val currentQuiz = _quizState.value ?: return
+        val isCorrect = selectedIndex == currentQuiz.correctIndex
+        
+        // 학습 모드일 때만 가중치 업데이트
+        if (isLearningMode && currentQuizWord != null) {
+            viewModelScope.launch {
+                repository.updateWordLearningStatus(
+                    currentQuizWord!!.id,
+                    isCorrect,
+                    currentQuizWord!!.learningWeight
+                )
             }
         }
     }

@@ -22,4 +22,32 @@ interface WordDao {
 
     @Query("SELECT * FROM word WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
     suspend fun getRandomWordByLevel(level: String?): Word? // 특정 수준(Level)에서 랜덤 단어 하나 조회
+
+    // 학습 모드용 - 가중치 상위 5개
+    @Query("""
+        SELECT * FROM word 
+        WHERE (:level = 'ALL' OR level = :level)
+        ORDER BY learningWeight DESC 
+        LIMIT 5
+    """)
+    suspend fun getTopPriorityWords(level: String): List<Word>
+
+    // 학습 모드용 - 오답 보기용 랜덤 15개
+    @Query("""
+        SELECT * FROM word 
+        WHERE (:level = 'ALL' OR level = :level)
+        AND id NOT IN (
+            SELECT id FROM word 
+            WHERE (:level = 'ALL' OR level = :level)
+            ORDER BY learningWeight DESC 
+            LIMIT 5
+        )
+        ORDER BY RANDOM()
+        LIMIT 15
+    """)
+    suspend fun getRandomDistractors(level: String): List<Word>
+
+    // 가중치와 학습 시간 업데이트
+    @Query("UPDATE word SET learningWeight = :weight, timestamp = :timestamp WHERE id = :wordId")
+    suspend fun updateWordLearningStatus(wordId: Int, weight: Float, timestamp: Long)
 }
