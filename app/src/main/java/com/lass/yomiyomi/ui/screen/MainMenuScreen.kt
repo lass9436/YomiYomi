@@ -1,23 +1,17 @@
 package com.lass.yomiyomi.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lass.yomiyomi.ui.components.MenuCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,59 +24,57 @@ fun MainMenuScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("YomiYomi", color = MaterialTheme.colorScheme.tertiary) }
+                title = {
+                    Text(
+                        "YomiYomi",
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
         content = { paddingValues ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Button(
-                        onClick = onNavigateToKanji,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary
+                    item {
+                        MenuCard(
+                            title = "한자 카드",
+                            subtitle = "랜덤으로 한자를\n학습해보세요",
+                            onClick = onNavigateToKanji
                         )
-                    ) {
-                        Text("랜덤 한자 카드 보기")
                     }
-
-                    Button(
-                        onClick = onNavigateToQuiz,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary
+                    item {
+                        MenuCard(
+                            title = "한자 퀴즈",
+                            subtitle = "한자 실력을\n테스트해보세요",
+                            onClick = onNavigateToQuiz
                         )
-                    ) {
-                        Text("한자 퀴즈 시작")
                     }
-
-                    Button(
-                        onClick = onNavigateToWordRandom,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary
+                    item {
+                        MenuCard(
+                            title = "단어 카드",
+                            subtitle = "랜덤으로 단어를\n학습해보세요",
+                            onClick = onNavigateToWordRandom
                         )
-                    ) {
-                        Text("랜덤 단어 카드 보기")
                     }
-
-                    Button(
-                        onClick = onNavigateToWordQuiz,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary
+                    item {
+                        MenuCard(
+                            title = "단어 퀴즈",
+                            subtitle = "단어 실력을\n테스트해보세요",
+                            onClick = onNavigateToWordQuiz
                         )
-                    ) {
-                        Text("단어 퀴즈 시작")
                     }
                 }
             }
