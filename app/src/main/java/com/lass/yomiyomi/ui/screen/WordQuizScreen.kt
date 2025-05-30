@@ -38,9 +38,10 @@ fun WordQuizScreen(
     var showDialog by remember { mutableStateOf(false) }
     var levelSelected by remember { mutableStateOf(Level.ALL) }
     var quizTypeSelected by remember { mutableStateOf(WordQuizType.WORD_TO_MEANING_READING) }
+    var isLearningMode by remember { mutableStateOf(false) }
 
-    LaunchedEffect(levelSelected, quizTypeSelected) {
-        wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected)
+    LaunchedEffect(levelSelected, quizTypeSelected, isLearningMode) {
+        wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
     }
 
     Scaffold(
@@ -138,6 +139,51 @@ fun WordQuizScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(2.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = { isLearningMode = true },
+                        colors = if (isLearningMode) {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    ) {
+                        Text("학습 모드", fontSize = 12.sp)
+                    }
+
+                    Button(
+                        onClick = { isLearningMode = false },
+                        colors = if (!isLearningMode) {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                contentColor = MaterialTheme.colorScheme.onTertiary
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        },
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+                    ) {
+                        Text("랜덤 모드", fontSize = 12.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -159,6 +205,10 @@ fun WordQuizScreen(
                                     answerResult = "오답입니다!\n정답: ${correct.answer}"
                                 }
                                 showDialog = true
+                                wordQuizViewModel.checkAnswer(
+                                    if (isCorrect) quizState.value!!.correctIndex else -1,
+                                    isLearningMode
+                                )
                             }
                         )
                     } else {
@@ -173,7 +223,7 @@ fun WordQuizScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button(
-                    onClick = { wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected) },
+                    onClick = { wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -194,7 +244,7 @@ fun WordQuizScreen(
                                 onClick = {
                                     showDialog = false
                                     answerResult = null
-                                    wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected)
+                                    wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
                                 },
                                 colors = ButtonDefaults.textButtonColors(
                                     contentColor = MaterialTheme.colorScheme.primary

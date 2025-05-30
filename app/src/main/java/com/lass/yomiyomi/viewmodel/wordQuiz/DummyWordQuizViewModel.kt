@@ -16,11 +16,9 @@ class DummyWordQuizViewModel : WordQuizViewModelInterface {
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> get() = _isLoading
 
-    override fun loadQuizByLevel(level: Level, quizType: WordQuizType) {
-        // 더미 데이터를 즉시 반환
+    override fun loadQuizByLevel(level: Level, quizType: WordQuizType, isLearningMode: Boolean) {
         _isLoading.value = true
 
-        // 퀴즈 타입에 따라 더미 데이터 구성
         val dummyQuiz = when (quizType) {
             WordQuizType.WORD_TO_MEANING_READING -> {
                 val options = listOf("의미 / よみ", "뜻 / はな", "사랑 / あい", "물 / みず")
@@ -44,5 +42,9 @@ class DummyWordQuizViewModel : WordQuizViewModelInterface {
 
         _quizState.value = dummyQuiz
         _isLoading.value = false
+    }
+
+    override fun checkAnswer(selectedIndex: Int, isLearningMode: Boolean) {
+        // Dummy implementation - do nothing
     }
 }
