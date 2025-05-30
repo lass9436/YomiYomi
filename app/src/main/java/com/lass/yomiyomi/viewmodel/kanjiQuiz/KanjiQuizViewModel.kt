@@ -1,39 +1,50 @@
 package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.model.KanjiQuiz
-import com.lass.yomiyomi.domain.usecase.GenerateKanjiQuizByLevelUseCase
+import com.lass.yomiyomi.domain.model.KanjiQuizType
+import com.lass.yomiyomi.domain.usecase.GenerateKanjiQuizUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class KanjiQuizViewModel(
-    private val generateKanjiQuizByLevelUseCase: GenerateKanjiQuizByLevelUseCase
-) : ViewModel(), KanjiQuizViewModelInterface {
+class KanjiQuizViewModel(application: Application) : AndroidViewModel(application), KanjiQuizViewModelInterface {
+    private val repository = KanjiRepository(application)
+    private val generateKanjiQuizUseCase = GenerateKanjiQuizUseCase(repository)
 
-    // StateFlow로 퀴즈 데이터를 관리
     private val _quizState = MutableStateFlow<KanjiQuiz?>(null)
-    override val quizState: StateFlow<KanjiQuiz?> get() = _quizState
+    override val quizState: StateFlow<KanjiQuiz?> = _quizState
 
-    // 퀴즈 로딩 상태를 관리
     private val _isLoading = MutableStateFlow(false)
-    override val isLoading: StateFlow<Boolean> get() = _isLoading
+    override val isLoading: StateFlow<Boolean> = _isLoading
 
-    override fun loadQuizByLevel(level: Level) {
-        // 비동기 작업을 viewModelScope에서 실행
+    private var currentKanjiId: Int? = null
+
+    override fun loadQuizByLevel(level: Level, quizType: KanjiQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
-                _isLoading.value = true // 로딩 시작
-                val quiz = generateKanjiQuizByLevelUseCase(level) // UseCase 호출
-                _quizState.value = quiz // 퀴즈 데이터 업데이트
+                val quiz = generateKanjiQuizUseCase.execute(level, quizType, isLearningMode)
+                _quizState.value = quiz.first
+                currentKanjiId = quiz.second
             } catch (e: Exception) {
-                // 오류 처리: 로그 출력 또는 UI와 연결
-                e.printStackTrace()
+                _quizState.value = null
             } finally {
-                _isLoading.value = false // 로딩 종료
+                _isLoading.value = false
             }
+        }
+    }
+
+    override fun checkAnswer(selectedIndex: Int, isLearningMode: Boolean) {
+        if (!isLearningMode || currentKanjiId == null) return
+        
+        viewModelScope.launch {
+            val isCorrect = selectedIndex == _quizState.value?.correctIndex
+            repository.updateKanjiLearningStatus(currentKanjiId!!, isCorrect, 0.5f) // 초기 가중치는 0.5f
         }
     }
 }
