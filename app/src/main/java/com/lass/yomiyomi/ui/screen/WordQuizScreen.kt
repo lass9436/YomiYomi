@@ -135,18 +135,9 @@ fun WordQuizScreen(
                     ) {
                         Text("뜻→단어", fontSize = 12.sp)
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
                     Button(
-                        onClick = { isLearningMode = true },
+                        onClick = { isLearningMode = !isLearningMode },
                         colors = if (isLearningMode) {
                             ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiary,
@@ -161,24 +152,6 @@ fun WordQuizScreen(
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
                     ) {
                         Text("학습 모드", fontSize = 12.sp)
-                    }
-
-                    Button(
-                        onClick = { isLearningMode = false },
-                        colors = if (!isLearningMode) {
-                            ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.tertiary,
-                                contentColor = MaterialTheme.colorScheme.onTertiary
-                            )
-                        } else {
-                            ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                contentColor = MaterialTheme.colorScheme.tertiary
-                            )
-                        },
-                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
-                    ) {
-                        Text("랜덤 모드", fontSize = 12.sp)
                     }
                 }
 
