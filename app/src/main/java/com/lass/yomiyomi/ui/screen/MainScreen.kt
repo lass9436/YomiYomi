@@ -22,7 +22,7 @@ enum class Routes(val route: String) {
 
 @Composable
 fun MainScreen(
-    kanjiViewModel: KanjiRandomViewModelInterface,
+    kanjiRandomViewModel: KanjiRandomViewModelInterface,
     kanjiQuizViewModel: KanjiQuizViewModelInterface,
     wordRandomViewModel: WordRandomViewModelInterface,
     wordQuizViewModel: WordQuizViewModelInterface,
@@ -44,8 +44,8 @@ fun MainScreen(
             )
         }
         composable(Routes.KANJI_RANDOM.route) {
-            KanjiScreen(
-                kanjiViewModel = kanjiViewModel,
+            KanjiRandomScreen(
+                kanjiViewModel = kanjiRandomViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
