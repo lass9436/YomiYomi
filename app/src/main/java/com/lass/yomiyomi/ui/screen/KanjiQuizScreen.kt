@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuizType
-import com.lass.yomiyomi.ui.layout.QuizScreen
+import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 
@@ -33,7 +33,7 @@ fun KanjiQuizScreen(
     val quizTypes = listOf("한자→읽기", "읽기→한자")
     val selectedQuizTypeIndex = if (quizTypeSelected == KanjiQuizType.KANJI_TO_READING_MEANING) 0 else 1
 
-    QuizScreen(
+    QuizLayout(
         title = "한자 퀴즈",
         selectedLevel = levelSelected,
         onLevelSelected = { levelSelected = it },

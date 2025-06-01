@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.ui.component.ItemCard
-import com.lass.yomiyomi.ui.layout.RandomScreen
+import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.viewmodel.wordRandom.DummyWordRandomViewModel
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
@@ -29,7 +29,7 @@ fun WordRandomScreen(
         wordViewModel.fetchRandomWordByLevel(levelSelected.value)
     }
 
-    RandomScreen(
+    RandomLayout(
         title = "랜덤 단어 카드",
         selectedLevel = levelSelected,
         onLevelSelected = { levelSelected = it },

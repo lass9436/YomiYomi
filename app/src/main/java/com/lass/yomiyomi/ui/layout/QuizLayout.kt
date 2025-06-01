@@ -18,7 +18,7 @@ import com.lass.yomiyomi.ui.component.LevelSelector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizScreen(
+fun QuizLayout(
     title: String,
     selectedLevel: Level,
     onLevelSelected: (Level) -> Unit,

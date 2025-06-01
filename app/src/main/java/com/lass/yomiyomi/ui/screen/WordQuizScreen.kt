@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.WordQuizType
-import com.lass.yomiyomi.ui.layout.QuizScreen
+import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.viewmodel.wordQuiz.DummyWordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
 
@@ -33,7 +33,7 @@ fun WordQuizScreen(
     val quizTypes = listOf("단어→의미", "의미→단어")
     val selectedQuizTypeIndex = if (quizTypeSelected == WordQuizType.WORD_TO_MEANING_READING) 0 else 1
 
-    QuizScreen(
+    QuizLayout(
         title = "단어 퀴즈",
         selectedLevel = levelSelected,
         onLevelSelected = { levelSelected = it },
