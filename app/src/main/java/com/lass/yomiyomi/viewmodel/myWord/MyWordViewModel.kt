@@ -92,6 +92,80 @@ class MyWordViewModel(context: Context) : ViewModel() {
         }
     }
 
+    // 직접 입력으로 내 단어 추가
+    fun addMyWordDirectly(
+        word: String,
+        reading: String,
+        meaning: String,
+        type: String,
+        level: String,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        if (word.isBlank() || reading.isBlank() || meaning.isBlank()) {
+            onResult(false, "모든 필드를 입력해주세요.")
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                // 새로운 ID 생성 (타임스탬프 기반)
+                val newId = System.currentTimeMillis().toInt()
+                
+                val myWord = MyWord(
+                    id = newId,
+                    word = word.trim(),
+                    reading = reading.trim(),
+                    type = type.trim().ifBlank { "명사" },
+                    meaning = meaning.trim(),
+                    level = level,
+                    learningWeight = 0.5f, // 기본 가중치
+                    timestamp = System.currentTimeMillis()
+                )
+                
+                repository.insertMyWordDirectly(myWord)
+                loadMyWords() // 목록 새로고침
+                onResult(true, "단어가 추가되었습니다.")
+            } catch (e: Exception) {
+                onResult(false, "단어 추가에 실패했습니다: ${e.message}")
+            }
+        }
+    }
+
+    // 내 단어 수정
+    fun updateMyWord(
+        myWord: MyWord,
+        newWord: String,
+        newReading: String,
+        newMeaning: String,
+        newType: String,
+        newLevel: String,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        if (newWord.isBlank() || newReading.isBlank() || newMeaning.isBlank()) {
+            onResult(false, "모든 필드를 입력해주세요.")
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val updatedMyWord = myWord.copy(
+                    word = newWord.trim(),
+                    reading = newReading.trim(),
+                    type = newType.trim().ifBlank { "명사" },
+                    meaning = newMeaning.trim(),
+                    level = newLevel,
+                    timestamp = System.currentTimeMillis()
+                )
+                
+                repository.insertMyWordDirectly(updatedMyWord) // REPLACE 전략으로 업데이트
+                loadMyWords() // 목록 새로고침
+                onResult(true, "단어가 수정되었습니다.")
+            } catch (e: Exception) {
+                onResult(false, "단어 수정에 실패했습니다: ${e.message}")
+            }
+        }
+    }
+
     // 내 단어 삭제
     fun deleteMyWord(myWord: MyWord) {
         viewModelScope.launch {

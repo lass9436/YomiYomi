@@ -29,6 +29,16 @@ class MyWordRepository(private val context: Context) {
         }
     }
 
+    // 직접 입력으로 내 단어 추가 (신규 추가 또는 수정)
+    suspend fun insertMyWordDirectly(myWord: MyWord): Boolean {
+        return try {
+            myWordDao.insertMyWord(myWord)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     // 내 단어 전체 조회
     suspend fun getAllMyWords(): List<MyWord> = myWordDao.getAllMyWords()
 

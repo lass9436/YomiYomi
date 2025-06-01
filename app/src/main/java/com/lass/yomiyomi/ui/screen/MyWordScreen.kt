@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.my.MyWordCard
 import com.lass.yomiyomi.ui.component.my.AddWordDialog
+import com.lass.yomiyomi.ui.component.my.EditWordDialog
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,6 +37,7 @@ fun MyWordScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showMyWordSearch by remember { mutableStateOf(false) }
+    var editingWord by remember { mutableStateOf<MyWord?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
         // Top App Bar
@@ -101,6 +104,7 @@ fun MyWordScreen(
                     items(myWords) { myWord ->
                         MyWordCard(
                             myWord = myWord,
+                            onEdit = { editingWord = myWord },
                             onDelete = { viewModel.deleteMyWord(myWord) }
                         )
                     }
@@ -114,6 +118,15 @@ fun MyWordScreen(
         AddWordDialog(
             viewModel = viewModel,
             onDismiss = { showAddDialog = false }
+        )
+    }
+
+    // 단어 수정 다이얼로그
+    editingWord?.let { myWord ->
+        EditWordDialog(
+            myWord = myWord,
+            viewModel = viewModel,
+            onDismiss = { editingWord = null }
         )
     }
 } 
