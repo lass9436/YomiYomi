@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.ui.component.common.LevelSelector
@@ -21,14 +22,15 @@ import com.lass.yomiyomi.ui.component.my.AddWordDialog
 import com.lass.yomiyomi.ui.component.my.EditWordDialog
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.myWord.DummyMyWordViewModel
+import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyWordScreen(
-    myWordViewModel: MyWordViewModelInterface,
     onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    myWordViewModel: MyWordViewModelInterface = hiltViewModel<MyWordViewModel>()
 ) {
     val myWords by myWordViewModel.myWords.collectAsState()
     val isLoading by myWordViewModel.isLoading.collectAsState()
@@ -138,8 +140,8 @@ fun MyWordScreen(
 fun MyWordScreenPreview() {
     YomiYomiTheme {
         MyWordScreen(
-            myWordViewModel = DummyMyWordViewModel(),
-            onNavigateBack = {}
+            onNavigateBack = {},
+            myWordViewModel = DummyMyWordViewModel()
         )
     }
 } 

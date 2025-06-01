@@ -3,7 +3,6 @@ package com.lass.yomiyomi
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
@@ -12,11 +11,6 @@ import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.ui.screen.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomRandomViewModel
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
-import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
-import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,16 +23,10 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var wordRepository: WordRepository
 
-    // Hilt가 자동으로 의존성 주입
-    private val kanjiRandomViewModel: KanjiRandomRandomViewModel by viewModels()
-    private val kanjiQuizViewModel: KanjiQuizViewModel by viewModels()
-    private val wordRandomViewModel: WordRandomViewModel by viewModels()
-    private val wordQuizViewModel: WordQuizViewModel by viewModels()
-    private val myWordViewModel: MyWordViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 앱 시작시 데이터 초기화만 담당
         lifecycleScope.launch {
             kanjiRepository.importKanjiData(this@MainActivity)
             wordRepository.importWordData(this@MainActivity)
@@ -48,16 +36,10 @@ class MainActivity : ComponentActivity() {
             YomiYomiTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
-                ) {
-                    contentPadding ->
-                        MainScreen(
-                            kanjiRandomViewModel = kanjiRandomViewModel,
-                            kanjiQuizViewModel = kanjiQuizViewModel,
-                            wordRandomViewModel = wordRandomViewModel,
-                            wordQuizViewModel = wordQuizViewModel,
-                            myWordViewModel = myWordViewModel,
-                            contentPadding = contentPadding
-                        )
+                ) { contentPadding ->
+                    MainScreen(
+                        contentPadding = contentPadding
+                    )
                 }
             }
         }

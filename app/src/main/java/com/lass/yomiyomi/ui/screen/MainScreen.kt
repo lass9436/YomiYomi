@@ -7,11 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
-import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
-import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
 // 네비게이션 경로를 Enum으로 정의
 enum class Routes(val route: String) {
@@ -25,11 +20,6 @@ enum class Routes(val route: String) {
 
 @Composable
 fun MainScreen(
-    kanjiRandomViewModel: KanjiRandomViewModelInterface,
-    kanjiQuizViewModel: KanjiQuizViewModelInterface,
-    wordRandomViewModel: WordRandomViewModelInterface,
-    wordQuizViewModel: WordQuizViewModelInterface,
-    myWordViewModel: MyWordViewModel,
     contentPadding: PaddingValues,
 ) {
     val navController = rememberNavController()
@@ -51,31 +41,26 @@ fun MainScreen(
         }
         composable(Routes.KANJI_RANDOM.route) {
             KanjiRandomScreen(
-                kanjiViewModel = kanjiRandomViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.KANJI_QUIZ.route) {
             KanjiQuizScreen(
-                kanjiQuizViewModel = kanjiQuizViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.WORD_QUIZ.route) {
             WordQuizScreen(
-                wordQuizViewModel = wordQuizViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.WORD_RANDOM.route) {
             WordRandomScreen(
-                wordViewModel = wordRandomViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.MY_WORD.route) {
             MyWordScreen(
-                myWordViewModel = myWordViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -7,18 +7,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.WordQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks
 import com.lass.yomiyomi.viewmodel.wordQuiz.DummyWordQuizViewModel
+import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
 
 @Composable
 fun WordQuizScreen(
-    wordQuizViewModel: WordQuizViewModelInterface,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    wordQuizViewModel: WordQuizViewModelInterface = hiltViewModel<WordQuizViewModel>()
 ) {
     val quizState = wordQuizViewModel.quizState.collectAsState()
     val isLoading = wordQuizViewModel.isLoading.collectAsState()
@@ -92,7 +94,7 @@ fun WordQuizScreen(
 @Composable
 fun WordQuizScreenPreview() {
     WordQuizScreen(
-        wordQuizViewModel = DummyWordQuizViewModel(),
-        onBack = {}
+        onBack = {},
+        wordQuizViewModel = DummyWordQuizViewModel()
     )
 }

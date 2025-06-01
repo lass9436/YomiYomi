@@ -11,16 +11,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.ui.component.random.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.viewmodel.wordRandom.DummyWordRandomViewModel
+import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
 @Composable
 fun WordRandomScreen(
-    wordViewModel: WordRandomViewModelInterface,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    wordViewModel: WordRandomViewModelInterface = hiltViewModel<WordRandomViewModel>()
 ) {
     val randomWord = wordViewModel.randomWord.collectAsState().value
     var levelSelected by remember { mutableStateOf(Level.ALL) }
@@ -46,7 +48,7 @@ fun WordRandomScreen(
 @Composable
 fun WordRandomScreenPreview() {
     WordRandomScreen(
-        wordViewModel = DummyWordRandomViewModel(),
-        onBack = {}
+        onBack = {},
+        wordViewModel = DummyWordRandomViewModel()
     )
 }

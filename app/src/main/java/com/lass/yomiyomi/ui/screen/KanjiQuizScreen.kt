@@ -7,18 +7,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
+import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 
 @Composable
 fun KanjiQuizScreen(
-    kanjiQuizViewModel: KanjiQuizViewModelInterface,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    kanjiQuizViewModel: KanjiQuizViewModelInterface = hiltViewModel<KanjiQuizViewModel>()
 ) {
     val quizState = kanjiQuizViewModel.quizState.collectAsState()
     val isLoading = kanjiQuizViewModel.isLoading.collectAsState()
@@ -92,7 +94,7 @@ fun KanjiQuizScreen(
 @Composable
 fun KanjiQuizScreenPreview() {
     KanjiQuizScreen(
-        kanjiQuizViewModel = DummyKanjiQuizViewModel(),
-        onBack = {}
+        onBack = {},
+        kanjiQuizViewModel = DummyKanjiQuizViewModel()
     )
 }
