@@ -3,6 +3,7 @@ package com.lass.yomiyomi.viewmodel.myWord
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.data.repository.MyWordRepository
@@ -25,8 +26,8 @@ class MyWordViewModel(context: Context) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    private val _selectedLevel = MutableStateFlow("ALL")
-    val selectedLevel: StateFlow<String> = _selectedLevel
+    private val _selectedLevel = MutableStateFlow(Level.ALL)
+    val selectedLevel: StateFlow<Level> = _selectedLevel
 
     init {
         loadMyWords()
@@ -37,10 +38,10 @@ class MyWordViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _myWords.value = if (_selectedLevel.value == "ALL") {
+                _myWords.value = if (_selectedLevel.value == Level.ALL) {
                     repository.getAllMyWords()
                 } else {
-                    repository.getAllMyWordsByLevel(_selectedLevel.value)
+                    repository.getAllMyWordsByLevel(_selectedLevel.value.value!!)
                 }
             } catch (e: Exception) {
                 // 에러 처리
@@ -104,7 +105,7 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 레벨 필터 변경
-    fun setSelectedLevel(level: String) {
+    fun setSelectedLevel(level: Level) {
         _selectedLevel.value = level
         loadMyWords()
     }
@@ -115,10 +116,10 @@ class MyWordViewModel(context: Context) : ViewModel() {
             _isLoading.value = true
             try {
                 _myWords.value = if (query.isBlank()) {
-                    if (_selectedLevel.value == "ALL") {
+                    if (_selectedLevel.value == Level.ALL) {
                         repository.getAllMyWords()
                     } else {
-                        repository.getAllMyWordsByLevel(_selectedLevel.value)
+                        repository.getAllMyWordsByLevel(_selectedLevel.value.value!!)
                     }
                 } else {
                     repository.searchMyWords(query)

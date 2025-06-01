@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lass.yomiyomi.ui.component.my.LevelFilterRow
+import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.my.MyWordCard
 import com.lass.yomiyomi.ui.component.my.AddWordDialog
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
@@ -72,7 +72,7 @@ fun MyWordScreen(
             }
 
             // 레벨 필터
-            LevelFilterRow(
+            LevelSelector(
                 selectedLevel = selectedLevel,
                 onLevelSelected = { viewModel.setSelectedLevel(it) }
             )
