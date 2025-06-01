@@ -6,8 +6,6 @@ import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.domain.model.KanjiQuizType
-import com.lass.yomiyomi.domain.usecase.GenerateKanjiQuizRandomModeUseCase
-import com.lass.yomiyomi.domain.usecase.GenerateKanjiQuizStudyModeUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,8 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class KanjiQuizViewModel @Inject constructor(
-    private val generateKanjiQuizRandomModeUseCase: GenerateKanjiQuizRandomModeUseCase,
-    private val generateKanjiQuizStudyModeUseCase: GenerateKanjiQuizStudyModeUseCase,
     private val repository: KanjiRepository
 ) : ViewModel(), KanjiQuizViewModelInterface {
     private val _quizState = MutableStateFlow<KanjiQuiz?>(null)
@@ -40,14 +36,14 @@ class KanjiQuizViewModel @Inject constructor(
                 
                 if (!isLearningMode) {
                     currentKanji = null
-                    val quiz = generateKanjiQuizRandomModeUseCase(level, quizType)
+                    val quiz = generateRandomModeQuiz(level, quizType)
                     _quizState.value = quiz
                     return@launch
                 }
 
                 // 학습 모드
                 if (priorityKanjiInMemory.isEmpty() || currentPriorityIndex >= priorityKanjiInMemory.size) {
-                    val (priorityKanji, distractors) = generateKanjiQuizStudyModeUseCase.loadLearningModeData(level)
+                    val (priorityKanji, distractors) = loadLearningModeData(level)
                     priorityKanjiInMemory = priorityKanji
                     distractorsInMemory = distractors
                     currentPriorityIndex = 0
@@ -57,7 +53,7 @@ class KanjiQuizViewModel @Inject constructor(
                 currentKanji = priorityKanjiInMemory[currentPriorityIndex]
                 
                 // 퀴즈 생성
-                val quiz = generateKanjiQuizStudyModeUseCase.generateQuiz(
+                val quiz = generateStudyModeQuiz(
                     currentKanji!!,
                     distractorsInMemory,
                     quizType
@@ -87,5 +83,58 @@ class KanjiQuizViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    // UseCase 로직을 ViewModel에 통합
+    private suspend fun generateRandomModeQuiz(level: Level, quizType: KanjiQuizType): KanjiQuiz {
+        // 정답 한자 가져오기
+        val correctKanji = if (level == Level.ALL) {
+            repository.getRandomKanji()
+        } else {
+            repository.getRandomKanjiByLevel(level.value)
+        } ?: throw IllegalStateException("No kanji found for level: ${level.value}")
+        
+        // 오답용 한자들 가져오기 (같은 레벨에서 3개)
+        val allKanji = if (level == Level.ALL) {
+            repository.getAllKanji()
+        } else {
+            repository.getAllKanjiByLevel(level.value ?: "")
+        }
+        
+        val distractors = allKanji.filter { it.id != correctKanji.id }.shuffled().take(3)
+        
+        if (distractors.size < 3) {
+            throw IllegalStateException("Not enough kanji for quiz generation")
+        }
+        
+        return generateStudyModeQuiz(correctKanji, distractors, quizType)
+    }
+
+    private suspend fun loadLearningModeData(level: Level): Pair<List<Kanji>, List<Kanji>> {
+        return repository.getKanjiForLearningMode(level.toString())
+    }
+
+    private fun generateStudyModeQuiz(correctKanji: Kanji, distractors: List<Kanji>, quizType: KanjiQuizType): KanjiQuiz {
+        // 오답 3개 선택 (매번 다르게)
+        val wrongOptions = distractors.shuffled().take(3)
+        
+        // 4개의 보기를 만들고 섞기
+        val allOptions = (wrongOptions + correctKanji).shuffled()
+        
+        return KanjiQuiz(
+            question = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> correctKanji.kanji
+                KanjiQuizType.READING_MEANING_TO_KANJI -> "${correctKanji.kunyomi} / ${correctKanji.meaning}"
+            },
+            answer = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> "${correctKanji.kunyomi} / ${correctKanji.meaning}"
+                KanjiQuizType.READING_MEANING_TO_KANJI -> correctKanji.kanji
+            },
+            options = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> allOptions.map { "${it.kunyomi} / ${it.meaning}" }
+                KanjiQuizType.READING_MEANING_TO_KANJI -> allOptions.map { it.kanji }
+            },
+            correctIndex = allOptions.indexOf(correctKanji)
+        )
     }
 }

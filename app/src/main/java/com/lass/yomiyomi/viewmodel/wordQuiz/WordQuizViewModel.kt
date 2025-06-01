@@ -6,8 +6,6 @@ import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
-import com.lass.yomiyomi.domain.usecase.GenerateWordQuizRandomModeUseCase
-import com.lass.yomiyomi.domain.usecase.GenerateWordQuizStudyModeUseCase
 import com.lass.yomiyomi.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WordQuizViewModel @Inject constructor(
-    private val generateWordQuizRandomModeUseCase: GenerateWordQuizRandomModeUseCase,
-    private val generateWordQuizStudyModeUseCase: GenerateWordQuizStudyModeUseCase,
     private val repository: WordRepository
 ) : ViewModel(), WordQuizViewModelInterface {
 
@@ -43,14 +39,14 @@ class WordQuizViewModel @Inject constructor(
                 
                 if (!isLearningMode) {
                     currentQuizWord = null
-                    val quiz = generateWordQuizRandomModeUseCase(level, quizType)
+                    val quiz = generateRandomModeQuiz(level, quizType)
                     _quizState.value = quiz
                     return@launch
                 }
 
                 // 학습 모드
                 if (priorityWordsInMemory.isEmpty() || currentPriorityIndex >= priorityWordsInMemory.size) {
-                    val (priorityWords, distractors) = generateWordQuizStudyModeUseCase.loadLearningModeData(level)
+                    val (priorityWords, distractors) = loadLearningModeData(level)
                     priorityWordsInMemory = priorityWords
                     distractorsInMemory = distractors
                     currentPriorityIndex = 0
@@ -60,7 +56,7 @@ class WordQuizViewModel @Inject constructor(
                 currentQuizWord = priorityWordsInMemory[currentPriorityIndex]
                 
                 // 퀴즈 생성
-                val quiz = generateWordQuizStudyModeUseCase.generateQuiz(
+                val quiz = generateStudyModeQuiz(
                     currentQuizWord!!,
                     distractorsInMemory,
                     quizType
@@ -90,5 +86,58 @@ class WordQuizViewModel @Inject constructor(
                 )
             }
         }
+    }
+    
+    // UseCase 로직을 ViewModel에 통합
+    private suspend fun generateRandomModeQuiz(level: Level, quizType: WordQuizType): WordQuiz {
+        // 정답 단어 가져오기
+        val correctWord = if (level == Level.ALL) {
+            repository.getRandomWord()
+        } else {
+            repository.getRandomWordByLevel(level.value)
+        } ?: throw IllegalStateException("No word found for level: ${level.value}")
+        
+        // 오답용 단어들 가져오기 (같은 레벨에서 3개)
+        val allWords = if (level == Level.ALL) {
+            repository.getAllWords()
+        } else {
+            repository.getAllWordsByLevel(level.value ?: "")
+        }
+        
+        val distractors = allWords.filter { it.id != correctWord.id }.shuffled().take(3)
+        
+        if (distractors.size < 3) {
+            throw IllegalStateException("Not enough words for quiz generation")
+        }
+        
+        return generateStudyModeQuiz(correctWord, distractors, quizType)
+    }
+
+    private suspend fun loadLearningModeData(level: Level): Pair<List<Word>, List<Word>> {
+        return repository.getWordsForLearningMode(level.toString())
+    }
+
+    private fun generateStudyModeQuiz(correctWord: Word, distractors: List<Word>, quizType: WordQuizType): WordQuiz {
+        // 오답 3개 선택 (매번 다르게)
+        val wrongOptions = distractors.shuffled().take(3)
+        
+        // 4개의 보기를 만들고 섞기
+        val allOptions = (wrongOptions + correctWord).shuffled()
+        
+        return WordQuiz(
+            question = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> correctWord.word
+                WordQuizType.MEANING_READING_TO_WORD -> "${correctWord.meaning} / ${correctWord.reading}"
+            },
+            answer = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> "${correctWord.meaning} / ${correctWord.reading}"
+                WordQuizType.MEANING_READING_TO_WORD -> correctWord.word
+            },
+            options = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> allOptions.map { "${it.meaning} / ${it.reading}" }
+                WordQuizType.MEANING_READING_TO_WORD -> allOptions.map { it.word }
+            },
+            correctIndex = allOptions.indexOf(correctWord)
+        )
     }
 }
