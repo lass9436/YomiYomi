@@ -26,7 +26,7 @@ fun MainMenuScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "YomiYomi",
+                        "요미요미",
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )

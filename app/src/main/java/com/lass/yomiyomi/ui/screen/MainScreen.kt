@@ -1,19 +1,23 @@
 package com.lass.yomiyomi.ui.screen
 
-import androidx.compose.runtime.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
-import androidx.activity.compose.BackHandler
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
-// MainScreen의 화면 상태 관리용 Enum
-enum class Screen {
-    Main,
-    RandomKanji,
-    KanjiQuiz,
-    WordQuiz,
-    WordRandom
+// 네비게이션 경로를 Enum으로 정의
+enum class Routes(val route: String) {
+    MAIN("main"),
+    KANJI_RANDOM("kanjiRandom"),
+    KANJI_QUIZ("kanjiQuiz"),
+    WORD_QUIZ("wordQuiz"),
+    WORD_RANDOM("wordRandom")
 }
 
 @Composable
@@ -23,36 +27,45 @@ fun MainScreen(
     wordRandomViewModel: WordRandomViewModelInterface,
     wordQuizViewModel: WordQuizViewModelInterface,
 ) {
-    var currentScreen by remember { mutableStateOf(Screen.Main) }
+    val navController = rememberNavController()
 
-    // 뒤로가기에 대한 처리
-    BackHandler(enabled = currentScreen != Screen.Main) {
-        currentScreen = Screen.Main
-    }
-
-    when (currentScreen) {
-        Screen.Main -> MainMenuScreen(
-            onNavigateToKanji = { currentScreen = Screen.RandomKanji },
-            onNavigateToQuiz = { currentScreen = Screen.KanjiQuiz },
-            onNavigateToWordQuiz = { currentScreen = Screen.WordQuiz },
-            onNavigateToWordRandom = { currentScreen = Screen.WordRandom }
-        )
-
-        Screen.RandomKanji -> KanjiScreen(
-            kanjiViewModel = kanjiViewModel,
-            onBack = { currentScreen = Screen.Main }
-        )
-        Screen.KanjiQuiz -> KanjiQuizScreen(
-            kanjiQuizViewModel = kanjiQuizViewModel,
-            onBack = { currentScreen = Screen.Main }
-        )
-        Screen.WordQuiz -> WordQuizScreen(
-            wordQuizViewModel = wordQuizViewModel,
-            onBack = { currentScreen = Screen.Main }
-        )
-        Screen.WordRandom -> WordRandomScreen(
-            wordViewModel = wordRandomViewModel,
-            onBack = { currentScreen = Screen.Main }
-        )
+    NavHost(
+        navController = navController, 
+        startDestination = Routes.MAIN.route,
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() }
+    ) {
+        composable(Routes.MAIN.route) {
+            MainMenuScreen(
+                onNavigateToKanji = { navController.navigate(Routes.KANJI_RANDOM.route) },
+                onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
+                onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
+                onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) }
+            )
+        }
+        composable(Routes.KANJI_RANDOM.route) {
+            KanjiScreen(
+                kanjiViewModel = kanjiViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.KANJI_QUIZ.route) {
+            KanjiQuizScreen(
+                kanjiQuizViewModel = kanjiQuizViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.WORD_QUIZ.route) {
+            WordQuizScreen(
+                wordQuizViewModel = wordQuizViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.WORD_RANDOM.route) {
+            WordRandomScreen(
+                wordViewModel = wordRandomViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }

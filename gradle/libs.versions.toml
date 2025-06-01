@@ -12,6 +12,7 @@ roomCommonJvm = "2.7.0"
 roomRuntimeAndroid = "2.7.0"
 ksp = "2.1.20-2.0.0" # KSP 버전 추가 (Kotlin 버전과 맞춰야 함)
 lifecycleViewModelCompose = "2.8.7"
+composeNavigation = "2.7.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,7 @@ androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomRuntimeAndroid" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomRuntimeAndroid" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelCompose" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
