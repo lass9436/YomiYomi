@@ -7,8 +7,13 @@ import com.lass.yomiyomi.data.repository.KanjiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class KanjiRandomRandomViewModel(private val repository: KanjiRepository) : ViewModel(), KanjiRandomViewModelInterface {
+@HiltViewModel
+class KanjiRandomRandomViewModel @Inject constructor(
+    private val repository: KanjiRepository
+) : ViewModel(), KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow<Kanji?>(null)
     override val randomKanji: StateFlow<Kanji?> = _randomKanji
 

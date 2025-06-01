@@ -5,8 +5,9 @@ import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
+import javax.inject.Inject
 
-class GenerateWordQuizRandomModeUseCase(
+class GenerateWordQuizRandomModeUseCase @Inject constructor(
     private val repository: WordRepository,
 ) {
     suspend operator fun invoke(level: Level, quizType: WordQuizType): WordQuiz {

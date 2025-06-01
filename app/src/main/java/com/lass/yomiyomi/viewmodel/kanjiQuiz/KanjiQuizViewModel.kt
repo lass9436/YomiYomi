@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.lass.yomiyomi.data.model.Kanji
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class KanjiQuizViewModel(
+@HiltViewModel
+class KanjiQuizViewModel @Inject constructor(
     private val generateKanjiQuizRandomModeUseCase: GenerateKanjiQuizRandomModeUseCase,
     private val generateKanjiQuizStudyModeUseCase: GenerateKanjiQuizStudyModeUseCase,
     private val repository: KanjiRepository

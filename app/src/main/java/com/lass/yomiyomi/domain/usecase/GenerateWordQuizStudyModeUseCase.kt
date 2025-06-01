@@ -5,8 +5,9 @@ import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
+import javax.inject.Inject
 
-class GenerateWordQuizStudyModeUseCase(
+class GenerateWordQuizStudyModeUseCase @Inject constructor(
     private val repository: WordRepository,
 ) {
     // 학습 모드용 데이터 로드

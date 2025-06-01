@@ -5,8 +5,9 @@ import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.domain.model.KanjiQuizType
+import javax.inject.Inject
 
-class GenerateKanjiQuizRandomModeUseCase(
+class GenerateKanjiQuizRandomModeUseCase @Inject constructor(
     private val repository: KanjiRepository
 ) {
     suspend operator fun invoke(level: Level, quizType: KanjiQuizType): KanjiQuiz {

@@ -7,8 +7,13 @@ import com.lass.yomiyomi.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class WordRandomViewModel(private val repository: WordRepository) : ViewModel(), WordRandomViewModelInterface {
+@HiltViewModel
+class WordRandomViewModel @Inject constructor(
+    private val repository: WordRepository
+) : ViewModel(), WordRandomViewModelInterface {
     private val _randomWord = MutableStateFlow<Word?>(null)
     override val randomWord: StateFlow<Word?> = _randomWord
 

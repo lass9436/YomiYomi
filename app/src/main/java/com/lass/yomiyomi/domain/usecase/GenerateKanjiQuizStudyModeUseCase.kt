@@ -5,8 +5,9 @@ import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.domain.model.KanjiQuizType
+import javax.inject.Inject
 
-class GenerateKanjiQuizStudyModeUseCase(
+class GenerateKanjiQuizStudyModeUseCase @Inject constructor(
     private val repository: KanjiRepository
 ) {
     // 학습 모드용 데이터 로드

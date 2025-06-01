@@ -14,13 +14,9 @@ import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.ui.screen.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModel
-import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelFactory
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomRandomViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelFactory
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
-import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelFactory
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
-import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,21 +29,11 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var wordRepository: WordRepository
 
-    private val kanjiRandomViewModel: KanjiRandomRandomViewModel by viewModels {
-        KanjiRandomViewModelFactory(kanjiRepository)
-    }
-
-    private val kanjiQuizViewModel: KanjiQuizViewModel by viewModels {
-        KanjiQuizViewModelFactory(kanjiRepository)
-    }
-
-    private val wordRandomViewModel: WordRandomViewModel by viewModels {
-        WordRandomViewModelFactory(wordRepository)
-    }
-
-    private val wordQuizViewModel: WordQuizViewModel by viewModels {
-        WordQuizViewModelFactory(wordRepository)
-    }
+    // Hilt가 자동으로 의존성 주입
+    private val kanjiRandomViewModel: KanjiRandomRandomViewModel by viewModels()
+    private val kanjiQuizViewModel: KanjiQuizViewModel by viewModels()
+    private val wordRandomViewModel: WordRandomViewModel by viewModels()
+    private val wordQuizViewModel: WordQuizViewModel by viewModels()
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -12,8 +12,11 @@ import com.lass.yomiyomi.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class WordQuizViewModel(
+@HiltViewModel
+class WordQuizViewModel @Inject constructor(
     private val generateWordQuizRandomModeUseCase: GenerateWordQuizRandomModeUseCase,
     private val generateWordQuizStudyModeUseCase: GenerateWordQuizStudyModeUseCase,
     private val repository: WordRepository
