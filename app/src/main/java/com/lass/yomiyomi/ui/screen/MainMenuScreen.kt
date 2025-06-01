@@ -20,6 +20,7 @@ fun MainMenuScreen(
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToWordRandom: () -> Unit,
     onNavigateToMyWord: () -> Unit,
+    onNavigateToMyKanji: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -83,6 +84,13 @@ fun MainMenuScreen(
                             onClick = onNavigateToMyWord
                         )
                     }
+                    item {
+                        MenuCard(
+                            title = "내 한자",
+                            subtitle = "나만의 한자장을\n만들어보세요",
+                            onClick = onNavigateToMyKanji
+                        )
+                    }
                 }
             }
         }
@@ -98,5 +106,6 @@ fun MainMenuScreenPreview() {
         onNavigateToWordQuiz = {},
         onNavigateToWordRandom = {},
         onNavigateToMyWord = {},
+        onNavigateToMyKanji = {},
     )
 }

@@ -13,6 +13,8 @@ import com.lass.yomiyomi.data.dao.WordDao
 import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.data.dao.MyWordDao
 import com.lass.yomiyomi.data.model.MyWord
+import com.lass.yomiyomi.data.dao.MyKanjiDao
+import com.lass.yomiyomi.data.model.MyKanji
 
 @Database(
     entities = [
@@ -20,8 +22,9 @@ import com.lass.yomiyomi.data.model.MyWord
         Kanji::class,
         Word::class,
         MyWord::class,
+        MyKanji::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -30,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun kanjiDao(): KanjiDao
     abstract fun wordDao(): WordDao
     abstract fun myWordDao(): MyWordDao
+    abstract fun myKanjiDao(): MyKanjiDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
