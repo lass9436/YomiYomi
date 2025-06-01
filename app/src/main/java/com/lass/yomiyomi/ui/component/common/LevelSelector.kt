@@ -1,31 +1,28 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.common
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.lass.yomiyomi.data.model.Level
 
 @Composable
-fun QuizTypeSelector(
-    quizTypes: List<String>,
-    selectedQuizTypeIndex: Int,
-    onQuizTypeSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+fun LevelSelector(
+    selectedLevel: Level,
+    onLevelSelected: (Level) -> Unit,
+    availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(2.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        quizTypes.forEachIndexed { index, type ->
+        availableLevels.forEach { level ->
             Button(
-                onClick = { onQuizTypeSelected(index) },
-                colors = if (selectedQuizTypeIndex == index) {
+                onClick = { onLevelSelected(level) },
+                colors = if (selectedLevel == level) {
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary
@@ -36,11 +33,10 @@ fun QuizTypeSelector(
                         contentColor = MaterialTheme.colorScheme.tertiary
                     )
                 },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp)
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.size(50.dp, 30.dp),
             ) {
-                Text(type, fontSize = 12.sp)
+                Text(level.name)
             }
         }
     }

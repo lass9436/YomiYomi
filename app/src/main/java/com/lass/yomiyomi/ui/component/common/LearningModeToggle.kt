@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.common
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button

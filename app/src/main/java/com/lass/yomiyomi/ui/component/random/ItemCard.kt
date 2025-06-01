@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.random
 
 import android.content.Intent
 import androidx.compose.foundation.clickable

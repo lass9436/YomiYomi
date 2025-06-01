@@ -6,7 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.ui.component.*
+import com.lass.yomiyomi.ui.component.common.LearningModeToggle
+import com.lass.yomiyomi.ui.component.common.LevelSelector
+import com.lass.yomiyomi.ui.component.common.RefreshButton
+import com.lass.yomiyomi.ui.component.quiz.QuizAnswerDialog
+import com.lass.yomiyomi.ui.component.quiz.QuizContent
+import com.lass.yomiyomi.ui.component.quiz.QuizTypeSelector
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks
 
@@ -58,7 +63,7 @@ fun QuizLayout(
                     onQuizTypeSelected = callbacks.onQuizTypeSelected,
                     modifier = Modifier.weight(0.7f)
                 )
-                
+
                 LearningModeToggle(
                     isLearningMode = state.isLearningMode,
                     onLearningModeChanged = callbacks.onLearningModeChanged,

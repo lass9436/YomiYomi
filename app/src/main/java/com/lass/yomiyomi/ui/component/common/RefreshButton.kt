@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.common
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

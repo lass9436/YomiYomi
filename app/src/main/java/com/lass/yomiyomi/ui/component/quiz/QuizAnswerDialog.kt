@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.quiz
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*

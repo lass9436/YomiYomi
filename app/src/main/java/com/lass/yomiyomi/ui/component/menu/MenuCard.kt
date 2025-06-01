@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.menu
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*

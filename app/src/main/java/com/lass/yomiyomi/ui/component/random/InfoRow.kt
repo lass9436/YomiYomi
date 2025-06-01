@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.random
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
