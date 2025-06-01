@@ -19,7 +19,6 @@ fun MainMenuScreen(
     onNavigateToQuiz: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToWordRandom: () -> Unit,
-    onNavigateToMyWord: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -90,6 +89,5 @@ fun MainMenuScreenPreview() {
         onNavigateToQuiz = {},
         onNavigateToWordQuiz = {},
         onNavigateToWordRandom = {},
-        onNavigateToMyWord = {}
     )
 }

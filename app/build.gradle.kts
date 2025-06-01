@@ -42,11 +42,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
-    
-    // Lint 설정 추가 - 문제가 되는 규칙 비활성화
-    lint {
-        disable += "StateFlowValueCalledInComposition"
-    }
 }
 
 dependencies {

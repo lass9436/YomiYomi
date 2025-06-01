@@ -1,6 +1,5 @@
 package com.lass.yomiyomi
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
     private val wordRandomViewModel: WordRandomViewModel by viewModels()
     private val wordQuizViewModel: WordQuizViewModel by viewModels()
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,12 +47,14 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    MainScreen(
-                        kanjiRandomViewModel = kanjiRandomViewModel,
-                        kanjiQuizViewModel = kanjiQuizViewModel,
-                        wordRandomViewModel = wordRandomViewModel,
-                        wordQuizViewModel = wordQuizViewModel,
-                    )
+                    contentPadding ->
+                        MainScreen(
+                            kanjiRandomViewModel = kanjiRandomViewModel,
+                            kanjiQuizViewModel = kanjiQuizViewModel,
+                            wordRandomViewModel = wordRandomViewModel,
+                            wordQuizViewModel = wordQuizViewModel,
+                            contentPadding = contentPadding
+                        )
                 }
             }
         }

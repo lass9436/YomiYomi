@@ -2,6 +2,7 @@ package com.lass.yomiyomi.ui.screen
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,12 +20,6 @@ enum class Routes(val route: String) {
     WORD_QUIZ("wordQuiz"),
     WORD_RANDOM("wordRandom"),
     MY_WORD_MAIN("myWordMain"),
-    MY_WORD_SEARCH("myWordSearch"),
-    MY_WORD_ADD("myWordAdd"),
-    MY_WORD_LIST("myWordList"),
-    MY_WORD_QUIZ("myWordQuiz"),
-    MY_WORD_RANDOM("myWordRandom"),
-    MY_WORD_EDIT("myWordEdit/{wordId}")
 }
 
 @Composable
@@ -33,6 +28,7 @@ fun MainScreen(
     kanjiQuizViewModel: KanjiQuizViewModelInterface,
     wordRandomViewModel: WordRandomViewModelInterface,
     wordQuizViewModel: WordQuizViewModelInterface,
+    contentPadding: PaddingValues,
 ) {
     val navController = rememberNavController()
 
@@ -48,7 +44,6 @@ fun MainScreen(
                 onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
                 onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
                 onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) },
-                onNavigateToMyWord = { navController.navigate(Routes.MY_WORD_MAIN.route) }
             )
         }
         composable(Routes.KANJI_RANDOM.route) {
