@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.my.MyWordCard
@@ -77,7 +78,8 @@ fun MyWordScreen(
             // 레벨 필터
             LevelSelector(
                 selectedLevel = selectedLevel,
-                onLevelSelected = { viewModel.setSelectedLevel(it) }
+                onLevelSelected = { viewModel.setSelectedLevel(it) },
+                availableLevels = listOf(Level.ALL, Level.N1, Level.N2, Level.N3, Level.N4, Level.N5)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -99,7 +101,8 @@ fun MyWordScreen(
                 }
             } else {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(myWords) { myWord ->
                         MyWordCard(
