@@ -87,7 +87,8 @@ fun KanjiQuizScreen(
     QuizLayout(
         title = "한자 퀴즈",
         state = state,
-        callbacks = callbacks
+        callbacks = callbacks,
+        onBack = onBack
     )
 }
 

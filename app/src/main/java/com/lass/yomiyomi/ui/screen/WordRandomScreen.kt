@@ -35,7 +35,8 @@ fun WordRandomScreen(
         title = "랜덤 단어 카드",
         selectedLevel = levelSelected,
         onLevelSelected = { levelSelected = it },
-        onRefresh = { wordViewModel.fetchRandomWordByLevel(levelSelected.value) }
+        onRefresh = { wordViewModel.fetchRandomWordByLevel(levelSelected.value) },
+        onBack = onBack
     ) {
         if (randomWord != null) {
             ItemCard(item = randomWord)

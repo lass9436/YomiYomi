@@ -87,7 +87,8 @@ fun WordQuizScreen(
     QuizLayout(
         title = "단어 퀴즈",
         state = state,
-        callbacks = callbacks
+        callbacks = callbacks,
+        onBack = onBack
     )
 }
 

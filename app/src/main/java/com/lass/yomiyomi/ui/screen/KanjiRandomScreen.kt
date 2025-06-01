@@ -36,6 +36,7 @@ fun KanjiRandomScreen(
         selectedLevel = levelSelected,
         onLevelSelected = { levelSelected = it },
         onRefresh = { kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value) },
+        onBack = onBack,
         availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
     ) {
         if (randomKanji != null) {
