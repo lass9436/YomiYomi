@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.ui.component.ItemCard
-import com.lass.yomiyomi.ui.component.RandomScreen
+import com.lass.yomiyomi.ui.layout.RandomScreen
 import com.lass.yomiyomi.viewmodel.wordRandom.DummyWordRandomViewModel
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
