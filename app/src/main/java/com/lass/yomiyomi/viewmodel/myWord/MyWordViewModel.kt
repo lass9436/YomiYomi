@@ -1,6 +1,5 @@
 package com.lass.yomiyomi.viewmodel.myWord
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.data.model.Level
@@ -10,31 +9,35 @@ import com.lass.yomiyomi.data.repository.MyWordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MyWordViewModel(context: Context) : ViewModel() {
-    private val repository = MyWordRepository(context)
+@HiltViewModel
+class MyWordViewModel @Inject constructor(
+    private val repository: MyWordRepository
+) : ViewModel(), MyWordViewModelInterface {
 
     private val _myWords = MutableStateFlow<List<MyWord>>(emptyList())
-    val myWords: StateFlow<List<MyWord>> = _myWords
+    override val myWords: StateFlow<List<MyWord>> = _myWords
 
     private val _searchResults = MutableStateFlow<List<Word>>(emptyList())
-    val searchResults: StateFlow<List<Word>> = _searchResults
+    override val searchResults: StateFlow<List<Word>> = _searchResults
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    override val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
+    override val searchQuery: StateFlow<String> = _searchQuery
 
     private val _selectedLevel = MutableStateFlow(Level.ALL)
-    val selectedLevel: StateFlow<Level> = _selectedLevel
+    override val selectedLevel: StateFlow<Level> = _selectedLevel
 
     init {
         loadMyWords()
     }
 
     // 내 단어 목록 로드
-    fun loadMyWords() {
+    override fun loadMyWords() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -52,7 +55,7 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 원본 단어 검색
-    fun searchOriginalWords(query: String) {
+    override fun searchOriginalWords(query: String) {
         _searchQuery.value = query
         if (query.isBlank()) {
             _searchResults.value = emptyList()
@@ -72,7 +75,7 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 단어를 내 단어에 추가
-    fun addWordToMyWords(word: Word, onResult: (Boolean) -> Unit) {
+    override fun addWordToMyWords(word: Word, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
                 val isAlreadyAdded = repository.isWordInMyWords(word.id)
@@ -93,7 +96,7 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 직접 입력으로 내 단어 추가
-    fun addMyWordDirectly(
+    override fun addMyWordDirectly(
         word: String,
         reading: String,
         meaning: String,
@@ -132,7 +135,7 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 내 단어 수정
-    fun updateMyWord(
+    override fun updateMyWord(
         myWord: MyWord,
         newWord: String,
         newReading: String,
@@ -167,7 +170,7 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 내 단어 삭제
-    fun deleteMyWord(myWord: MyWord) {
+    override fun deleteMyWord(myWord: MyWord) {
         viewModelScope.launch {
             try {
                 repository.deleteMyWord(myWord)
@@ -179,13 +182,13 @@ class MyWordViewModel(context: Context) : ViewModel() {
     }
 
     // 레벨 필터 변경
-    fun setSelectedLevel(level: Level) {
+    override fun setSelectedLevel(level: Level) {
         _selectedLevel.value = level
         loadMyWords()
     }
 
     // 내 단어 검색
-    fun searchMyWords(query: String) {
+    override fun searchMyWords(query: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {

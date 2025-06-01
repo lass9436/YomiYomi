@@ -24,12 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
+import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @Composable
 fun EditWordDialog(
     myWord: MyWord,
-    viewModel: MyWordViewModel,
+    viewModel: MyWordViewModelInterface,
     onDismiss: () -> Unit
 ) {
     var word by remember { mutableStateOf(myWord.word) }

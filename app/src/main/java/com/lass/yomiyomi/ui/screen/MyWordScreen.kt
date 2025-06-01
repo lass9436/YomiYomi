@@ -11,29 +11,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.my.MyWordCard
 import com.lass.yomiyomi.ui.component.my.AddWordDialog
 import com.lass.yomiyomi.ui.component.my.EditWordDialog
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
+import com.lass.yomiyomi.ui.theme.YomiYomiTheme
+import com.lass.yomiyomi.viewmodel.myWord.DummyMyWordViewModel
+import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyWordScreen(
+    myWordViewModel: MyWordViewModelInterface,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val viewModel: MyWordViewModel = viewModel { MyWordViewModel(context) }
-    
-    val myWords by viewModel.myWords.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val selectedLevel by viewModel.selectedLevel.collectAsState()
+    val myWords by myWordViewModel.myWords.collectAsState()
+    val isLoading by myWordViewModel.isLoading.collectAsState()
+    val selectedLevel by myWordViewModel.selectedLevel.collectAsState()
     
     var showAddDialog by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -66,7 +65,7 @@ fun MyWordScreen(
                     value = searchQuery,
                     onValueChange = { 
                         searchQuery = it
-                        viewModel.searchMyWords(it)
+                        myWordViewModel.searchMyWords(it)
                     },
                     label = { Text("내 단어 검색") },
                     modifier = Modifier.fillMaxWidth(),
@@ -78,7 +77,7 @@ fun MyWordScreen(
             // 레벨 필터
             LevelSelector(
                 selectedLevel = selectedLevel,
-                onLevelSelected = { viewModel.setSelectedLevel(it) },
+                onLevelSelected = { myWordViewModel.setSelectedLevel(it) },
                 availableLevels = listOf(Level.ALL, Level.N1, Level.N2, Level.N3, Level.N4, Level.N5)
             )
 
@@ -108,7 +107,7 @@ fun MyWordScreen(
                         MyWordCard(
                             myWord = myWord,
                             onEdit = { editingWord = myWord },
-                            onDelete = { viewModel.deleteMyWord(myWord) }
+                            onDelete = { myWordViewModel.deleteMyWord(myWord) }
                         )
                     }
                 }
@@ -119,7 +118,7 @@ fun MyWordScreen(
     // 단어 추가 다이얼로그
     if (showAddDialog) {
         AddWordDialog(
-            viewModel = viewModel,
+            viewModel = myWordViewModel,
             onDismiss = { showAddDialog = false }
         )
     }
@@ -128,8 +127,19 @@ fun MyWordScreen(
     editingWord?.let { myWord ->
         EditWordDialog(
             myWord = myWord,
-            viewModel = viewModel,
+            viewModel = myWordViewModel,
             onDismiss = { editingWord = null }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MyWordScreenPreview() {
+    YomiYomiTheme {
+        MyWordScreen(
+            myWordViewModel = DummyMyWordViewModel(),
+            onNavigateBack = {}
         )
     }
 } 

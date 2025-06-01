@@ -14,6 +14,7 @@ import com.lass.yomiyomi.ui.screen.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomRandomViewModel
+import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     private val kanjiQuizViewModel: KanjiQuizViewModel by viewModels()
     private val wordRandomViewModel: WordRandomViewModel by viewModels()
     private val wordQuizViewModel: WordQuizViewModel by viewModels()
+    private val myWordViewModel: MyWordViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
                             kanjiQuizViewModel = kanjiQuizViewModel,
                             wordRandomViewModel = wordRandomViewModel,
                             wordQuizViewModel = wordQuizViewModel,
+                            myWordViewModel = myWordViewModel,
                             contentPadding = contentPadding
                         )
                 }

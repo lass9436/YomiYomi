@@ -31,10 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
+import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @Composable
 fun AddWordDialog(
-    viewModel: MyWordViewModel,
+    viewModel: MyWordViewModelInterface,
     onDismiss: () -> Unit
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -92,7 +93,7 @@ fun AddWordDialog(
 
 @Composable
 private fun SearchWordContent(
-    viewModel: MyWordViewModel,
+    viewModel: MyWordViewModelInterface,
     onDismiss: () -> Unit
 ) {
     val searchResults by viewModel.searchResults.collectAsState()
@@ -149,7 +150,7 @@ private fun SearchWordContent(
 
 @Composable
 private fun DirectInputContent(
-    viewModel: MyWordViewModel,
+    viewModel: MyWordViewModelInterface,
     onDismiss: () -> Unit
 ) {
     var word by remember { mutableStateOf("") }

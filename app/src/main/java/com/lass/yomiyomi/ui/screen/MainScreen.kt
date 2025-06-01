@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
+import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
@@ -28,6 +29,7 @@ fun MainScreen(
     kanjiQuizViewModel: KanjiQuizViewModelInterface,
     wordRandomViewModel: WordRandomViewModelInterface,
     wordQuizViewModel: WordQuizViewModelInterface,
+    myWordViewModel: MyWordViewModel,
     contentPadding: PaddingValues,
 ) {
     val navController = rememberNavController()
@@ -73,6 +75,7 @@ fun MainScreen(
         }
         composable(Routes.MY_WORD.route) {
             MyWordScreen(
+                myWordViewModel = myWordViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
