@@ -11,7 +11,7 @@ import com.lass.yomiyomi.data.model.Level
 fun LevelSelector(
     selectedLevel: Level,
     onLevelSelected: (Level) -> Unit,
-    availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
+    availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
 ) {
     Row(
         modifier = Modifier

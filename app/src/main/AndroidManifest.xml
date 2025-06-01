@@ -1,6 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 음성 인식 권한 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- TTS 권한 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:name=".YomiYomiApplication"
         android:allowBackup="true"
@@ -35,7 +42,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_streak_info" />
         </receiver>
-
 
     </application>
 </manifest>

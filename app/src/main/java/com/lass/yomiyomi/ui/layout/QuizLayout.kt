@@ -24,7 +24,8 @@ fun QuizLayout(
     state: QuizState,
     callbacks: QuizCallbacks,
     onBack: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    extraContent: (@Composable () -> Unit)? = null
 ) {
     Scaffold(
         topBar = {
@@ -94,6 +95,9 @@ fun QuizLayout(
                 onOptionSelected = callbacks.onOptionSelected,
                 searchUrl = state.searchUrl
             )
+
+            // Extra Content (for speech features)
+            extraContent?.invoke()
 
             Spacer(modifier = Modifier.weight(1f))
 

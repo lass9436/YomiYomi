@@ -79,7 +79,7 @@ fun MyWordLayout(
             LevelSelector(
                 selectedLevel = state.selectedLevel,
                 onLevelSelected = callbacks.onLevelSelected,
-                availableLevels = listOf(Level.ALL, Level.N1, Level.N2, Level.N3, Level.N4, Level.N5)
+                availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
             )
 
             Spacer(modifier = Modifier.height(16.dp))

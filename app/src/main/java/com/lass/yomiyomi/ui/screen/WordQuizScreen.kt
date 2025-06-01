@@ -47,7 +47,8 @@ fun WordQuizScreen(
         options = quizState.value?.options ?: emptyList(),
         showDialog = showDialog,
         answerResult = answerResult,
-        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query="
+        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=",
+        availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
     )
 
     val callbacks = QuizCallbacks(

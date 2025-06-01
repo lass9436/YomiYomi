@@ -95,6 +95,7 @@ fun MyWordQuizScreen(
         showDialog = showDialog,
         answerResult = answerResult,
         searchUrl = "https://ja.dict.naver.com/#/search?range=word&query="
+        // availableLevels는 기본값 사용 (N1 포함)
     )
 
     val callbacks = QuizCallbacks(
