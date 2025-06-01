@@ -19,6 +19,7 @@ fun MainMenuScreen(
     onNavigateToQuiz: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToWordRandom: () -> Unit,
+    onNavigateToMyWord: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -75,6 +76,13 @@ fun MainMenuScreen(
                             onClick = onNavigateToWordQuiz
                         )
                     }
+                    item {
+                        MenuCard(
+                            title = "내 단어",
+                            subtitle = "나만의 단어장을\n만들어보세요",
+                            onClick = onNavigateToMyWord
+                        )
+                    }
                 }
             }
         }
@@ -89,5 +97,6 @@ fun MainMenuScreenPreview() {
         onNavigateToQuiz = {},
         onNavigateToWordQuiz = {},
         onNavigateToWordRandom = {},
+        onNavigateToMyWord = {},
     )
 }
