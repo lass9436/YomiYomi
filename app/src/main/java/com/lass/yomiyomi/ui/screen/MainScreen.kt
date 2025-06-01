@@ -19,6 +19,8 @@ enum class Routes(val route: String) {
     MY_KANJI("myKanji"),
     MY_WORD_RANDOM("myWordRandom"),
     MY_KANJI_RANDOM("myKanjiRandom"),
+    MY_KANJI_QUIZ("myKanjiQuiz"),
+    MY_WORD_QUIZ("myWordQuiz"),
 }
 
 @Composable
@@ -43,6 +45,8 @@ fun MainScreen(
                 onNavigateToMyKanji = { navController.navigate(Routes.MY_KANJI.route) },
                 onNavigateToMyWordRandom = { navController.navigate(Routes.MY_WORD_RANDOM.route) },
                 onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
+                onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
+                onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
             )
         }
         composable(Routes.KANJI_RANDOM.route) {
@@ -82,6 +86,16 @@ fun MainScreen(
         }
         composable(Routes.MY_KANJI_RANDOM.route) {
             MyKanjiRandomScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.MY_KANJI_QUIZ.route) {
+            MyKanjiQuizScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.MY_WORD_QUIZ.route) {
+            MyWordQuizScreen(
                 onBack = { navController.popBackStack() }
             )
         }
