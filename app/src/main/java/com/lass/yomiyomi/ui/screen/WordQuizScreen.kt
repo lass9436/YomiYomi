@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.WordQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
+import com.lass.yomiyomi.ui.state.QuizState
+import com.lass.yomiyomi.ui.state.QuizCallbacks
 import com.lass.yomiyomi.viewmodel.wordQuiz.DummyWordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
 
@@ -33,12 +35,21 @@ fun WordQuizScreen(
     val quizTypes = listOf("단어→의미", "의미→단어")
     val selectedQuizTypeIndex = if (quizTypeSelected == WordQuizType.WORD_TO_MEANING_READING) 0 else 1
 
-    QuizLayout(
-        title = "단어 퀴즈",
+    val state = QuizState(
         selectedLevel = levelSelected,
-        onLevelSelected = { levelSelected = it },
         quizTypes = quizTypes,
         selectedQuizTypeIndex = selectedQuizTypeIndex,
+        isLearningMode = isLearningMode,
+        isLoading = isLoading.value,
+        question = quizState.value?.question,
+        options = quizState.value?.options ?: emptyList(),
+        showDialog = showDialog,
+        answerResult = answerResult,
+        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query="
+    )
+
+    val callbacks = QuizCallbacks(
+        onLevelSelected = { levelSelected = it },
         onQuizTypeSelected = { index ->
             quizTypeSelected = if (index == 0) {
                 WordQuizType.WORD_TO_MEANING_READING
@@ -46,11 +57,7 @@ fun WordQuizScreen(
                 WordQuizType.MEANING_READING_TO_WORD
             }
         },
-        isLearningMode = isLearningMode,
         onLearningModeChanged = { isLearningMode = it },
-        isLoading = isLoading.value,
-        question = quizState.value?.question,
-        options = quizState.value?.options ?: emptyList(),
         onOptionSelected = { index ->
             val isCorrect = index == quizState.value?.correctIndex
             if (isCorrect) {
@@ -68,14 +75,17 @@ fun WordQuizScreen(
         onRefresh = {
             wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
         },
-        showDialog = showDialog,
-        answerResult = answerResult,
         onDismissDialog = {
             showDialog = false
             answerResult = null
             wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
-        },
-        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query="
+        }
+    )
+
+    QuizLayout(
+        title = "단어 퀴즈",
+        state = state,
+        callbacks = callbacks
     )
 }
 

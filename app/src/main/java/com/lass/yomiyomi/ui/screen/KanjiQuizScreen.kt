@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
+import com.lass.yomiyomi.ui.state.QuizState
+import com.lass.yomiyomi.ui.state.QuizCallbacks
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
 
@@ -33,12 +35,21 @@ fun KanjiQuizScreen(
     val quizTypes = listOf("한자→읽기", "읽기→한자")
     val selectedQuizTypeIndex = if (quizTypeSelected == KanjiQuizType.KANJI_TO_READING_MEANING) 0 else 1
 
-    QuizLayout(
-        title = "한자 퀴즈",
+    val state = QuizState(
         selectedLevel = levelSelected,
-        onLevelSelected = { levelSelected = it },
         quizTypes = quizTypes,
         selectedQuizTypeIndex = selectedQuizTypeIndex,
+        isLearningMode = isLearningMode,
+        isLoading = isLoading.value,
+        question = quizState.value?.question,
+        options = quizState.value?.options ?: emptyList(),
+        showDialog = showDialog,
+        answerResult = answerResult,
+        searchUrl = "https://ja.dict.naver.com/#/search?range=kanji&query="
+    )
+
+    val callbacks = QuizCallbacks(
+        onLevelSelected = { levelSelected = it },
         onQuizTypeSelected = { index ->
             quizTypeSelected = if (index == 0) {
                 KanjiQuizType.KANJI_TO_READING_MEANING
@@ -46,11 +57,7 @@ fun KanjiQuizScreen(
                 KanjiQuizType.READING_MEANING_TO_KANJI
             }
         },
-        isLearningMode = isLearningMode,
         onLearningModeChanged = { isLearningMode = it },
-        isLoading = isLoading.value,
-        question = quizState.value?.question,
-        options = quizState.value?.options ?: emptyList(),
         onOptionSelected = { index ->
             val isCorrect = index == quizState.value?.correctIndex
             if (isCorrect) {
@@ -68,15 +75,17 @@ fun KanjiQuizScreen(
         onRefresh = {
             kanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
         },
-        showDialog = showDialog,
-        answerResult = answerResult,
         onDismissDialog = {
             showDialog = false
             answerResult = null
             kanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
-        },
-        searchUrl = "https://ja.dict.naver.com/#/search?range=kanji&query=",
-        availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL)
+        }
+    )
+
+    QuizLayout(
+        title = "한자 퀴즈",
+        state = state,
+        callbacks = callbacks
     )
 }
 

@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.data.model.Level
 import com.lass.yomiyomi.ui.component.LevelSelector
+import com.lass.yomiyomi.ui.component.RefreshButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,18 +57,13 @@ fun RandomLayout(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Button(
+                RefreshButton(
                     onClick = onRefresh,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary
-                    )
-                ) {
-                    Text("랜덤 가져오기")
-                }
+                    text = "랜덤으로 가져오기"
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
