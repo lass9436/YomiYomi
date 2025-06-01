@@ -24,8 +24,9 @@ import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomRandomViewModel
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
 import androidx.core.net.toUri
 import androidx.compose.ui.platform.LocalContext
+import com.lass.yomiyomi.ui.component.ItemCard
+import com.lass.yomiyomi.ui.component.RandomScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KanjiScreen(
     kanjiViewModel: KanjiRandomViewModelInterface,
@@ -38,87 +39,19 @@ fun KanjiScreen(
         kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "랜덤 한자 카드",
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-            )
-        },
-        content = { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
-                    levels.forEach { level ->
-                        Button(
-                            onClick = { levelSelected = level },
-                            colors = if (levelSelected == level) {
-                                ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary,
-                                    contentColor = MaterialTheme.colorScheme.onTertiary
-                                )
-                            } else {
-                                ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.tertiary
-                                )
-                            },
-                            contentPadding = PaddingValues(0.dp),
-                            modifier = Modifier.size(50.dp, 30.dp),
-                        ) {
-                            Text(level.name)
-                        }
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 200.dp, max = 500.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (randomKanji != null) {
-                        KanjiCard(randomKanji)
-                    } else {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Button(
-                    onClick = { kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary
-                    )
-                ) {
-                    Text("랜덤 한자 가져오기")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+    RandomScreen(
+        title = "랜덤 한자 카드",
+        selectedLevel = levelSelected,
+        onLevelSelected = { levelSelected = it },
+        onRefresh = { kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value) },
+        availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
+    ) {
+        if (randomKanji != null) {
+            ItemCard(item = randomKanji)
+        } else {
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
         }
-    )
+    }
 }
 
 @Composable
@@ -188,7 +121,6 @@ fun InfoRow(label: String, value: String) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun KanjiScreenPreview() {
     KanjiScreen(
