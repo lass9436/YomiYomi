@@ -1,6 +1,8 @@
 package com.lass.yomiyomi.ui.layout
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +20,7 @@ fun RandomLayout(
     selectedLevel: Level,
     onLevelSelected: (Level) -> Unit,
     onRefresh: () -> Unit,
+    onBack: (() -> Unit)? = null,
     availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL),
     content: @Composable () -> Unit
 ) {
@@ -30,6 +33,16 @@ fun RandomLayout(
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    if (onBack != null) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "뒤로가기"
+                            )
+                        }
+                    }
                 }
             )
         },

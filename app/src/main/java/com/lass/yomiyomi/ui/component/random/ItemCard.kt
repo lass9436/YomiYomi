@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.data.model.Kanji
 import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.data.model.MyWord
 
 @Composable
 fun ItemCard(
@@ -70,6 +72,34 @@ fun ItemCard(
                     InfoRow(label = "레벨 :", value = item.level)
                 }
                 is Word -> {
+                    Text(
+                        text = item.word,
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    InfoRow(label = "읽기 :", value = item.reading)
+                    InfoRow(label = "품사 :", value = item.type)
+                    InfoRow(label = "의미 :", value = item.meaning)
+                    InfoRow(label = "레벨 :", value = item.level)
+                }
+                is MyKanji -> {
+                    Text(
+                        text = item.kanji,
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    InfoRow(label = "음독 :", value = item.onyomi)
+                    InfoRow(label = "훈독 :", value = item.kunyomi)
+                    InfoRow(label = "의미 :", value = item.meaning)
+                    InfoRow(label = "레벨 :", value = item.level)
+                }
+                is MyWord -> {
                     Text(
                         text = item.word,
                         fontSize = 48.sp,

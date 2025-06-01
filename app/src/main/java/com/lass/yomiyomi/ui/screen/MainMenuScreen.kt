@@ -21,6 +21,8 @@ fun MainMenuScreen(
     onNavigateToWordRandom: () -> Unit,
     onNavigateToMyWord: () -> Unit,
     onNavigateToMyKanji: () -> Unit,
+    onNavigateToMyWordRandom: () -> Unit,
+    onNavigateToMyKanjiRandom: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -91,6 +93,20 @@ fun MainMenuScreen(
                             onClick = onNavigateToMyWord
                         )
                     }
+                    item {
+                        MenuCard(
+                            title = "내 한자 랜덤",
+                            subtitle = "랜덤으로 한자를\n학습해보세요",
+                            onClick = onNavigateToMyKanjiRandom
+                        )
+                    }
+                    item {
+                        MenuCard(
+                            title = "내 단어 랜덤",
+                            subtitle = "랜덤으로 단어를\n학습해보세요",
+                            onClick = onNavigateToMyWordRandom
+                        )
+                    }
                 }
             }
         }
@@ -107,5 +123,7 @@ fun MainMenuScreenPreview() {
         onNavigateToWordRandom = {},
         onNavigateToMyWord = {},
         onNavigateToMyKanji = {},
+        onNavigateToMyWordRandom = {},
+        onNavigateToMyKanjiRandom = {},
     )
 }
