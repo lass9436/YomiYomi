@@ -31,4 +31,32 @@ interface MyKanjiDao {
 
     @Query("SELECT * FROM my_kanji WHERE id = :id")
     suspend fun getMyKanjiById(id: Int): MyKanji?
+
+    // 학습 모드용 - 가중치 상위 5개
+    @Query("""
+        SELECT * FROM my_kanji 
+        WHERE (:level = 'ALL' OR level = :level)
+        ORDER BY learningWeight DESC 
+        LIMIT 5
+    """)
+    suspend fun getTopPriorityMyKanji(level: String): List<MyKanji>
+
+    // 학습 모드용 - 오답 보기용 랜덤 15개
+    @Query("""
+        SELECT * FROM my_kanji 
+        WHERE (:level = 'ALL' OR level = :level)
+        AND id NOT IN (
+            SELECT id FROM my_kanji 
+            WHERE (:level = 'ALL' OR level = :level)
+            ORDER BY learningWeight DESC 
+            LIMIT 5
+        )
+        ORDER BY RANDOM()
+        LIMIT 15
+    """)
+    suspend fun getRandomMyKanjiDistractors(level: String): List<MyKanji>
+
+    // 가중치와 학습 시간 업데이트
+    @Query("UPDATE my_kanji SET learningWeight = :weight, timestamp = :timestamp WHERE id = :kanjiId")
+    suspend fun updateMyKanjiLearningStatus(kanjiId: Int, weight: Float, timestamp: Long)
 } 

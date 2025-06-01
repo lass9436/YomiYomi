@@ -74,4 +74,45 @@ class MyKanjiRepository(private val context: Context) {
         // MyKanjiDao에 이 메서드가 없으므로 나중에 추가 필요
         return false // 임시
     }
+
+    // 랜덤 내 한자 조회
+    suspend fun getRandomMyKanji(): MyKanji? {
+        val allMyKanji = myKanjiDao.getAllMyKanji()
+        return allMyKanji.randomOrNull()
+    }
+
+    // 레벨별 랜덤 내 한자 조회
+    suspend fun getRandomMyKanjiByLevel(level: String?): MyKanji? {
+        return if (level == null || level == "ALL") {
+            getRandomMyKanji()
+        } else {
+            val kanjiByLevel = myKanjiDao.getMyKanjiByLevel(level)
+            kanjiByLevel.randomOrNull()
+        }
+    }
+
+    // 학습 모드용 데이터 조회
+    suspend fun getMyKanjiForLearningMode(level: String): Pair<List<MyKanji>, List<MyKanji>> {
+        return Pair(
+            myKanjiDao.getTopPriorityMyKanji(level),
+            myKanjiDao.getRandomMyKanjiDistractors(level)
+        )
+    }
+
+    // 내 한자 학습 상태 업데이트
+    suspend fun updateMyKanjiLearningStatus(kanjiId: Int, isCorrect: Boolean, currentWeight: Float) {
+        val newWeight = if (isCorrect) {
+            // 정답: w_new = w_old - (w_old * w_old) * 0.4
+            currentWeight - (currentWeight * currentWeight * 0.4f)
+        } else {
+            // 오답: w_new = w_old + ((1-w_old) * (1-w_old)) * 0.4
+            val inverseWeight = 1 - currentWeight
+            currentWeight + (inverseWeight * inverseWeight * 0.4f)
+        }
+        
+        val clampedWeight = newWeight.coerceIn(0f, 1f)
+        val currentTimestamp = System.currentTimeMillis()
+        
+        myKanjiDao.updateMyKanjiLearningStatus(kanjiId, clampedWeight, currentTimestamp)
+    }
 } 
