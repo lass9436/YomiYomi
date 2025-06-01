@@ -2,13 +2,10 @@ package com.lass.yomiyomi.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,8 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.ui.component.my.LevelFilterRow
+import com.lass.yomiyomi.ui.component.my.MyWordCard
+import com.lass.yomiyomi.ui.component.my.AddWordDialog
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,189 +115,5 @@ fun MyWordScreen(
             viewModel = viewModel,
             onDismiss = { showAddDialog = false }
         )
-    }
-}
-
-@Composable
-fun LevelFilterRow(
-    selectedLevel: String,
-    onLevelSelected: (String) -> Unit
-) {
-    val levels = listOf("ALL", "N1", "N2", "N3", "N4", "N5")
-    
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(levels) { level ->
-            FilterChip(
-                selected = selectedLevel == level,
-                onClick = { onLevelSelected(level) },
-                label = { Text(level) }
-            )
-        }
-    }
-}
-
-@Composable
-fun MyWordCard(
-    myWord: MyWord,
-    onDelete: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = myWord.word,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Text(
-                    text = myWord.reading,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = myWord.meaning,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "${myWord.type} • ${myWord.level}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "삭제",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AddWordDialog(
-    viewModel: MyWordViewModel,
-    onDismiss: () -> Unit
-) {
-    val searchResults by viewModel.searchResults.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    
-    var localSearchQuery by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("단어 추가") },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = localSearchQuery,
-                    onValueChange = { 
-                        localSearchQuery = it
-                        viewModel.searchOriginalWords(it)
-                    },
-                    label = { Text("단어 검색") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                if (isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else if (searchResults.isNotEmpty()) {
-                    LazyColumn(
-                        modifier = Modifier.height(300.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(searchResults) { word ->
-                            SearchResultCard(
-                                word = word,
-                                onAdd = { 
-                                    viewModel.addWordToMyWords(word) { success ->
-                                        if (success) {
-                                            onDismiss()
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    }
-                } else if (localSearchQuery.isNotBlank()) {
-                    Text("검색 결과가 없습니다.")
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("닫기")
-            }
-        }
-    )
-}
-
-@Composable
-fun SearchResultCard(
-    word: Word,
-    onAdd: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = word.word,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = word.reading,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = word.meaning,
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = "${word.type} • ${word.level}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            
-            Button(
-                onClick = onAdd,
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Text("추가")
-            }
-        }
     }
 } 
