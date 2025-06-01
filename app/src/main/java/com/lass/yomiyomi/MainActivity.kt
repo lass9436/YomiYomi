@@ -21,51 +21,53 @@ import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
 import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelFactory
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
 import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlin.getValue
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var kanjiRepository: KanjiRepository
+
+    @Inject
+    lateinit var wordRepository: WordRepository
+
+    private val kanjiRandomViewModel: KanjiRandomRandomViewModel by viewModels {
+        KanjiRandomViewModelFactory(kanjiRepository)
+    }
+
+    private val kanjiQuizViewModel: KanjiQuizViewModel by viewModels {
+        KanjiQuizViewModelFactory(kanjiRepository)
+    }
+
+    private val wordRandomViewModel: WordRandomViewModel by viewModels {
+        WordRandomViewModelFactory(wordRepository)
+    }
+
+    private val wordQuizViewModel: WordQuizViewModel by viewModels {
+        WordQuizViewModelFactory(wordRepository)
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // KanjiRepository 초기화
-        val kanjiRepository = KanjiRepository(applicationContext)
-        val wordRepository = WordRepository(applicationContext)
-
-        // 초기화: Kanji 데이터베이스 초기 데이터 삽입
         lifecycleScope.launch {
-            kanjiRepository.initializeDatabase()
-            wordRepository.initializeDatabase()
+            kanjiRepository.importKanjiData(this@MainActivity)
+            wordRepository.importWordData(this@MainActivity)
         }
 
-        // KanjiViewModel 생성
-        val kanjiviewModel: KanjiRandomRandomViewModel by viewModels {
-            KanjiRandomViewModelFactory(kanjiRepository)
-        }
-
-        // KanjiQuizViewModel 생성
-        val kanjiQuizViewModel: KanjiQuizViewModel by viewModels {
-            KanjiQuizViewModelFactory(kanjiRepository)
-        }
-
-        val wordRandomViewModel: WordRandomViewModel by viewModels {
-            WordRandomViewModelFactory(wordRepository)
-        }
-
-        val wordQuizViewModel: WordQuizViewModel by viewModels {
-            WordQuizViewModelFactory(wordRepository)
-        }
-
-        // UI 설정
         setContent {
             YomiYomiTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     MainScreen(
-                        kanjiviewModel,
-                        kanjiQuizViewModel,
-                        wordRandomViewModel,
-                        wordQuizViewModel
+                        kanjiRandomViewModel = kanjiRandomViewModel,
+                        kanjiQuizViewModel = kanjiQuizViewModel,
+                        wordRandomViewModel = wordRandomViewModel,
+                        wordQuizViewModel = wordQuizViewModel,
                     )
                 }
             }

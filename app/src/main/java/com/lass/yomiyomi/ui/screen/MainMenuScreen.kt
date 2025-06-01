@@ -18,7 +18,8 @@ fun MainMenuScreen(
     onNavigateToKanji: () -> Unit,
     onNavigateToQuiz: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
-    onNavigateToWordRandom: () -> Unit
+    onNavigateToWordRandom: () -> Unit,
+    onNavigateToMyWord: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -88,6 +89,7 @@ fun MainMenuScreenPreview() {
         onNavigateToKanji = {},
         onNavigateToQuiz = {},
         onNavigateToWordQuiz = {},
-        onNavigateToWordRandom = {}
+        onNavigateToWordRandom = {},
+        onNavigateToMyWord = {}
     )
 }

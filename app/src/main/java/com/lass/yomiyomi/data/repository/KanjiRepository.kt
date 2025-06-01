@@ -11,7 +11,7 @@ class KanjiRepository(private val context: Context) {
     /**
      * CSV 파일을 불러와 Room 데이터베이스로 삽입
      */
-    suspend fun initializeDatabase() {
+    suspend fun importKanjiData(context: Context) {
         val kanjiList = KanjiDataImporter.importKanjiFromCsv(context)
         kanjiDao.insertAll(kanjiList)
     }

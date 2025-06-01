@@ -12,7 +12,7 @@ class WordRepository(private val context: Context) {
     /**
      * CSV 파일을 불러와 Room 데이터베이스로 삽입
      */
-    suspend fun initializeDatabase() {
+    suspend fun importWordData(context: Context) {
         val wordList = WordDataImporter.importWordsFromCsv(context) // CSV 데이터 가져오기
         wordDao.insertAll(wordList) // Room DB에 데이터 추가
     }

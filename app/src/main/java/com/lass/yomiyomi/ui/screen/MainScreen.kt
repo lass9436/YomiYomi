@@ -17,7 +17,14 @@ enum class Routes(val route: String) {
     KANJI_RANDOM("kanjiRandom"),
     KANJI_QUIZ("kanjiQuiz"),
     WORD_QUIZ("wordQuiz"),
-    WORD_RANDOM("wordRandom")
+    WORD_RANDOM("wordRandom"),
+    MY_WORD_MAIN("myWordMain"),
+    MY_WORD_SEARCH("myWordSearch"),
+    MY_WORD_ADD("myWordAdd"),
+    MY_WORD_LIST("myWordList"),
+    MY_WORD_QUIZ("myWordQuiz"),
+    MY_WORD_RANDOM("myWordRandom"),
+    MY_WORD_EDIT("myWordEdit/{wordId}")
 }
 
 @Composable
@@ -40,7 +47,8 @@ fun MainScreen(
                 onNavigateToKanji = { navController.navigate(Routes.KANJI_RANDOM.route) },
                 onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
                 onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
-                onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) }
+                onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) },
+                onNavigateToMyWord = { navController.navigate(Routes.MY_WORD_MAIN.route) }
             )
         }
         composable(Routes.KANJI_RANDOM.route) {

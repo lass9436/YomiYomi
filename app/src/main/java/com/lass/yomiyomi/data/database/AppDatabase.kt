@@ -12,12 +12,20 @@ import com.lass.yomiyomi.data.dao.KanjiDao
 import com.lass.yomiyomi.data.dao.WordDao
 import com.lass.yomiyomi.data.model.Word
 
-@Database(entities = [DailyRecord::class, Kanji::class, Word::class], version = 2)
+@Database(
+    entities = [
+        DailyRecord::class,
+        Kanji::class,
+        Word::class,
+    ],
+    version = 3,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dailyRecordDao(): DailyRecordDao
-    abstract fun kanjiDao(): KanjiDao // KanjiDao 추가
-    abstract fun wordDao(): WordDao // WordDao 추가
+    abstract fun kanjiDao(): KanjiDao
+    abstract fun wordDao(): WordDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
@@ -29,7 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "study_db"
                 )
-                .fallbackToDestructiveMigration(true) // 기존 데이터베이스 삭제 후 재생성
+                .fallbackToDestructiveMigration()
                 .build().also { instance = it }
             }
         }
