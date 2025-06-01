@@ -79,16 +79,16 @@ fun MainMenuScreen(
                     }
                     item {
                         MenuCard(
-                            title = "내 단어",
-                            subtitle = "나만의 단어장을\n만들어보세요",
-                            onClick = onNavigateToMyWord
+                            title = "내 한자",
+                            subtitle = "나만의 한자장을\n만들어보세요",
+                            onClick = onNavigateToMyKanji
                         )
                     }
                     item {
                         MenuCard(
-                            title = "내 한자",
-                            subtitle = "나만의 한자장을\n만들어보세요",
-                            onClick = onNavigateToMyKanji
+                            title = "내 단어",
+                            subtitle = "나만의 단어장을\n만들어보세요",
+                            onClick = onNavigateToMyWord
                         )
                     }
                 }

@@ -29,25 +29,17 @@ fun EditKanjiDialog(
         ) 
     }
 
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "한자 수정",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { 
+            Text(
+                "한자 수정",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            ) 
+        },
+        text = {
+            Column {
                 OutlinedTextField(
                     value = kanji,
                     onValueChange = { kanji = it },
@@ -93,37 +85,43 @@ fun EditKanjiDialog(
                     onLevelSelected = { selectedLevel = it },
                     availableLevels = listOf(Level.N1, Level.N2, Level.N3, Level.N4, Level.N5)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("취소")
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (kanji.isNotBlank() && (onyomi.isNotBlank() || kunyomi.isNotBlank()) && meaning.isNotBlank()) {
+                        val updatedKanji = myKanji.copy(
+                            kanji = kanji,
+                            onyomi = onyomi,
+                            kunyomi = kunyomi,
+                            meaning = meaning,
+                            level = selectedLevel.value ?: "N5"
+                        )
+                        viewModel.updateMyKanji(updatedKanji)
+                        onDismiss()
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            if (kanji.isNotBlank() && (onyomi.isNotBlank() || kunyomi.isNotBlank()) && meaning.isNotBlank()) {
-                                val updatedKanji = myKanji.copy(
-                                    kanji = kanji,
-                                    onyomi = onyomi,
-                                    kunyomi = kunyomi,
-                                    meaning = meaning,
-                                    level = selectedLevel.value ?: "N5"
-                                )
-                                viewModel.updateMyKanji(updatedKanji)
-                                onDismiss()
-                            }
-                        },
-                        enabled = kanji.isNotBlank() && (onyomi.isNotBlank() || kunyomi.isNotBlank()) && meaning.isNotBlank()
-                    ) {
-                        Text("수정")
-                    }
-                }
+                },
+                enabled = kanji.isNotBlank() && (onyomi.isNotBlank() || kunyomi.isNotBlank()) && meaning.isNotBlank(),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.tertiary
+                )
+            ) {
+                Text(
+                    "수정",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            ) {
+                Text("취소")
             }
         }
-    }
+    )
 } 

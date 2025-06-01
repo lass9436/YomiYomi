@@ -23,32 +23,29 @@ fun AddKanjiDialog(
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("검색", "직접 입력")
 
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "한자 추가",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { 
+            Text(
+                "한자 추가",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            ) 
+        },
+        text = {
+            Column {
                 // 탭 선택
                 TabRow(selectedTabIndex = selectedTab) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
                             selected = selectedTab == index,
                             onClick = { selectedTab = index },
-                            text = { Text(title) }
+                            text = { 
+                                Text(
+                                    title,
+                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal
+                                ) 
+                            }
                         )
                     }
                 }
@@ -59,21 +56,20 @@ fun AddKanjiDialog(
                     0 -> SearchKanjiTab(viewModel = viewModel)
                     1 -> DirectInputKanjiTab(viewModel = viewModel, onDismiss = onDismiss)
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 닫기 버튼
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("닫기")
-                    }
-                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            ) {
+                Text("닫기")
             }
         }
-    }
+    )
 }
 
 @Composable
