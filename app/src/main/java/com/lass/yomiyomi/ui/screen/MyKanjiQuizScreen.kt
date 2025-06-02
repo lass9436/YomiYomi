@@ -37,51 +37,6 @@ fun MyKanjiQuizScreen(
         myKanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
     }
 
-    // 데이터 부족 상태 처리
-    if (hasInsufficientData.value) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "📝",
-                style = MaterialTheme.typography.displayMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "내 한자 데이터가 부족합니다",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "퀴즈를 만들기 위해서는 최소 4개의 한자가 필요합니다.\n내 한자에 더 많은 한자를 추가해 주세요.",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedButton(onClick = onBack) {
-                    Text("뒤로 가기")
-                }
-                Button(
-                    onClick = {
-                        myKanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
-                    }
-                ) {
-                    Text("다시 시도")
-                }
-            }
-        }
-        return
-    }
-
     val quizTypes = listOf("한자→읽기", "읽기→한자")
     val selectedQuizTypeIndex = if (quizTypeSelected == KanjiQuizType.KANJI_TO_READING_MEANING) 0 else 1
 
@@ -91,11 +46,17 @@ fun MyKanjiQuizScreen(
         selectedQuizTypeIndex = selectedQuizTypeIndex,
         isLearningMode = isLearningMode,
         isLoading = isLoading.value,
-        question = quizState.value?.question,
-        options = quizState.value?.options ?: emptyList(),
+        question = if (hasInsufficientData.value) null else quizState.value?.question,
+        options = if (hasInsufficientData.value) emptyList() else (quizState.value?.options ?: emptyList()),
         showDialog = showDialog,
         answerResult = answerResult,
-        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query="
+        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=",
+        insufficientDataMessage = if (hasInsufficientData.value) {
+            if (levelSelected == Level.ALL) 
+                "내 한자가 없습니다.\n+ 버튼을 눌러 한자를 추가해보세요!"
+            else 
+                "${levelSelected.value} 레벨의 내 한자가 없습니다."
+        } else null
     )
 
     val callbacks = QuizCallbacks(

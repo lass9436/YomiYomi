@@ -13,7 +13,8 @@ data class QuizState(
     val showDialog: Boolean = false,
     val answerResult: String? = null,
     val searchUrl: String,
-    val availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
+    val availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL),
+    val insufficientDataMessage: String? = null
 )
 
 data class QuizCallbacks(

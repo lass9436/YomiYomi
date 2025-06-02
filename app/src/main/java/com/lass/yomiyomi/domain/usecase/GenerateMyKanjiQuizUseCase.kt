@@ -27,49 +27,30 @@ class GenerateMyKanjiQuizUseCase @Inject constructor(
         val (priorityKanji, distractors) = myKanjiRepository.getMyKanjiForLearningMode(level.value ?: "ALL")
         
         if (priorityKanji.isEmpty()) {
-            // 학습 모드용 데이터가 없으면 랜덤 모드로 폴백
+            // 선택한 레벨에 우선순위 데이터가 없으면 랜덤 모드로 폴백
             return generateRandomModeQuiz(level, quizType)
         }
         
         val correctKanji = priorityKanji.random()
-        val allMyKanji = priorityKanji + distractors
-        val wrongOptions = allMyKanji.filter { it.id != correctKanji.id }.shuffled().take(3)
         
-        if (wrongOptions.size < 3) {
-            // 옵션이 부족하면 랜덤 모드로 폴백
-            return generateRandomModeQuiz(level, quizType)
-        }
-        
-        return createQuizFromMyKanji(listOf(correctKanji) + wrongOptions, quizType)
+        // 오답 선택지 생성 (다른 레벨이나 원본 데이터 사용 가능)
+        return createQuizWithCorrectAnswer(correctKanji, quizType)
     }
     
-    // 랜덤 모드 퀴즈 생성 (기존 로직)
+    // 랜덤 모드 퀴즈 생성 (수정된 로직)
     private suspend fun generateRandomModeQuiz(level: Level, quizType: KanjiQuizType): KanjiQuiz? {
-        // 1단계: 같은 레벨에 4개 이상?
+        // 정답은 반드시 선택한 레벨에서만 선택
         val levelKanji = getMyKanjiByLevel(level)
-        if (levelKanji.size >= 4) {
-            return createQuizFromMyKanji(levelKanji, quizType)
+        if (levelKanji.isEmpty()) {
+            // 선택한 레벨에 데이터가 없으면 null 반환 (데이터 부족 표시)
+            return null
         }
         
-        // 2단계: 인접 레벨 포함해서 4개 이상?
-        val expandedKanji = getMyKanjiWithAdjacentLevels(level)
-        if (expandedKanji.size >= 4) {
-            return createQuizFromMyKanji(expandedKanji, quizType)
-        }
+        // 정답 선택 (선택한 레벨에서만)
+        val correctKanji = levelKanji.random()
         
-        // 3단계: 전체 MyKanji로 4개 이상?
-        val allMyKanji = myKanjiRepository.getAllMyKanji()
-        if (allMyKanji.size >= 4) {
-            return createQuizFromMyKanji(allMyKanji, quizType)
-        }
-        
-        // 4단계: 원본 데이터로 오답 보완
-        if (allMyKanji.isNotEmpty()) {
-            return createHybridQuiz(allMyKanji.random(), quizType)
-        }
-        
-        // 5단계: 데이터 부족
-        return null
+        // 오답 선택지 생성 (다른 레벨이나 원본 데이터 사용 가능)
+        return createQuizWithCorrectAnswer(correctKanji, quizType)
     }
     
     private suspend fun getMyKanjiByLevel(level: Level): List<MyKanjiItem> {
@@ -157,6 +138,59 @@ class GenerateMyKanjiQuizUseCase @Inject constructor(
                 KanjiQuizType.READING_MEANING_TO_KANJI -> allOptions.map { it.kanji }
             },
             correctIndex = allOptions.indexOf(correctMyKanji)
+        )
+    }
+    
+    private suspend fun createQuizWithCorrectAnswer(correctKanji: MyKanjiItem, quizType: KanjiQuizType): KanjiQuiz {
+        // 오답 선택지 생성 - 우선순위: 다른 MyKanji → 원본 Kanji
+        val wrongOptions = mutableListOf<MyKanjiItem>()
+        
+        // 1. 다른 MyKanji에서 오답 선택지 찾기
+        val allMyKanji = myKanjiRepository.getAllMyKanji().filter { it.id != correctKanji.id }
+        wrongOptions.addAll(allMyKanji.shuffled().take(3))
+        
+        // 2. MyKanji가 부족하면 원본 Kanji에서 보충
+        if (wrongOptions.size < 3) {
+            val originalKanji = kanjiRepository.getAllKanji()
+            val usedIds = (wrongOptions + correctKanji).map { it.id }.toSet()
+            val additionalOptions = originalKanji
+                .filter { it.id !in usedIds }
+                .shuffled()
+                .take(3 - wrongOptions.size)
+                .map { kanjiItem ->
+                    // KanjiItem을 MyKanjiItem으로 변환
+                    MyKanjiItem(
+                        id = kanjiItem.id,
+                        kanji = kanjiItem.kanji,
+                        onyomi = kanjiItem.onyomi,
+                        kunyomi = kanjiItem.kunyomi,
+                        meaning = kanjiItem.meaning,
+                        level = kanjiItem.level,
+                        learningWeight = kanjiItem.learningWeight,
+                        timestamp = kanjiItem.timestamp
+                    )
+                }
+            wrongOptions.addAll(additionalOptions)
+        }
+        
+        // 3개의 오답 선택지만 사용 (부족하면 부족한 대로)
+        val finalWrongOptions = wrongOptions.take(3)
+        val allOptions = (finalWrongOptions + correctKanji).shuffled()
+        
+        return KanjiQuiz(
+            question = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> correctKanji.kanji
+                KanjiQuizType.READING_MEANING_TO_KANJI -> "${correctKanji.kunyomi} / ${correctKanji.meaning}"
+            },
+            answer = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> "${correctKanji.kunyomi} / ${correctKanji.meaning}"
+                KanjiQuizType.READING_MEANING_TO_KANJI -> correctKanji.kanji
+            },
+            options = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> allOptions.map { "${it.kunyomi} / ${it.meaning}" }
+                KanjiQuizType.READING_MEANING_TO_KANJI -> allOptions.map { it.kanji }
+            },
+            correctIndex = allOptions.indexOf(correctKanji)
         )
     }
 } 

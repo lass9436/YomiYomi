@@ -93,7 +93,8 @@ fun QuizLayout(
                 question = state.question,
                 options = state.options,
                 onOptionSelected = callbacks.onOptionSelected,
-                searchUrl = state.searchUrl
+                searchUrl = state.searchUrl,
+                insufficientDataMessage = state.insufficientDataMessage
             )
 
             // Extra Content (for speech features)

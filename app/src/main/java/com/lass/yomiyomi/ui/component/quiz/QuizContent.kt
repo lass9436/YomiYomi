@@ -17,6 +17,7 @@ fun QuizContent(
     options: List<String>,
     onOptionSelected: (Int) -> Unit,
     searchUrl: String,
+    insufficientDataMessage: String? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -28,6 +29,14 @@ fun QuizContent(
         when {
             isLoading -> {
                 CircularProgressIndicator(modifier = Modifier.size(48.dp))
+            }
+            insufficientDataMessage != null -> {
+                Text(
+                    text = insufficientDataMessage,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
             question != null -> {
                 QuizCard(

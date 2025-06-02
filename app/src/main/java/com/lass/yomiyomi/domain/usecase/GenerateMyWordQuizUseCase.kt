@@ -27,49 +27,30 @@ class GenerateMyWordQuizUseCase @Inject constructor(
         val (priorityWords, distractors) = myWordRepository.getMyWordsForLearningMode(level.value ?: "ALL")
         
         if (priorityWords.isEmpty()) {
-            // 학습 모드용 데이터가 없으면 랜덤 모드로 폴백
+            // 선택한 레벨에 우선순위 데이터가 없으면 랜덤 모드로 폴백
             return generateRandomModeQuiz(level, quizType)
         }
         
         val correctWord = priorityWords.random()
-        val allMyWords = priorityWords + distractors
-        val wrongOptions = allMyWords.filter { it.id != correctWord.id }.shuffled().take(3)
         
-        if (wrongOptions.size < 3) {
-            // 옵션이 부족하면 랜덤 모드로 폴백
-            return generateRandomModeQuiz(level, quizType)
-        }
-        
-        return createQuizFromMyWords(listOf(correctWord) + wrongOptions, quizType)
+        // 오답 선택지 생성 (다른 레벨이나 원본 데이터 사용 가능)
+        return createQuizWithCorrectAnswer(correctWord, quizType)
     }
     
-    // 랜덤 모드 퀴즈 생성 (기존 로직)
+    // 랜덤 모드 퀴즈 생성 (수정된 로직)
     private suspend fun generateRandomModeQuiz(level: Level, quizType: WordQuizType): WordQuiz? {
-        // 1단계: 같은 레벨에 4개 이상?
+        // 정답은 반드시 선택한 레벨에서만 선택
         val levelWords = getMyWordsByLevel(level)
-        if (levelWords.size >= 4) {
-            return createQuizFromMyWords(levelWords, quizType)
+        if (levelWords.isEmpty()) {
+            // 선택한 레벨에 데이터가 없으면 null 반환 (데이터 부족 표시)
+            return null
         }
         
-        // 2단계: 인접 레벨 포함해서 4개 이상?
-        val expandedWords = getMyWordsWithAdjacentLevels(level)
-        if (expandedWords.size >= 4) {
-            return createQuizFromMyWords(expandedWords, quizType)
-        }
+        // 정답 선택 (선택한 레벨에서만)
+        val correctWord = levelWords.random()
         
-        // 3단계: 전체 MyWord로 4개 이상?
-        val allMyWords = myWordRepository.getAllMyWords()
-        if (allMyWords.size >= 4) {
-            return createQuizFromMyWords(allMyWords, quizType)
-        }
-        
-        // 4단계: 원본 데이터로 오답 보완
-        if (allMyWords.isNotEmpty()) {
-            return createHybridQuiz(allMyWords.random(), quizType)
-        }
-        
-        // 5단계: 데이터 부족
-        return null
+        // 오답 선택지 생성 (다른 레벨이나 원본 데이터 사용 가능)
+        return createQuizWithCorrectAnswer(correctWord, quizType)
     }
     
     private suspend fun getMyWordsByLevel(level: Level): List<MyWordItem> {
@@ -157,6 +138,59 @@ class GenerateMyWordQuizUseCase @Inject constructor(
                 WordQuizType.MEANING_READING_TO_WORD -> allOptions.map { it.word }
             },
             correctIndex = allOptions.indexOf(correctMyWord)
+        )
+    }
+    
+    private suspend fun createQuizWithCorrectAnswer(correctWord: MyWordItem, quizType: WordQuizType): WordQuiz {
+        // 오답 선택지 생성 - 우선순위: 다른 MyWord → 원본 Word
+        val wrongOptions = mutableListOf<MyWordItem>()
+        
+        // 1. 다른 MyWord에서 오답 선택지 찾기
+        val allMyWords = myWordRepository.getAllMyWords().filter { it.id != correctWord.id }
+        wrongOptions.addAll(allMyWords.shuffled().take(3))
+        
+        // 2. MyWord가 부족하면 원본 Word에서 보충
+        if (wrongOptions.size < 3) {
+            val originalWords = wordRepository.getAllWords()
+            val usedIds = (wrongOptions + correctWord).map { it.id }.toSet()
+            val additionalOptions = originalWords
+                .filter { it.id !in usedIds }
+                .shuffled()
+                .take(3 - wrongOptions.size)
+                .map { wordItem ->
+                    // WordItem을 MyWordItem으로 변환
+                    MyWordItem(
+                        id = wordItem.id,
+                        word = wordItem.word,
+                        reading = wordItem.reading,
+                        type = wordItem.type,
+                        meaning = wordItem.meaning,
+                        level = wordItem.level,
+                        learningWeight = wordItem.learningWeight,
+                        timestamp = wordItem.timestamp
+                    )
+                }
+            wrongOptions.addAll(additionalOptions)
+        }
+        
+        // 3개의 오답 선택지만 사용 (부족하면 부족한 대로)
+        val finalWrongOptions = wrongOptions.take(3)
+        val allOptions = (finalWrongOptions + correctWord).shuffled()
+        
+        return WordQuiz(
+            question = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> correctWord.word
+                WordQuizType.MEANING_READING_TO_WORD -> "${correctWord.meaning} / ${correctWord.reading}"
+            },
+            answer = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> "${correctWord.meaning} / ${correctWord.reading}"
+                WordQuizType.MEANING_READING_TO_WORD -> correctWord.word
+            },
+            options = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> allOptions.map { "${it.meaning} / ${it.reading}" }
+                WordQuizType.MEANING_READING_TO_WORD -> allOptions.map { it.word }
+            },
+            correctIndex = allOptions.indexOf(correctWord)
         )
     }
 } 
