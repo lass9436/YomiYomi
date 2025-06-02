@@ -2,8 +2,8 @@ package com.lass.yomiyomi.viewmodel.wordQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.WordItem
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
 import com.lass.yomiyomi.data.repository.WordRepository
@@ -27,10 +27,10 @@ class WordQuizViewModel @Inject constructor(
     override val isLoading: StateFlow<Boolean> get() = _isLoading
 
     // 학습 모드를 위한 메모리 상태 관리
-    private var priorityWordsInMemory: List<Word> = emptyList()
-    private var distractorsInMemory: List<Word> = emptyList()
+    private var priorityWordsInMemory: List<WordItem> = emptyList()
+    private var distractorsInMemory: List<WordItem> = emptyList()
     private var currentPriorityIndex = 0
-    private var currentQuizWord: Word? = null
+    private var currentQuizWord: WordItem? = null
 
     override fun loadQuizByLevel(level: Level, quizType: WordQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {
@@ -113,11 +113,11 @@ class WordQuizViewModel @Inject constructor(
         return generateStudyModeQuiz(correctWord, distractors, quizType)
     }
 
-    private suspend fun loadLearningModeData(level: Level): Pair<List<Word>, List<Word>> {
+    private suspend fun loadLearningModeData(level: Level): Pair<List<WordItem>, List<WordItem>> {
         return repository.getWordsForLearningMode(level.toString())
     }
 
-    private fun generateStudyModeQuiz(correctWord: Word, distractors: List<Word>, quizType: WordQuizType): WordQuiz {
+    private fun generateStudyModeQuiz(correctWord: WordItem, distractors: List<WordItem>, quizType: WordQuizType): WordQuiz {
         // 오답 3개 선택 (매번 다르게)
         val wrongOptions = distractors.shuffled().take(3)
         

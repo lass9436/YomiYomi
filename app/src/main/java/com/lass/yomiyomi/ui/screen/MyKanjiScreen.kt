@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.layout.MyKanjiLayout
 import com.lass.yomiyomi.ui.state.MyKanjiState
 import com.lass.yomiyomi.ui.state.MyKanjiCallbacks
@@ -26,7 +26,7 @@ fun MyKanjiScreen(
     var searchQuery by remember { mutableStateOf("") }
     var showMyKanjiSearch by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
-    var editingKanji by remember { mutableStateOf<MyKanji?>(null) }
+    var editingKanji by remember { mutableStateOf<MyKanjiItem?>(null) }
 
     val state = MyKanjiState(
         myKanji = myKanji,

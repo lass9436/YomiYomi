@@ -2,7 +2,7 @@ package com.lass.yomiyomi.viewmodel.kanjiRandom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.domain.model.KanjiItem
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,8 +14,8 @@ import javax.inject.Inject
 class KanjiRandomRandomViewModel @Inject constructor(
     private val repository: KanjiRepository
 ) : ViewModel(), KanjiRandomViewModelInterface {
-    private val _randomKanji = MutableStateFlow<Kanji?>(null)
-    override val randomKanji: StateFlow<Kanji?> = _randomKanji
+    private val _randomKanji = MutableStateFlow<KanjiItem?>(null)
+    override val randomKanji: StateFlow<KanjiItem?> = _randomKanji
 
     override fun fetchRandomKanji() {
         viewModelScope.launch {

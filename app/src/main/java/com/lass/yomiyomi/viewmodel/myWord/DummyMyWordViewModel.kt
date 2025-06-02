@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.viewmodel.myWord
 
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.WordItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -10,7 +10,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
 
     private val _myWords = MutableStateFlow(
         listOf(
-            MyWord(
+            MyWordItem(
                 id = 1,
                 word = "食べる",
                 reading = "たべる",
@@ -20,7 +20,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
                 learningWeight = 0.5f,
                 timestamp = System.currentTimeMillis()
             ),
-            MyWord(
+            MyWordItem(
                 id = 2,
                 word = "勉強",
                 reading = "べんきょう",
@@ -30,7 +30,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
                 learningWeight = 0.3f,
                 timestamp = System.currentTimeMillis()
             ),
-            MyWord(
+            MyWordItem(
                 id = 3,
                 word = "桜",
                 reading = "さくら",
@@ -40,7 +40,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
                 learningWeight = 0.8f,
                 timestamp = System.currentTimeMillis()
             ),
-            MyWord(
+            MyWordItem(
                 id = 4,
                 word = "概念",
                 reading = "がいねん",
@@ -52,10 +52,10 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
             )
         )
     )
-    override val myWords: StateFlow<List<MyWord>> = _myWords
+    override val myWords: StateFlow<List<MyWordItem>> = _myWords
 
-    private val _searchResults = MutableStateFlow<List<Word>>(emptyList())
-    override val searchResults: StateFlow<List<Word>> = _searchResults
+    private val _searchResults = MutableStateFlow<List<WordItem>>(emptyList())
+    override val searchResults: StateFlow<List<WordItem>> = _searchResults
 
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading
@@ -74,7 +74,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
         _searchQuery.value = query
         if (query.isNotBlank()) {
             _searchResults.value = listOf(
-                Word(
+                WordItem(
                     id = 100,
                     word = "愛",
                     reading = "あい",
@@ -84,7 +84,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
                     learningWeight = 0.5f,
                     timestamp = System.currentTimeMillis()
                 ),
-                Word(
+                WordItem(
                     id = 101,
                     word = "美しい",
                     reading = "うつくしい",
@@ -100,7 +100,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
         }
     }
 
-    override fun addWordToMyWords(word: Word, onResult: (Boolean) -> Unit) {
+    override fun addWordToMyWords(word: WordItem, onResult: (Boolean) -> Unit) {
         onResult(true)
     }
 
@@ -116,7 +116,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
     }
 
     override fun updateMyWord(
-        myWord: MyWord,
+        myWord: MyWordItem,
         newWord: String,
         newReading: String,
         newMeaning: String,
@@ -127,7 +127,7 @@ class DummyMyWordViewModel : MyWordViewModelInterface {
         onResult(true, "단어가 수정되었습니다.")
     }
 
-    override fun deleteMyWord(myWord: MyWord) {
+    override fun deleteMyWord(myWord: MyWordItem) {
         // Dummy implementation - do nothing
     }
 

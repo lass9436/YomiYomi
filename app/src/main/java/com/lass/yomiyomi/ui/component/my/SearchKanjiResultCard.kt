@@ -10,12 +10,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.domain.model.KanjiItem
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 
 @Composable
 fun SearchKanjiResultCard(
-    kanji: Kanji,
+    kanji: KanjiItem,
     onAdd: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -75,7 +75,7 @@ fun SearchKanjiResultCard(
 fun SearchKanjiResultCardPreview() {
     YomiYomiTheme {
         SearchKanjiResultCard(
-            kanji = Kanji(
+            kanji = KanjiItem(
                 id = 1,
                 kanji = "水",
                 onyomi = "すい",

@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.viewmodel.myKanji
 
-import com.lass.yomiyomi.data.model.Kanji
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
 
     private val sampleMyKanji = listOf(
-        MyKanji(
+        MyKanjiItem(
             id = 1,
             kanji = "食",
             onyomi = "しょく",
@@ -20,7 +20,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
             learningWeight = 0.8f,
             timestamp = System.currentTimeMillis()
         ),
-        MyKanji(
+        MyKanjiItem(
             id = 2,
             kanji = "学",
             onyomi = "がく",
@@ -30,7 +30,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
             learningWeight = 0.6f,
             timestamp = System.currentTimeMillis()
         ),
-        MyKanji(
+        MyKanjiItem(
             id = 3,
             kanji = "心",
             onyomi = "しん",
@@ -40,7 +40,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
             learningWeight = 0.9f,
             timestamp = System.currentTimeMillis()
         ),
-        MyKanji(
+        MyKanjiItem(
             id = 4,
             kanji = "美",
             onyomi = "び",
@@ -50,7 +50,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
             learningWeight = 0.7f,
             timestamp = System.currentTimeMillis()
         ),
-        MyKanji(
+        MyKanjiItem(
             id = 5,
             kanji = "概",
             onyomi = "がい",
@@ -63,7 +63,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
     )
 
     private val sampleSearchResults = listOf(
-        Kanji(
+        KanjiItem(
             id = 100,
             kanji = "水",
             onyomi = "すい",
@@ -73,7 +73,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
             learningWeight = 1.0f,
             timestamp = System.currentTimeMillis()
         ),
-        Kanji(
+        KanjiItem(
             id = 101,
             kanji = "火",
             onyomi = "か",
@@ -86,7 +86,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
     )
 
     private val _myKanji = MutableStateFlow(sampleMyKanji)
-    override val myKanji: StateFlow<List<MyKanji>> = _myKanji.asStateFlow()
+    override val myKanji: StateFlow<List<MyKanjiItem>> = _myKanji.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -95,7 +95,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
     override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
     private val _searchResults = MutableStateFlow(sampleSearchResults)
-    override val searchResults: StateFlow<List<Kanji>> = _searchResults.asStateFlow()
+    override val searchResults: StateFlow<List<KanjiItem>> = _searchResults.asStateFlow()
 
     private val _isSearching = MutableStateFlow(false)
     override val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
@@ -113,7 +113,7 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
         // 더미에서는 실제 검색은 하지 않음
     }
 
-    override fun addKanjiToMyKanji(kanji: Kanji) {
+    override fun addKanjiToMyKanji(kanji: KanjiItem) {
         // 더미에서는 실제 추가는 하지 않음
     }
 
@@ -121,11 +121,11 @@ class DummyMyKanjiViewModel : MyKanjiViewModelInterface {
         // 더미에서는 실제 추가는 하지 않음
     }
 
-    override fun updateMyKanji(myKanji: MyKanji) {
+    override fun updateMyKanji(myKanji: MyKanjiItem) {
         // 더미에서는 실제 업데이트는 하지 않음
     }
 
-    override fun deleteMyKanji(myKanji: MyKanji) {
+    override fun deleteMyKanji(myKanji: MyKanjiItem) {
         // 더미에서는 실제 삭제는 하지 않음
     }
 } 

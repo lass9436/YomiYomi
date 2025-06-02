@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.data.model
+package com.lass.yomiyomi.domain.model
 
 /**
  * UI에서 카드로 표현할 수 있는 아이템들의 공통 인터페이스

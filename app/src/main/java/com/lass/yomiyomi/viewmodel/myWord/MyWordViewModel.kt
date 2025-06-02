@@ -2,9 +2,9 @@ package com.lass.yomiyomi.viewmodel.myWord
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.WordItem
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +17,11 @@ class MyWordViewModel @Inject constructor(
     private val repository: MyWordRepository
 ) : ViewModel(), MyWordViewModelInterface {
 
-    private val _myWords = MutableStateFlow<List<MyWord>>(emptyList())
-    override val myWords: StateFlow<List<MyWord>> = _myWords
+    private val _myWords = MutableStateFlow<List<MyWordItem>>(emptyList())
+    override val myWords: StateFlow<List<MyWordItem>> = _myWords
 
-    private val _searchResults = MutableStateFlow<List<Word>>(emptyList())
-    override val searchResults: StateFlow<List<Word>> = _searchResults
+    private val _searchResults = MutableStateFlow<List<WordItem>>(emptyList())
+    override val searchResults: StateFlow<List<WordItem>> = _searchResults
 
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading
@@ -75,7 +75,7 @@ class MyWordViewModel @Inject constructor(
     }
 
     // 단어를 내 단어에 추가
-    override fun addWordToMyWords(word: Word, onResult: (Boolean) -> Unit) {
+    override fun addWordToMyWords(word: WordItem, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
                 val isAlreadyAdded = repository.isWordInMyWords(word.id)
@@ -114,7 +114,7 @@ class MyWordViewModel @Inject constructor(
                 // 새로운 ID 생성 (타임스탬프 기반)
                 val newId = System.currentTimeMillis().toInt()
                 
-                val myWord = MyWord(
+                val myWord = MyWordItem(
                     id = newId,
                     word = word.trim(),
                     reading = reading.trim(),
@@ -136,7 +136,7 @@ class MyWordViewModel @Inject constructor(
 
     // 내 단어 수정
     override fun updateMyWord(
-        myWord: MyWord,
+        myWord: MyWordItem,
         newWord: String,
         newReading: String,
         newMeaning: String,
@@ -170,7 +170,7 @@ class MyWordViewModel @Inject constructor(
     }
 
     // 내 단어 삭제
-    override fun deleteMyWord(myWord: MyWord) {
+    override fun deleteMyWord(myWord: MyWordItem) {
         viewModelScope.launch {
             try {
                 repository.deleteMyWord(myWord)

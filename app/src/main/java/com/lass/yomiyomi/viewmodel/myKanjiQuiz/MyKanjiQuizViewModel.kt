@@ -2,8 +2,8 @@ package com.lass.yomiyomi.viewmodel.myKanjiQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.domain.model.KanjiQuizType
 import com.lass.yomiyomi.domain.usecase.GenerateMyKanjiQuizUseCase
@@ -30,10 +30,10 @@ class MyKanjiQuizViewModel @Inject constructor(
     override val hasInsufficientData: StateFlow<Boolean> = _hasInsufficientData
 
     // 학습 모드를 위한 상태 관리
-    private var priorityKanjiInMemory: List<MyKanji> = emptyList()
-    private var distractorsInMemory: List<MyKanji> = emptyList()
+    private var priorityKanjiInMemory: List<MyKanjiItem> = emptyList()
+    private var distractorsInMemory: List<MyKanjiItem> = emptyList()
     private var currentPriorityIndex = 0
-    private var currentKanji: MyKanji? = null
+    private var currentKanji: MyKanjiItem? = null
 
     override fun loadQuizByLevel(level: Level, quizType: KanjiQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {

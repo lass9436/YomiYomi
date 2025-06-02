@@ -1,16 +1,16 @@
 package com.lass.yomiyomi.ui.state
 
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
 
 data class MyWordState(
-    val myWords: List<MyWord>,
+    val myWords: List<MyWordItem>,
     val isLoading: Boolean,
     val selectedLevel: Level,
     val searchQuery: String,
     val showMyWordSearch: Boolean,
     val showAddDialog: Boolean,
-    val editingWord: MyWord?
+    val editingWord: MyWordItem?
 )
 
 data class MyWordCallbacks(
@@ -20,7 +20,7 @@ data class MyWordCallbacks(
     val onToggleSearch: () -> Unit,
     val onShowAddDialog: () -> Unit,
     val onDismissAddDialog: () -> Unit,
-    val onEditWord: (MyWord) -> Unit,
+    val onEditWord: (MyWordItem) -> Unit,
     val onDismissEditDialog: () -> Unit,
-    val onDeleteWord: (MyWord) -> Unit
+    val onDeleteWord: (MyWordItem) -> Unit
 ) 

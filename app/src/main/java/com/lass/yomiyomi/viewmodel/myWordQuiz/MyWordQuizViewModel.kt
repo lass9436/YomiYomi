@@ -2,8 +2,8 @@ package com.lass.yomiyomi.viewmodel.myWordQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
 import com.lass.yomiyomi.domain.usecase.GenerateMyWordQuizUseCase
@@ -30,10 +30,10 @@ class MyWordQuizViewModel @Inject constructor(
     override val hasInsufficientData: StateFlow<Boolean> = _hasInsufficientData
 
     // 학습 모드를 위한 상태 관리
-    private var priorityWordsInMemory: List<MyWord> = emptyList()
-    private var distractorsInMemory: List<MyWord> = emptyList()
+    private var priorityWordsInMemory: List<MyWordItem> = emptyList()
+    private var distractorsInMemory: List<MyWordItem> = emptyList()
     private var currentPriorityIndex = 0
-    private var currentWord: MyWord? = null
+    private var currentWord: MyWordItem? = null
 
     override fun loadQuizByLevel(level: Level, quizType: WordQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {

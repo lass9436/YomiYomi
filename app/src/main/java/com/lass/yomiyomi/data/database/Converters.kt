@@ -1,7 +1,7 @@
 package com.lass.yomiyomi.data.database
 
 import androidx.room.TypeConverter
-import com.lass.yomiyomi.data.model.StudyStatus
+import com.lass.yomiyomi.domain.model.StudyStatus
 import java.time.LocalDate
 
 class Converters {

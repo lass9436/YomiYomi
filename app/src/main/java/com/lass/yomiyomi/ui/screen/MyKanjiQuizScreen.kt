@@ -10,7 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuizType
 import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton

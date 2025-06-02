@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.domain.usecase
 
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.WordItem
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.WordQuiz
@@ -72,7 +72,7 @@ class GenerateMyWordQuizUseCase @Inject constructor(
         return null
     }
     
-    private suspend fun getMyWordsByLevel(level: Level): List<MyWord> {
+    private suspend fun getMyWordsByLevel(level: Level): List<MyWordItem> {
         return if (level == Level.ALL) {
             myWordRepository.getAllMyWords()
         } else {
@@ -80,9 +80,9 @@ class GenerateMyWordQuizUseCase @Inject constructor(
         }
     }
     
-    private suspend fun getMyWordsWithAdjacentLevels(level: Level): List<MyWord> {
+    private suspend fun getMyWordsWithAdjacentLevels(level: Level): List<MyWordItem> {
         val adjacentLevels = getAdjacentLevels(level)
-        val allWords = mutableListOf<MyWord>()
+        val allWords = mutableListOf<MyWordItem>()
         
         for (lvl in adjacentLevels) {
             allWords.addAll(getMyWordsByLevel(lvl))
@@ -102,67 +102,61 @@ class GenerateMyWordQuizUseCase @Inject constructor(
         }
     }
     
-    private fun createQuizFromMyWords(myWords: List<MyWord>, quizType: WordQuizType): WordQuiz {
+    private fun createQuizFromMyWords(myWords: List<MyWordItem>, quizType: WordQuizType): WordQuiz {
         val correctWord = myWords.random()
         val wrongOptions = myWords.filter { it.id != correctWord.id }.shuffled().take(3)
         val allOptions = (wrongOptions + correctWord).shuffled()
         
-        // MyWord를 Word로 변환해서 기존 퀴즈 생성 로직 재사용
-        val correctWordAsWord = myWordToWord(correctWord)
-        val allOptionsAsWords = allOptions.map { myWordToWord(it) }
-        
         return WordQuiz(
             question = when (quizType) {
-                WordQuizType.WORD_TO_MEANING_READING -> correctWordAsWord.word
-                WordQuizType.MEANING_READING_TO_WORD -> "${correctWordAsWord.meaning} / ${correctWordAsWord.reading}"
+                WordQuizType.WORD_TO_MEANING_READING -> correctWord.word
+                WordQuizType.MEANING_READING_TO_WORD -> "${correctWord.meaning} / ${correctWord.reading}"
             },
             answer = when (quizType) {
-                WordQuizType.WORD_TO_MEANING_READING -> "${correctWordAsWord.meaning} / ${correctWordAsWord.reading}"
-                WordQuizType.MEANING_READING_TO_WORD -> correctWordAsWord.word
-            },
-            options = when (quizType) {
-                WordQuizType.WORD_TO_MEANING_READING -> allOptionsAsWords.map { "${it.meaning} / ${it.reading}" }
-                WordQuizType.MEANING_READING_TO_WORD -> allOptionsAsWords.map { it.word }
-            },
-            correctIndex = allOptionsAsWords.indexOf(correctWordAsWord)
-        )
-    }
-    
-    private suspend fun createHybridQuiz(correctMyWord: MyWord, quizType: WordQuizType): WordQuiz {
-        // 정답은 MyWord에서, 오답은 원본 Word에서 가져오기
-        val originalWords = wordRepository.getAllWords()
-        val wrongOptions = originalWords.shuffled().take(3)
-        
-        val correctWordAsWord = myWordToWord(correctMyWord)
-        val allOptions = (wrongOptions + correctWordAsWord).shuffled()
-        
-        return WordQuiz(
-            question = when (quizType) {
-                WordQuizType.WORD_TO_MEANING_READING -> correctWordAsWord.word
-                WordQuizType.MEANING_READING_TO_WORD -> "${correctWordAsWord.meaning} / ${correctWordAsWord.reading}"
-            },
-            answer = when (quizType) {
-                WordQuizType.WORD_TO_MEANING_READING -> "${correctWordAsWord.meaning} / ${correctWordAsWord.reading}"
-                WordQuizType.MEANING_READING_TO_WORD -> correctWordAsWord.word
+                WordQuizType.WORD_TO_MEANING_READING -> "${correctWord.meaning} / ${correctWord.reading}"
+                WordQuizType.MEANING_READING_TO_WORD -> correctWord.word
             },
             options = when (quizType) {
                 WordQuizType.WORD_TO_MEANING_READING -> allOptions.map { "${it.meaning} / ${it.reading}" }
                 WordQuizType.MEANING_READING_TO_WORD -> allOptions.map { it.word }
             },
-            correctIndex = allOptions.indexOf(correctWordAsWord)
+            correctIndex = allOptions.indexOf(correctWord)
         )
     }
     
-    private fun myWordToWord(myWord: MyWord): Word {
-        return Word(
-            id = myWord.id,
-            word = myWord.word,
-            reading = myWord.reading,
-            type = myWord.type,
-            meaning = myWord.meaning,
-            level = myWord.level,
-            learningWeight = myWord.learningWeight,
-            timestamp = myWord.timestamp
+    private suspend fun createHybridQuiz(correctMyWord: MyWordItem, quizType: WordQuizType): WordQuiz {
+        // 정답은 MyWord에서, 오답은 원본 Word에서 가져오기
+        val originalWords = wordRepository.getAllWords()
+        val wrongOptionsAsMyWords = originalWords.shuffled().take(3).map { wordItem ->
+            // WordItem을 MyWordItem으로 변환
+            MyWordItem(
+                id = wordItem.id,
+                word = wordItem.word,
+                reading = wordItem.reading,
+                type = wordItem.type,
+                meaning = wordItem.meaning,
+                level = wordItem.level,
+                learningWeight = wordItem.learningWeight,
+                timestamp = wordItem.timestamp
+            )
+        }
+        
+        val allOptions = (wrongOptionsAsMyWords + correctMyWord).shuffled()
+        
+        return WordQuiz(
+            question = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> correctMyWord.word
+                WordQuizType.MEANING_READING_TO_WORD -> "${correctMyWord.meaning} / ${correctMyWord.reading}"
+            },
+            answer = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> "${correctMyWord.meaning} / ${correctMyWord.reading}"
+                WordQuizType.MEANING_READING_TO_WORD -> correctMyWord.word
+            },
+            options = when (quizType) {
+                WordQuizType.WORD_TO_MEANING_READING -> allOptions.map { "${it.meaning} / ${it.reading}" }
+                WordQuizType.MEANING_READING_TO_WORD -> allOptions.map { it.word }
+            },
+            correctIndex = allOptions.indexOf(correctMyWord)
         )
     }
 } 

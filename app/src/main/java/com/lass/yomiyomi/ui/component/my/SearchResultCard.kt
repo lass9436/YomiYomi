@@ -17,11 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.WordItem
 
 @Composable
 fun SearchResultCard(
-    word: Word,
+    word: WordItem,
     onAdd: () -> Unit
 ) {
     Card(

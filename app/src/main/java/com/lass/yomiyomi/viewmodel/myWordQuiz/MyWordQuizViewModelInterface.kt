@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.viewmodel.myWordQuiz
 
-import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.domain.model.WordQuiz
 import com.lass.yomiyomi.domain.model.WordQuizType
 import kotlinx.coroutines.flow.StateFlow

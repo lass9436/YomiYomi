@@ -15,7 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.component.random.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
@@ -31,7 +32,7 @@ fun MyKanjiRandomScreen(
     val myKanji by myKanjiViewModel.myKanji.collectAsState()
     val isLoading by myKanjiViewModel.isLoading.collectAsState()
     var selectedLevel by remember { mutableStateOf(Level.ALL) }
-    var currentRandomKanji by remember { mutableStateOf<com.lass.yomiyomi.data.model.MyKanji?>(null) }
+    var currentRandomKanji by remember { mutableStateOf<MyKanjiItem?>(null) }
 
     // 레벨에 따라 필터링된 한자들
     val filteredKanji = remember(myKanji, selectedLevel) {

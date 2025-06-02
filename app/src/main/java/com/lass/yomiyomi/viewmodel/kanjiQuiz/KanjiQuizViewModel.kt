@@ -2,14 +2,14 @@ package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.model.KanjiQuiz
 import com.lass.yomiyomi.domain.model.KanjiQuizType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.domain.model.KanjiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -24,10 +24,10 @@ class KanjiQuizViewModel @Inject constructor(
     override val isLoading: StateFlow<Boolean> = _isLoading
 
     // 학습 모드를 위한 메모리 상태 관리
-    private var priorityKanjiInMemory: List<Kanji> = emptyList()
-    private var distractorsInMemory: List<Kanji> = emptyList()
+    private var priorityKanjiInMemory: List<KanjiItem> = emptyList()
+    private var distractorsInMemory: List<KanjiItem> = emptyList()
     private var currentPriorityIndex = 0
-    private var currentKanji: Kanji? = null
+    private var currentKanji: KanjiItem? = null
 
     override fun loadQuizByLevel(level: Level, quizType: KanjiQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {
@@ -110,11 +110,11 @@ class KanjiQuizViewModel @Inject constructor(
         return generateStudyModeQuiz(correctKanji, distractors, quizType)
     }
 
-    private suspend fun loadLearningModeData(level: Level): Pair<List<Kanji>, List<Kanji>> {
+    private suspend fun loadLearningModeData(level: Level): Pair<List<KanjiItem>, List<KanjiItem>> {
         return repository.getKanjiForLearningMode(level.toString())
     }
 
-    private fun generateStudyModeQuiz(correctKanji: Kanji, distractors: List<Kanji>, quizType: KanjiQuizType): KanjiQuiz {
+    private fun generateStudyModeQuiz(correctKanji: KanjiItem, distractors: List<KanjiItem>, quizType: KanjiQuizType): KanjiQuiz {
         // 오답 3개 선택 (매번 다르게)
         val wrongOptions = distractors.shuffled().take(3)
         

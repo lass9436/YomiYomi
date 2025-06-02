@@ -3,7 +3,7 @@ package com.lass.yomiyomi.data.repository
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
 import com.lass.yomiyomi.data.model.DailyRecord
-import com.lass.yomiyomi.data.model.StudyStatus
+import com.lass.yomiyomi.domain.model.StudyStatus
 import java.time.LocalDate
 
 class StudyRepository(context: Context) {

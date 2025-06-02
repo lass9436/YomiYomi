@@ -2,9 +2,9 @@ package com.lass.yomiyomi.viewmodel.myKanji
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.data.model.Kanji
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -22,16 +22,16 @@ class MyKanjiViewModel @Inject constructor(
     private val _selectedLevel = MutableStateFlow(Level.ALL)
     override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
-    private val _searchResults = MutableStateFlow<List<Kanji>>(emptyList())
-    override val searchResults: StateFlow<List<Kanji>> = _searchResults.asStateFlow()
+    private val _searchResults = MutableStateFlow<List<KanjiItem>>(emptyList())
+    override val searchResults: StateFlow<List<KanjiItem>> = _searchResults.asStateFlow()
 
     private val _isSearching = MutableStateFlow(false)
     override val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
 
-    private val _allMyKanji = MutableStateFlow<List<MyKanji>>(emptyList())
+    private val _allMyKanji = MutableStateFlow<List<MyKanjiItem>>(emptyList())
     private val _searchQuery = MutableStateFlow("")
 
-    override val myKanji: StateFlow<List<MyKanji>> = combine(
+    override val myKanji: StateFlow<List<MyKanjiItem>> = combine(
         _allMyKanji,
         _selectedLevel,
         _searchQuery
@@ -99,7 +99,7 @@ class MyKanjiViewModel @Inject constructor(
         }
     }
 
-    override fun addKanjiToMyKanji(kanji: Kanji) {
+    override fun addKanjiToMyKanji(kanji: KanjiItem) {
         viewModelScope.launch {
             try {
                 myKanjiRepository.addKanjiToMyKanji(kanji)
@@ -114,7 +114,7 @@ class MyKanjiViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val newId = System.currentTimeMillis().toInt() // 임시 ID 생성
-                val myKanji = MyKanji(
+                val myKanji = MyKanjiItem(
                     id = newId,
                     kanji = kanji,
                     onyomi = onyomi,
@@ -132,7 +132,7 @@ class MyKanjiViewModel @Inject constructor(
         }
     }
 
-    override fun updateMyKanji(myKanji: MyKanji) {
+    override fun updateMyKanji(myKanji: MyKanjiItem) {
         viewModelScope.launch {
             try {
                 myKanjiRepository.insertMyKanjiDirectly(myKanji) // REPLACE 전략으로 업데이트
@@ -143,7 +143,7 @@ class MyKanjiViewModel @Inject constructor(
         }
     }
 
-    override fun deleteMyKanji(myKanji: MyKanji) {
+    override fun deleteMyKanji(myKanji: MyKanjiItem) {
         viewModelScope.launch {
             try {
                 myKanjiRepository.deleteMyKanji(myKanji)

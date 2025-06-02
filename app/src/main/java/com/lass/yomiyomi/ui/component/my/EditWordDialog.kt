@@ -22,13 +22,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @Composable
 fun EditWordDialog(
-    myWord: MyWord,
+    myWord: MyWordItem,
     viewModel: MyWordViewModelInterface,
     onDismiss: () -> Unit
 ) {

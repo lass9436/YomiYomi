@@ -14,12 +14,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 
 @Composable
 fun MyKanjiCard(
-    myKanji: MyKanji,
+    myKanji: MyKanjiItem,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onPlaySound: ((String) -> Unit)? = null,
@@ -186,7 +186,7 @@ fun MyKanjiCard(
 fun MyKanjiCardPreview() {
     YomiYomiTheme {
         MyKanjiCard(
-            myKanji = MyKanji(
+            myKanji = MyKanjiItem(
                 id = 1,
                 kanji = "食",
                 onyomi = "しょく",

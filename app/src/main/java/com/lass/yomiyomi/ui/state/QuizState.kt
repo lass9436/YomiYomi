@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.ui.state
 
-import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.domain.model.Level
 
 data class QuizState(
     val selectedLevel: Level = Level.ALL,

@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import com.lass.yomiyomi.data.model.*
+import com.lass.yomiyomi.domain.model.*
 import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
 import com.lass.yomiyomi.util.JapaneseTextFilter
@@ -47,7 +47,7 @@ fun ItemCard(
             .then(
                 if (onCardClick != null) {
                     Modifier.clickable(onClick = onCardClick)
-                } else if (item is Kanji) {
+                } else if (item is KanjiItem) {
                     Modifier.clickable {
                         val intent = Intent(
                             Intent.ACTION_VIEW,

@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.domain.usecase
 
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyKanji
-import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
+import com.lass.yomiyomi.domain.model.KanjiItem
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.domain.model.KanjiQuiz
@@ -72,7 +72,7 @@ class GenerateMyKanjiQuizUseCase @Inject constructor(
         return null
     }
     
-    private suspend fun getMyKanjiByLevel(level: Level): List<MyKanji> {
+    private suspend fun getMyKanjiByLevel(level: Level): List<MyKanjiItem> {
         return if (level == Level.ALL) {
             myKanjiRepository.getAllMyKanji()
         } else {
@@ -80,9 +80,9 @@ class GenerateMyKanjiQuizUseCase @Inject constructor(
         }
     }
     
-    private suspend fun getMyKanjiWithAdjacentLevels(level: Level): List<MyKanji> {
+    private suspend fun getMyKanjiWithAdjacentLevels(level: Level): List<MyKanjiItem> {
         val adjacentLevels = getAdjacentLevels(level)
-        val allKanji = mutableListOf<MyKanji>()
+        val allKanji = mutableListOf<MyKanjiItem>()
         
         for (lvl in adjacentLevels) {
             allKanji.addAll(getMyKanjiByLevel(lvl))
@@ -102,67 +102,61 @@ class GenerateMyKanjiQuizUseCase @Inject constructor(
         }
     }
     
-    private fun createQuizFromMyKanji(myKanji: List<MyKanji>, quizType: KanjiQuizType): KanjiQuiz {
+    private fun createQuizFromMyKanji(myKanji: List<MyKanjiItem>, quizType: KanjiQuizType): KanjiQuiz {
         val correctKanji = myKanji.random()
         val wrongOptions = myKanji.filter { it.id != correctKanji.id }.shuffled().take(3)
         val allOptions = (wrongOptions + correctKanji).shuffled()
         
-        // MyKanji를 Kanji로 변환해서 기존 퀴즈 생성 로직 재사용
-        val correctKanjiAsKanji = myKanjiToKanji(correctKanji)
-        val allOptionsAsKanji = allOptions.map { myKanjiToKanji(it) }
-        
         return KanjiQuiz(
             question = when (quizType) {
-                KanjiQuizType.KANJI_TO_READING_MEANING -> correctKanjiAsKanji.kanji
-                KanjiQuizType.READING_MEANING_TO_KANJI -> "${correctKanjiAsKanji.kunyomi} / ${correctKanjiAsKanji.meaning}"
+                KanjiQuizType.KANJI_TO_READING_MEANING -> correctKanji.kanji
+                KanjiQuizType.READING_MEANING_TO_KANJI -> "${correctKanji.kunyomi} / ${correctKanji.meaning}"
             },
             answer = when (quizType) {
-                KanjiQuizType.KANJI_TO_READING_MEANING -> "${correctKanjiAsKanji.kunyomi} / ${correctKanjiAsKanji.meaning}"
-                KanjiQuizType.READING_MEANING_TO_KANJI -> correctKanjiAsKanji.kanji
-            },
-            options = when (quizType) {
-                KanjiQuizType.KANJI_TO_READING_MEANING -> allOptionsAsKanji.map { "${it.kunyomi} / ${it.meaning}" }
-                KanjiQuizType.READING_MEANING_TO_KANJI -> allOptionsAsKanji.map { it.kanji }
-            },
-            correctIndex = allOptionsAsKanji.indexOf(correctKanjiAsKanji)
-        )
-    }
-    
-    private suspend fun createHybridQuiz(correctMyKanji: MyKanji, quizType: KanjiQuizType): KanjiQuiz {
-        // 정답은 MyKanji에서, 오답은 원본 Kanji에서 가져오기
-        val originalKanji = kanjiRepository.getAllKanji()
-        val wrongOptions = originalKanji.shuffled().take(3)
-        
-        val correctKanjiAsKanji = myKanjiToKanji(correctMyKanji)
-        val allOptions = (wrongOptions + correctKanjiAsKanji).shuffled()
-        
-        return KanjiQuiz(
-            question = when (quizType) {
-                KanjiQuizType.KANJI_TO_READING_MEANING -> correctKanjiAsKanji.kanji
-                KanjiQuizType.READING_MEANING_TO_KANJI -> "${correctKanjiAsKanji.kunyomi} / ${correctKanjiAsKanji.meaning}"
-            },
-            answer = when (quizType) {
-                KanjiQuizType.KANJI_TO_READING_MEANING -> "${correctKanjiAsKanji.kunyomi} / ${correctKanjiAsKanji.meaning}"
-                KanjiQuizType.READING_MEANING_TO_KANJI -> correctKanjiAsKanji.kanji
+                KanjiQuizType.KANJI_TO_READING_MEANING -> "${correctKanji.kunyomi} / ${correctKanji.meaning}"
+                KanjiQuizType.READING_MEANING_TO_KANJI -> correctKanji.kanji
             },
             options = when (quizType) {
                 KanjiQuizType.KANJI_TO_READING_MEANING -> allOptions.map { "${it.kunyomi} / ${it.meaning}" }
                 KanjiQuizType.READING_MEANING_TO_KANJI -> allOptions.map { it.kanji }
             },
-            correctIndex = allOptions.indexOf(correctKanjiAsKanji)
+            correctIndex = allOptions.indexOf(correctKanji)
         )
     }
     
-    private fun myKanjiToKanji(myKanji: MyKanji): Kanji {
-        return Kanji(
-            id = myKanji.id,
-            kanji = myKanji.kanji,
-            onyomi = myKanji.onyomi,
-            kunyomi = myKanji.kunyomi,
-            meaning = myKanji.meaning,
-            level = myKanji.level,
-            learningWeight = myKanji.learningWeight,
-            timestamp = myKanji.timestamp
+    private suspend fun createHybridQuiz(correctMyKanji: MyKanjiItem, quizType: KanjiQuizType): KanjiQuiz {
+        // 정답은 MyKanji에서, 오답은 원본 Kanji에서 가져오기
+        val originalKanji = kanjiRepository.getAllKanji()
+        val wrongOptionsAsMyKanji = originalKanji.shuffled().take(3).map { kanjiItem ->
+            // KanjiItem을 MyKanjiItem으로 변환
+            MyKanjiItem(
+                id = kanjiItem.id,
+                kanji = kanjiItem.kanji,
+                onyomi = kanjiItem.onyomi,
+                kunyomi = kanjiItem.kunyomi,
+                meaning = kanjiItem.meaning,
+                level = kanjiItem.level,
+                learningWeight = kanjiItem.learningWeight,
+                timestamp = kanjiItem.timestamp
+            )
+        }
+        
+        val allOptions = (wrongOptionsAsMyKanji + correctMyKanji).shuffled()
+        
+        return KanjiQuiz(
+            question = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> correctMyKanji.kanji
+                KanjiQuizType.READING_MEANING_TO_KANJI -> "${correctMyKanji.kunyomi} / ${correctMyKanji.meaning}"
+            },
+            answer = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> "${correctMyKanji.kunyomi} / ${correctMyKanji.meaning}"
+                KanjiQuizType.READING_MEANING_TO_KANJI -> correctMyKanji.kanji
+            },
+            options = when (quizType) {
+                KanjiQuizType.KANJI_TO_READING_MEANING -> allOptions.map { "${it.kunyomi} / ${it.meaning}" }
+                KanjiQuizType.READING_MEANING_TO_KANJI -> allOptions.map { it.kanji }
+            },
+            correctIndex = allOptions.indexOf(correctMyKanji)
         )
     }
 } 

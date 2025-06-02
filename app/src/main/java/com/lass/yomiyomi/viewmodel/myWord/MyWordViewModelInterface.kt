@@ -1,20 +1,20 @@
 package com.lass.yomiyomi.viewmodel.myWord
 
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.WordItem
 import kotlinx.coroutines.flow.StateFlow
 
 interface MyWordViewModelInterface {
-    val myWords: StateFlow<List<MyWord>>
-    val searchResults: StateFlow<List<Word>>
+    val myWords: StateFlow<List<MyWordItem>>
+    val searchResults: StateFlow<List<WordItem>>
     val isLoading: StateFlow<Boolean>
     val searchQuery: StateFlow<String>
     val selectedLevel: StateFlow<Level>
 
     fun loadMyWords()
     fun searchOriginalWords(query: String)
-    fun addWordToMyWords(word: Word, onResult: (Boolean) -> Unit)
+    fun addWordToMyWords(word: WordItem, onResult: (Boolean) -> Unit)
     fun addMyWordDirectly(
         word: String,
         reading: String,
@@ -24,7 +24,7 @@ interface MyWordViewModelInterface {
         onResult: (Boolean, String) -> Unit
     )
     fun updateMyWord(
-        myWord: MyWord,
+        myWord: MyWordItem,
         newWord: String,
         newReading: String,
         newMeaning: String,
@@ -32,7 +32,7 @@ interface MyWordViewModelInterface {
         newLevel: String,
         onResult: (Boolean, String) -> Unit
     )
-    fun deleteMyWord(myWord: MyWord)
+    fun deleteMyWord(myWord: MyWordItem)
     fun setSelectedLevel(level: Level)
     fun searchMyWords(query: String)
 } 

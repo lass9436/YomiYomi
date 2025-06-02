@@ -1,16 +1,16 @@
 package com.lass.yomiyomi.ui.state
 
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 
 data class MyKanjiState(
-    val myKanji: List<MyKanji>,
+    val myKanji: List<MyKanjiItem>,
     val isLoading: Boolean,
     val selectedLevel: Level,
     val searchQuery: String,
     val showMyKanjiSearch: Boolean,
     val showAddDialog: Boolean,
-    val editingKanji: MyKanji?
+    val editingKanji: MyKanjiItem?
 )
 
 data class MyKanjiCallbacks(
@@ -20,7 +20,7 @@ data class MyKanjiCallbacks(
     val onToggleSearch: () -> Unit,
     val onShowAddDialog: () -> Unit,
     val onDismissAddDialog: () -> Unit,
-    val onEditKanji: (MyKanji) -> Unit,
+    val onEditKanji: (MyKanjiItem) -> Unit,
     val onDismissEditDialog: () -> Unit,
-    val onDeleteKanji: (MyKanji) -> Unit
+    val onDeleteKanji: (MyKanjiItem) -> Unit
 ) 

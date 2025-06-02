@@ -15,7 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.data.model.Level
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.ui.component.random.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
@@ -31,7 +32,7 @@ fun MyWordRandomScreen(
     val myWords by myWordViewModel.myWords.collectAsState()
     val isLoading by myWordViewModel.isLoading.collectAsState()
     var selectedLevel by remember { mutableStateOf(Level.ALL) }
-    var currentRandomWord by remember { mutableStateOf<com.lass.yomiyomi.data.model.MyWord?>(null) }
+    var currentRandomWord by remember { mutableStateOf<MyWordItem?>(null) }
 
     // 레벨에 따라 필터링된 단어들
     val filteredWords = remember(myWords, selectedLevel) {

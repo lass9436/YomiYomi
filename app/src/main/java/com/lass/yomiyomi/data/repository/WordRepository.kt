@@ -3,8 +3,9 @@ package com.lass.yomiyomi.data.repository
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
 import com.lass.yomiyomi.data.database.WordDataImporter
-import com.lass.yomiyomi.data.model.Word
-
+import com.lass.yomiyomi.domain.model.WordItem
+import com.lass.yomiyomi.domain.model.toWordItem
+import com.lass.yomiyomi.domain.model.toWordItems
 
 class WordRepository(private val context: Context) {
     private val wordDao = AppDatabase.getInstance(context).wordDao() // WordDao 초기화
@@ -17,19 +18,23 @@ class WordRepository(private val context: Context) {
         wordDao.insertAll(wordList) // Room DB에 데이터 추가
     }
 
-    suspend fun getAllWords() = wordDao.getAllWords() // 전체 Word 조회
+    suspend fun getAllWords(): List<WordItem> = wordDao.getAllWords().toWordItems() // 전체 Word 조회
 
-    suspend fun getAllWordsByLevel(level: String): List<Word> = wordDao.getAllWordsByLevel(level) // 특정 Level 조회
+    suspend fun getAllWordsByLevel(level: String): List<WordItem> = wordDao.getAllWordsByLevel(level).toWordItems() // 특정 Level 조회
 
-    suspend fun getRandomWord() = wordDao.getRandomWord() // 랜덤 Word 하나 조회
+    suspend fun getRandomWord(): WordItem? = wordDao.getRandomWord()?.toWordItem() // 랜덤 Word 하나 조회
 
-    suspend fun getRandomWordByLevel(level: String?): Word? = wordDao.getRandomWordByLevel(level) // 특정 Level에서 랜덤 Word 조회
+    suspend fun getRandomWordByLevel(level: String?): WordItem? = wordDao.getRandomWordByLevel(level)?.toWordItem() // 특정 Level에서 랜덤 Word 조회
 
     // 학습 모드용 데이터 조회
-    suspend fun getWordsForLearningMode(level: String): Pair<List<Word>, List<Word>> {
-        return Pair(
+    suspend fun getWordsForLearningMode(level: String): Pair<List<WordItem>, List<WordItem>> {
+        val (topPriority, distractors) = Pair(
             wordDao.getTopPriorityWords(level),
             wordDao.getRandomDistractors(level)
+        )
+        return Pair(
+            topPriority.toWordItems(),
+            distractors.toWordItems()
         )
     }
 

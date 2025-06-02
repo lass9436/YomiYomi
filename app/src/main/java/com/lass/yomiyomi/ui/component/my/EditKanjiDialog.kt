@@ -8,14 +8,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.lass.yomiyomi.data.model.Level
-import com.lass.yomiyomi.data.model.MyKanji
+import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
 
 @Composable
 fun EditKanjiDialog(
-    myKanji: MyKanji,
+    myKanji: MyKanjiItem,
     viewModel: MyKanjiViewModelInterface,
     onDismiss: () -> Unit
 ) {
@@ -91,12 +91,15 @@ fun EditKanjiDialog(
             TextButton(
                 onClick = {
                     if (kanji.isNotBlank() && (onyomi.isNotBlank() || kunyomi.isNotBlank()) && meaning.isNotBlank()) {
-                        val updatedKanji = myKanji.copy(
+                        val updatedKanji = MyKanjiItem(
+                            id = myKanji.id,
                             kanji = kanji,
                             onyomi = onyomi,
                             kunyomi = kunyomi,
                             meaning = meaning,
-                            level = selectedLevel.value ?: "N5"
+                            level = selectedLevel.value ?: "N5",
+                            learningWeight = myKanji.learningWeight,
+                            timestamp = myKanji.timestamp
                         )
                         viewModel.updateMyKanji(updatedKanji)
                         onDismiss()

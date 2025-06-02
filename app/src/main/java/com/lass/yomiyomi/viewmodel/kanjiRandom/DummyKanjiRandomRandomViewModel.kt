@@ -1,12 +1,12 @@
 package com.lass.yomiyomi.viewmodel.kanjiRandom
 
-import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.domain.model.KanjiItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow(
-        Kanji(
+        KanjiItem(
             id = 1,
             kanji = "木",
             onyomi = "モク",
@@ -17,7 +17,7 @@ class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
             timestamp = 0L
         )
     )
-    override val randomKanji: StateFlow<Kanji?> = _randomKanji
+    override val randomKanji: StateFlow<KanjiItem?> = _randomKanji
 
     override fun fetchRandomKanji() {
         // 실제로는 아무 동작하지 않음

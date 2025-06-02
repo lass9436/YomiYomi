@@ -1,12 +1,12 @@
 package com.lass.yomiyomi.viewmodel.wordRandom
 
-import com.lass.yomiyomi.data.model.Word
+import com.lass.yomiyomi.domain.model.WordItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class DummyWordRandomViewModel : WordRandomViewModelInterface {
     private val _randomWord = MutableStateFlow(
-        Word(
+        WordItem(
             id = 1,
             word = "学校",
             reading = "がっこう",
@@ -17,7 +17,7 @@ class DummyWordRandomViewModel : WordRandomViewModelInterface {
             timestamp = 0L
         )
     )
-    override val randomWord: StateFlow<Word?> = _randomWord
+    override val randomWord: StateFlow<WordItem?> = _randomWord
 
     override fun fetchRandomWord() {
         // 실제로는 아무 동작하지 않음

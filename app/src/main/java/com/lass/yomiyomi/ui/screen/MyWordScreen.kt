@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.data.model.MyWord
+import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.ui.layout.MyWordLayout
 import com.lass.yomiyomi.ui.state.MyWordState
 import com.lass.yomiyomi.ui.state.MyWordCallbacks
@@ -26,7 +26,7 @@ fun MyWordScreen(
     var searchQuery by remember { mutableStateOf("") }
     var showMyWordSearch by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
-    var editingWord by remember { mutableStateOf<MyWord?>(null) }
+    var editingWord by remember { mutableStateOf<MyWordItem?>(null) }
 
     val state = MyWordState(
         myWords = myWords,

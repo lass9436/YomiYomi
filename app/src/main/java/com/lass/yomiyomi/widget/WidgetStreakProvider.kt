@@ -9,7 +9,7 @@ import android.util.Log
 import android.widget.RemoteViews
 import com.lass.yomiyomi.MainActivity
 import com.lass.yomiyomi.R
-import com.lass.yomiyomi.data.model.StudyStatus
+import com.lass.yomiyomi.domain.model.StudyStatus
 import com.lass.yomiyomi.data.repository.StudyRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

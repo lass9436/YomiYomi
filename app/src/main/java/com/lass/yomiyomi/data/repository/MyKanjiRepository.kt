@@ -4,13 +4,20 @@ import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
 import com.lass.yomiyomi.data.model.MyKanji
 import com.lass.yomiyomi.data.model.Kanji
+import com.lass.yomiyomi.domain.model.MyKanjiItem
+import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.toMyKanjiItem
+import com.lass.yomiyomi.domain.model.toMyKanjiItems
+import com.lass.yomiyomi.domain.model.toKanjiItem
+import com.lass.yomiyomi.domain.model.toKanjiItems
+import com.lass.yomiyomi.domain.model.toMyKanji
 
 class MyKanjiRepository(private val context: Context) {
     private val myKanjiDao = AppDatabase.getInstance(context).myKanjiDao()
     private val kanjiDao = AppDatabase.getInstance(context).kanjiDao()
 
     // 원본 한자를 내 한자로 복제
-    suspend fun addKanjiToMyKanji(originalKanji: Kanji): Boolean {
+    suspend fun addKanjiToMyKanji(originalKanji: KanjiItem): Boolean {
         return try {
             val myKanji = MyKanji(
                 id = originalKanji.id,
@@ -30,9 +37,9 @@ class MyKanjiRepository(private val context: Context) {
     }
 
     // 직접 입력으로 내 한자 추가 (신규 추가 또는 수정)
-    suspend fun insertMyKanjiDirectly(myKanji: MyKanji): Boolean {
+    suspend fun insertMyKanjiDirectly(myKanjiItem: MyKanjiItem): Boolean {
         return try {
-            myKanjiDao.insertMyKanji(myKanji)
+            myKanjiDao.insertMyKanji(myKanjiItem.toMyKanji())
             true
         } catch (e: Exception) {
             false
@@ -40,28 +47,28 @@ class MyKanjiRepository(private val context: Context) {
     }
 
     // 내 한자 전체 조회
-    suspend fun getAllMyKanji(): List<MyKanji> = myKanjiDao.getAllMyKanji()
+    suspend fun getAllMyKanji(): List<MyKanjiItem> = myKanjiDao.getAllMyKanji().toMyKanjiItems()
 
     // 레벨별 내 한자 조회
-    suspend fun getAllMyKanjiByLevel(level: String): List<MyKanji> = myKanjiDao.getMyKanjiByLevel(level)
+    suspend fun getAllMyKanjiByLevel(level: String): List<MyKanjiItem> = myKanjiDao.getMyKanjiByLevel(level).toMyKanjiItems()
 
     // 내 한자 검색
-    suspend fun searchMyKanji(query: String): List<MyKanji> = myKanjiDao.searchMyKanji(query)
+    suspend fun searchMyKanji(query: String): List<MyKanjiItem> = myKanjiDao.searchMyKanji(query).toMyKanjiItems()
 
     // 원본 한자 검색 (내 한자에 추가하기 위해)
-    suspend fun searchOriginalKanji(query: String): List<Kanji> {
+    suspend fun searchOriginalKanji(query: String): List<KanjiItem> {
         val allKanji = kanjiDao.getAllKanji()
         return allKanji.filter { kanji ->
             kanji.kanji.contains(query, ignoreCase = true) || 
             kanji.meaning.contains(query, ignoreCase = true) ||
             kanji.onyomi.contains(query, ignoreCase = true) ||
             kanji.kunyomi.contains(query, ignoreCase = true)
-        }
+        }.toKanjiItems()
     }
 
     // 내 한자 삭제
-    suspend fun deleteMyKanji(myKanji: MyKanji) {
-        myKanjiDao.deleteMyKanji(myKanji)
+    suspend fun deleteMyKanji(myKanjiItem: MyKanjiItem) {
+        myKanjiDao.deleteMyKanji(myKanjiItem.toMyKanji())
     }
 
     // ID로 내 한자 삭제
@@ -76,26 +83,30 @@ class MyKanjiRepository(private val context: Context) {
     }
 
     // 랜덤 내 한자 조회
-    suspend fun getRandomMyKanji(): MyKanji? {
+    suspend fun getRandomMyKanji(): MyKanjiItem? {
         val allMyKanji = myKanjiDao.getAllMyKanji()
-        return allMyKanji.randomOrNull()
+        return allMyKanji.randomOrNull()?.toMyKanjiItem()
     }
 
     // 레벨별 랜덤 내 한자 조회
-    suspend fun getRandomMyKanjiByLevel(level: String?): MyKanji? {
+    suspend fun getRandomMyKanjiByLevel(level: String?): MyKanjiItem? {
         return if (level == null || level == "ALL") {
             getRandomMyKanji()
         } else {
             val kanjiByLevel = myKanjiDao.getMyKanjiByLevel(level)
-            kanjiByLevel.randomOrNull()
+            kanjiByLevel.randomOrNull()?.toMyKanjiItem()
         }
     }
 
     // 학습 모드용 데이터 조회
-    suspend fun getMyKanjiForLearningMode(level: String): Pair<List<MyKanji>, List<MyKanji>> {
-        return Pair(
+    suspend fun getMyKanjiForLearningMode(level: String): Pair<List<MyKanjiItem>, List<MyKanjiItem>> {
+        val (topPriority, distractors) = Pair(
             myKanjiDao.getTopPriorityMyKanji(level),
             myKanjiDao.getRandomMyKanjiDistractors(level)
+        )
+        return Pair(
+            topPriority.toMyKanjiItems(),
+            distractors.toMyKanjiItems()
         )
     }
 
