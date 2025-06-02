@@ -16,22 +16,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import com.lass.yomiyomi.data.model.Kanji
-import com.lass.yomiyomi.data.model.Word
-import com.lass.yomiyomi.data.model.MyKanji
-import com.lass.yomiyomi.data.model.MyWord
+import com.lass.yomiyomi.data.model.*
 import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
 import com.lass.yomiyomi.util.JapaneseTextFilter
 
 @Composable
 fun ItemCard(
-    item: Any,
+    item: Item,
     onCardClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     
-    // TTS 기능 추가
+    // TTS 기능
     val speechManager = remember {
         SpeechManager(context)
     }
@@ -54,7 +51,7 @@ fun ItemCard(
                     Modifier.clickable {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://ja.dict.naver.com/#/search?range=word&query=${item.kanji}".toUri()
+                            "https://ja.dict.naver.com/#/search?range=word&query=${item.getMainText()}".toUri()
                         )
                         context.startActivity(intent)
                     }
@@ -68,176 +65,79 @@ fun ItemCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            when (item) {
-                is Kanji -> {
-                    // 한자 표시와 TTS 버튼
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.kanji,
-                            fontSize = 48.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        TextToSpeechButton(
-                            text = item.kanji,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { 
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(it)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speak(japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 32.dp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    InfoRowWithTTS(
-                        label = "음독 :", 
-                        value = item.onyomi, 
-                        speechManager = speechManager, 
-                        isSpeaking = isSpeaking,
-                        labelWidth = 60
-                    )
-                    InfoRowWithTTS(
-                        label = "훈독 :", 
-                        value = item.kunyomi, 
-                        speechManager = speechManager, 
-                        isSpeaking = isSpeaking,
-                        labelWidth = 60
-                    )
-                    InfoRow(label = "의미 :", value = item.meaning, labelWidth = 60)
-                    InfoRow(label = "레벨 :", value = item.level, labelWidth = 60)
+            // 메인 텍스트와 TTS 버튼
+            MainTextWithTTS(
+                text = item.getMainText(),
+                speechManager = speechManager,
+                isSpeaking = isSpeaking
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // 정보 행들 - 완전히 추상화됨
+            InfoRows(
+                infoRows = item.toInfoRows(),
+                speechManager = speechManager,
+                isSpeaking = isSpeaking
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainTextWithTTS(
+    text: String,
+    speechManager: SpeechManager,
+    isSpeaking: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            fontSize = 48.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.tertiary
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        TextToSpeechButton(
+            text = text,
+            isSpeaking = isSpeaking,
+            onSpeak = { 
+                val japaneseText = JapaneseTextFilter.prepareTTSText(it)
+                if (japaneseText.isNotEmpty()) {
+                    speechManager.speak(japaneseText)
                 }
-                is Word -> {
-                    // 단어 표시와 TTS 버튼
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.word,
-                            fontSize = 48.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        TextToSpeechButton(
-                            text = item.word,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { 
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(it)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speak(japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 32.dp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    InfoRowWithTTS(
-                        label = "읽기 :", 
-                        value = item.reading, 
-                        speechManager = speechManager, 
-                        isSpeaking = isSpeaking,
-                        labelWidth = 60
-                    )
-                    InfoRow(label = "품사 :", value = item.type, labelWidth = 60)
-                    InfoRow(label = "의미 :", value = item.meaning, labelWidth = 60)
-                    InfoRow(label = "레벨 :", value = item.level, labelWidth = 60)
-                }
-                is MyKanji -> {
-                    // 내 한자 표시와 TTS 버튼
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.kanji,
-                            fontSize = 48.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        TextToSpeechButton(
-                            text = item.kanji,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { 
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(it)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speak(japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 32.dp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    InfoRowWithTTS(
-                        label = "음독 :", 
-                        value = item.onyomi, 
-                        speechManager = speechManager, 
-                        isSpeaking = isSpeaking,
-                        labelWidth = 60
-                    )
-                    InfoRowWithTTS(
-                        label = "훈독 :", 
-                        value = item.kunyomi, 
-                        speechManager = speechManager, 
-                        isSpeaking = isSpeaking,
-                        labelWidth = 60
-                    )
-                    InfoRow(label = "의미 :", value = item.meaning, labelWidth = 60)
-                    InfoRow(label = "레벨 :", value = item.level, labelWidth = 60)
-                }
-                is MyWord -> {
-                    // 내 단어 표시와 TTS 버튼
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.word,
-                            fontSize = 48.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        TextToSpeechButton(
-                            text = item.word,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { 
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(it)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speak(japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 32.dp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    InfoRowWithTTS(
-                        label = "읽기 :", 
-                        value = item.reading, 
-                        speechManager = speechManager, 
-                        isSpeaking = isSpeaking,
-                        labelWidth = 60
-                    )
-                    InfoRow(label = "품사 :", value = item.type, labelWidth = 60)
-                    InfoRow(label = "의미 :", value = item.meaning, labelWidth = 60)
-                    InfoRow(label = "레벨 :", value = item.level, labelWidth = 60)
-                }
-            }
+            },
+            onStop = { speechManager.stopSpeaking() },
+            size = 32.dp
+        )
+    }
+}
+
+@Composable
+private fun InfoRows(
+    infoRows: List<InfoRowData>,
+    speechManager: SpeechManager,
+    isSpeaking: Boolean
+) {
+    infoRows.forEach { infoRow ->
+        if (infoRow.isJapanese) {
+            InfoRowWithTTS(
+                label = infoRow.label,
+                value = infoRow.value,
+                speechManager = speechManager,
+                isSpeaking = isSpeaking,
+                labelWidth = 60
+            )
+        } else {
+            InfoRow(
+                label = infoRow.label,
+                value = infoRow.value,
+                labelWidth = 60
+            )
         }
     }
 } 
