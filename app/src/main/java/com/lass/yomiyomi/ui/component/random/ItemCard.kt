@@ -47,14 +47,6 @@ fun ItemCard(
             .then(
                 if (onCardClick != null) {
                     Modifier.clickable(onClick = onCardClick)
-                } else if (item is KanjiItem) {
-                    Modifier.clickable {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://ja.dict.naver.com/#/search?range=word&query=${item.getMainText()}".toUri()
-                        )
-                        context.startActivity(intent)
-                    }
                 } else {
                     Modifier
                 }
@@ -69,7 +61,9 @@ fun ItemCard(
             MainTextWithTTS(
                 text = item.getMainText(),
                 speechManager = speechManager,
-                isSpeaking = isSpeaking
+                isSpeaking = isSpeaking,
+                item = item,
+                context = context
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -88,7 +82,9 @@ fun ItemCard(
 private fun MainTextWithTTS(
     text: String,
     speechManager: SpeechManager,
-    isSpeaking: Boolean
+    isSpeaking: Boolean,
+    item: Item,
+    context: android.content.Context
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -99,7 +95,20 @@ private fun MainTextWithTTS(
             text = text,
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.tertiary
+            color = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier.clickable {
+                // 아이템 타입에 따라 적절한 네이버 사전 URL 생성
+                val searchUrl = when (item) {
+                    is KanjiItem, is MyKanjiItem -> 
+                        "https://ja.dict.naver.com/#/search?range=kanji&query=${text}"
+                    is WordItem, is MyWordItem -> 
+                        "https://ja.dict.naver.com/#/search?range=word&query=${text}"
+                    else -> 
+                        "https://ja.dict.naver.com/#/search?range=word&query=${text}"
+                }
+                val intent = Intent(Intent.ACTION_VIEW, searchUrl.toUri())
+                context.startActivity(intent)
+            }
         )
         Spacer(modifier = Modifier.width(16.dp))
         TextToSpeechButton(
