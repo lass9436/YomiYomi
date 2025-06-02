@@ -47,12 +47,12 @@ fun QuizCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // 질문과 TTS 버튼을 중앙에 배치
-            Row(
+            // 질문과 TTS 버튼을 Box로 중앙에 배치
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.Center
             ) {
+                // 질문 텍스트 - 정중앙
                 Text(
                     text = question,
                     fontSize = 32.sp,
@@ -67,20 +67,27 @@ fun QuizCard(
                     },
                     lineHeight = 36.sp,
                 )
-                Spacer(modifier = Modifier.width(16.dp))
-                TextToSpeechButton(
-                    text = question,
-                    isSpeaking = isSpeaking,
-                    onSpeak = { originalText ->
-                        val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                        if (japaneseText.isNotEmpty()) {
-                            speechManager.speakWithOriginalText(originalText, japaneseText)
-                        }
-                    },
-                    onStop = { speechManager.stopSpeaking() },
-                    size = 32.dp,
-                    speechManager = speechManager
-                )
+                
+                // TTS 버튼 - 우측 절대 위치
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                ) {
+                    TextToSpeechButton(
+                        text = question,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 32.dp,
+                        speechManager = speechManager
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

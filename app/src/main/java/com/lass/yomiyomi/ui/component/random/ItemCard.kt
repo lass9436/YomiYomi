@@ -83,11 +83,11 @@ private fun MainTextWithTTS(
     item: Item,
     context: android.content.Context
 ) {
-    Row(
+    Box(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
+        // 메인 텍스트 - 정중앙
         Text(
             text = text,
             fontSize = 48.sp,
@@ -100,20 +100,27 @@ private fun MainTextWithTTS(
                 context.startActivity(intent)
             }
         )
-        Spacer(modifier = Modifier.width(16.dp))
-        TextToSpeechButton(
-            text = text,
-            isSpeaking = isSpeaking,
-            onSpeak = { originalText ->
-                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                if (japaneseText.isNotEmpty()) {
-                    speechManager.speakWithOriginalText(originalText, japaneseText)
-                }
-            },
-            onStop = { speechManager.stopSpeaking() },
-            size = 32.dp,
-            speechManager = speechManager
-        )
+        
+        // TTS 버튼 - 우측 절대 위치
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp)
+        ) {
+            TextToSpeechButton(
+                text = text,
+                isSpeaking = isSpeaking,
+                onSpeak = { originalText ->
+                    val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                    if (japaneseText.isNotEmpty()) {
+                        speechManager.speakWithOriginalText(originalText, japaneseText)
+                    }
+                },
+                onStop = { speechManager.stopSpeaking() },
+                size = 32.dp,
+                speechManager = speechManager
+            )
+        }
     }
 }
 

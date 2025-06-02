@@ -55,9 +55,12 @@ fun MyKanjiCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                // 한자와 TTS 버튼을 Box로 중앙 정렬
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
+                    // 한자 텍스트 - 정중앙
                     Text(
                         text = myKanji.kanji,
                         fontSize = 24.sp,
@@ -72,20 +75,26 @@ fun MyKanjiCard(
                         }
                     )
                     
-                    // 한자 발음 버튼 - 직접 TTS 처리
-                    TextToSpeechButton(
-                        text = myKanji.kanji,
-                        isSpeaking = isSpeaking,
-                        onSpeak = { originalText ->
-                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                            if (japaneseText.isNotEmpty()) {
-                                speechManager.speakWithOriginalText(originalText, japaneseText)
-                            }
-                        },
-                        onStop = { speechManager.stopSpeaking() },
-                        size = 32.dp,
-                        speechManager = speechManager
-                    )
+                    // 한자 발음 버튼 - 우측 절대 위치
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 8.dp)
+                    ) {
+                        TextToSpeechButton(
+                            text = myKanji.kanji,
+                            isSpeaking = isSpeaking,
+                            onSpeak = { originalText ->
+                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                                if (japaneseText.isNotEmpty()) {
+                                    speechManager.speakWithOriginalText(originalText, japaneseText)
+                                }
+                            },
+                            onStop = { speechManager.stopSpeaking() },
+                            size = 32.dp,
+                            speechManager = speechManager
+                        )
+                    }
                 }
                 
                 Card(

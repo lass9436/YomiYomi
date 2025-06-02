@@ -49,10 +49,12 @@ fun MyWordCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                // 단어와 재생 버튼
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                // 단어와 재생 버튼을 Box로 중앙 정렬
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
+                    // 단어 텍스트 - 정중앙
                     Text(
                         text = myWord.word,
                         style = MaterialTheme.typography.headlineSmall,
@@ -67,20 +69,26 @@ fun MyWordCard(
                         }
                     )
                     
-                    // 단어 발음 버튼 - 직접 TTS 처리
-                    TextToSpeechButton(
-                        text = myWord.word,
-                        isSpeaking = isSpeaking,
-                        onSpeak = { originalText ->
-                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                            if (japaneseText.isNotEmpty()) {
-                                speechManager.speakWithOriginalText(originalText, japaneseText)
-                            }
-                        },
-                        onStop = { speechManager.stopSpeaking() },
-                        size = 32.dp,
-                        speechManager = speechManager
-                    )
+                    // 단어 발음 버튼 - 우측 절대 위치
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 8.dp)
+                    ) {
+                        TextToSpeechButton(
+                            text = myWord.word,
+                            isSpeaking = isSpeaking,
+                            onSpeak = { originalText ->
+                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                                if (japaneseText.isNotEmpty()) {
+                                    speechManager.speakWithOriginalText(originalText, japaneseText)
+                                }
+                            },
+                            onStop = { speechManager.stopSpeaking() },
+                            size = 32.dp,
+                            speechManager = speechManager
+                        )
+                    }
                 }
                 
                 // 읽기와 재생 버튼
