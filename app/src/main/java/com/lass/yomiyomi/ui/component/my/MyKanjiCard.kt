@@ -1,5 +1,7 @@
 package com.lass.yomiyomi.ui.component.my
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -10,10 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 
@@ -25,6 +29,8 @@ fun MyKanjiCard(
     onPlaySound: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -53,7 +59,14 @@ fun MyKanjiCard(
                         text = myKanji.kanji,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                "https://ja.dict.naver.com/#/search?range=word&query=${myKanji.kanji}".toUri()
+                            )
+                            context.startActivity(intent)
+                        }
                     )
                     
                     // 한자 발음 버튼

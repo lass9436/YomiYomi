@@ -1,5 +1,7 @@
 package com.lass.yomiyomi.ui.component.my
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,8 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.MyWordItem
 
 @Composable
@@ -31,6 +35,8 @@ fun MyWordCard(
     onDelete: () -> Unit,
     onPlaySound: ((String) -> Unit)? = null
 ) {
+    val context = LocalContext.current
+    
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -55,7 +61,14 @@ fun MyWordCard(
                         text = myWord.word,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                "https://ja.dict.naver.com/#/search?range=word&query=${myWord.word}".toUri()
+                            )
+                            context.startActivity(intent)
+                        }
                     )
                     
                     // 단어 발음 버튼

@@ -53,7 +53,7 @@ fun KanjiQuizScreen(
         options = quizState.value?.options ?: emptyList(),
         showDialog = showDialog,
         answerResult = answerResult,
-        searchUrl = "https://ja.dict.naver.com/#/search?range=kanji&query="
+        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query="
     )
 
     val callbacks = QuizCallbacks(
