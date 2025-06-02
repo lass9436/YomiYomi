@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,6 +22,7 @@ fun MyKanjiCard(
     myKanji: MyKanji,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onPlaySound: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -44,12 +46,31 @@ fun MyKanjiCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = myKanji.kanji,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = myKanji.kanji,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    
+                    // 한자 발음 버튼
+                    if (onPlaySound != null) {
+                        IconButton(
+                            onClick = { onPlaySound(myKanji.kanji) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "한자 발음 듣기",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
                 
                 Card(
                     colors = CardDefaults.cardColors(
@@ -70,20 +91,60 @@ fun MyKanjiCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             // 음독
-            Text(
-                text = "음독: ${myKanji.onyomi}",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "음독: ${myKanji.onyomi}",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // 음독 발음 버튼
+                if (onPlaySound != null && myKanji.onyomi.isNotBlank()) {
+                    IconButton(
+                        onClick = { onPlaySound(myKanji.onyomi) },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "음독 발음 듣기",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 
             // 훈독
-            Text(
-                text = "훈독: ${myKanji.kunyomi}",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "훈독: ${myKanji.kunyomi}",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // 훈독 발음 버튼
+                if (onPlaySound != null && myKanji.kunyomi.isNotBlank()) {
+                    IconButton(
+                        onClick = { onPlaySound(myKanji.kunyomi) },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "훈독 발음 듣기",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 

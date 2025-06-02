@@ -24,6 +24,7 @@ import com.lass.yomiyomi.ui.state.QuizCallbacks
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.DummyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.kanjiQuiz.KanjiQuizViewModelInterface
+import com.lass.yomiyomi.util.JapaneseTextFilter
 
 @Composable
 fun KanjiQuizScreen(
@@ -120,7 +121,12 @@ fun KanjiQuizScreen(
                     TextToSpeechButton(
                         text = question,
                         isSpeaking = isSpeaking,
-                        onSpeak = { speechManager.speak(it) },
+                        onSpeak = { 
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(it)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speak(japaneseText)
+                            }
+                        },
                         onStop = { speechManager.stopSpeaking() },
                         size = 40.dp
                     )
