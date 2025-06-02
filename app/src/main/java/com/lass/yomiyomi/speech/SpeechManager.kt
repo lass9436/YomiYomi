@@ -31,6 +31,10 @@ class SpeechManager @Inject constructor(
     private val _isSpeaking = MutableStateFlow(false)
     val isSpeaking: StateFlow<Boolean> = _isSpeaking.asStateFlow()
     
+    // 현재 재생 중인 텍스트 추적
+    private val _currentSpeakingText = MutableStateFlow("")
+    val currentSpeakingText: StateFlow<String> = _currentSpeakingText.asStateFlow()
+    
     private val _recognizedText = MutableStateFlow("")
     val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
 
@@ -59,10 +63,12 @@ class SpeechManager @Inject constructor(
                         
                         override fun onDone(utteranceId: String?) {
                             _isSpeaking.value = false
+                            _currentSpeakingText.value = ""
                         }
                         
                         override fun onError(utteranceId: String?) {
                             _isSpeaking.value = false
+                            _currentSpeakingText.value = ""
                             _speechState.value = _speechState.value.copy(
                                 error = "음성 재생 중 오류가 발생했습니다"
                             )
@@ -194,10 +200,29 @@ class SpeechManager @Inject constructor(
     }
 
     /**
+     * 텍스트를 일본어로 읽기 (원본 텍스트 추적 지원)
+     */
+    fun speakWithOriginalText(originalText: String, processedText: String, utteranceId: String = "yomiyomi_speech") {
+        if (!_speechState.value.isTTSReady) return
+        
+        // 원본 텍스트를 저장 (버튼 매칭용)
+        _currentSpeakingText.value = originalText
+        
+        val params = Bundle().apply {
+            putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+        }
+        
+        textToSpeech?.speak(processedText, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
+    }
+
+    /**
      * 텍스트를 일본어로 읽기
      */
     fun speak(text: String, utteranceId: String = "yomiyomi_speech") {
         if (!_speechState.value.isTTSReady) return
+        
+        // 원본 텍스트를 저장 (버튼 매칭용)
+        _currentSpeakingText.value = text
         
         val params = Bundle().apply {
             putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
@@ -212,6 +237,7 @@ class SpeechManager @Inject constructor(
     fun stopSpeaking() {
         textToSpeech?.stop()
         _isSpeaking.value = false
+        _currentSpeakingText.value = ""
     }
 
     /**
@@ -223,6 +249,13 @@ class SpeechManager @Inject constructor(
 
     fun setPitch(pitch: Float) {
         textToSpeech?.setPitch(pitch)
+    }
+
+    /**
+     * 특정 텍스트가 현재 재생 중인지 확인
+     */
+    fun isSpeakingText(text: String): Boolean {
+        return _isSpeaking.value && _currentSpeakingText.value == text
     }
 
     /**

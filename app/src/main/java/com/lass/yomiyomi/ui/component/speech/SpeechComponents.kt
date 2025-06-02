@@ -118,11 +118,18 @@ fun TextToSpeechButton(
     onSpeak: (String) -> Unit,
     onStop: () -> Unit,
     modifier: Modifier = Modifier,
-    size: androidx.compose.ui.unit.Dp = 48.dp
+    size: androidx.compose.ui.unit.Dp = 48.dp,
+    speechManager: com.lass.yomiyomi.speech.SpeechManager? = null
 ) {
+    // 현재 이 버튼의 텍스트가 재생 중인지 확인
+    val isThisTextSpeaking = speechManager?.let { manager ->
+        val currentText by manager.currentSpeakingText.collectAsState()
+        isSpeaking && currentText == text
+    } ?: isSpeaking
+    
     val rotation by animateFloatAsState(
-        targetValue = if (isSpeaking) 360f else 0f,
-        animationSpec = if (isSpeaking) {
+        targetValue = if (isThisTextSpeaking) 360f else 0f,
+        animationSpec = if (isThisTextSpeaking) {
             infiniteRepeatable(
                 animation = tween(2000, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
@@ -135,7 +142,7 @@ fun TextToSpeechButton(
 
     IconButton(
         onClick = {
-            if (isSpeaking) {
+            if (isThisTextSpeaking) {
                 onStop()
             } else {
                 onSpeak(text)
@@ -145,14 +152,14 @@ fun TextToSpeechButton(
         modifier = modifier.size(size)
     ) {
         Icon(
-            imageVector = if (isSpeaking) Icons.Default.Close else Icons.Default.PlayArrow,
-            contentDescription = if (isSpeaking) "음성 중지" else "음성 재생",
+            imageVector = if (isThisTextSpeaking) Icons.Default.Close else Icons.Default.PlayArrow,
+            contentDescription = if (isThisTextSpeaking) "음성 중지" else "음성 재생",
             tint = if (isEnabled && text.isNotBlank()) {
                 MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             },
-            modifier = if (isSpeaking) {
+            modifier = if (isThisTextSpeaking) {
                 Modifier.graphicsLayer { rotationZ = rotation }
             } else {
                 Modifier

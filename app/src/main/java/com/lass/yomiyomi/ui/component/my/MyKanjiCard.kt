@@ -7,9 +7,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,17 +18,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.MyKanjiItem
+import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
+import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun MyKanjiCard(
     myKanji: MyKanjiItem,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onPlaySound: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val speechManager = rememberSpeechManager()
+    val isSpeaking by speechManager.isSpeaking.collectAsState()
     
     Card(
         modifier = modifier
@@ -69,20 +72,20 @@ fun MyKanjiCard(
                         }
                     )
                     
-                    // 한자 발음 버튼
-                    if (onPlaySound != null) {
-                        IconButton(
-                            onClick = { onPlaySound(myKanji.kanji) },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "한자 발음 듣기",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
+                    // 한자 발음 버튼 - 직접 TTS 처리
+                    TextToSpeechButton(
+                        text = myKanji.kanji,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 32.dp,
+                        speechManager = speechManager
+                    )
                 }
                 
                 Card(
@@ -114,19 +117,21 @@ fun MyKanjiCard(
                     modifier = Modifier.weight(1f)
                 )
                 
-                // 음독 발음 버튼
-                if (onPlaySound != null && myKanji.onyomi.isNotBlank()) {
-                    IconButton(
-                        onClick = { onPlaySound(myKanji.onyomi) },
-                        modifier = Modifier.size(28.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "음독 발음 듣기",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+                // 음독 발음 버튼 - 직접 TTS 처리
+                if (myKanji.onyomi.isNotBlank()) {
+                    TextToSpeechButton(
+                        text = myKanji.onyomi,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 28.dp,
+                        speechManager = speechManager
+                    )
                 }
             }
 
@@ -143,19 +148,21 @@ fun MyKanjiCard(
                     modifier = Modifier.weight(1f)
                 )
                 
-                // 훈독 발음 버튼
-                if (onPlaySound != null && myKanji.kunyomi.isNotBlank()) {
-                    IconButton(
-                        onClick = { onPlaySound(myKanji.kunyomi) },
-                        modifier = Modifier.size(28.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "훈독 발음 듣기",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+                // 훈독 발음 버튼 - 직접 TTS 처리
+                if (myKanji.kunyomi.isNotBlank()) {
+                    TextToSpeechButton(
+                        text = myKanji.kunyomi,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 28.dp,
+                        speechManager = speechManager
+                    )
                 }
             }
 

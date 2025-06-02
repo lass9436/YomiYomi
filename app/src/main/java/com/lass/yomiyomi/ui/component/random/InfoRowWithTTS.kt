@@ -52,14 +52,15 @@ fun InfoRowWithTTS(
             TextToSpeechButton(
                 text = value,
                 isSpeaking = isSpeaking,
-                onSpeak = { 
-                    val japaneseText = JapaneseTextFilter.prepareTTSText(it)
+                onSpeak = { originalText ->
+                    val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
                     if (japaneseText.isNotEmpty()) {
-                        speechManager.speak(japaneseText)
+                        speechManager.speakWithOriginalText(originalText, japaneseText)
                     }
                 },
                 onStop = { speechManager.stopSpeaking() },
-                size = 24.dp
+                size = 24.dp,
+                speechManager = speechManager
             )
         }
     }

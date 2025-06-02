@@ -2,40 +2,36 @@ package com.lass.yomiyomi.ui.component.my
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
+import com.lass.yomiyomi.ui.theme.YomiYomiTheme
+import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun MyWordCard(
     myWord: MyWordItem,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onPlaySound: ((String) -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val speechManager = rememberSpeechManager()
+    val isSpeaking by speechManager.isSpeaking.collectAsState()
     
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -71,20 +67,20 @@ fun MyWordCard(
                         }
                     )
                     
-                    // 단어 발음 버튼
-                    if (onPlaySound != null) {
-                        IconButton(
-                            onClick = { onPlaySound(myWord.word) },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "단어 발음 듣기",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
+                    // 단어 발음 버튼 - 직접 TTS 처리
+                    TextToSpeechButton(
+                        text = myWord.word,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 32.dp,
+                        speechManager = speechManager
+                    )
                 }
                 
                 // 읽기와 재생 버튼
@@ -97,19 +93,21 @@ fun MyWordCard(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     
-                    // 읽기 발음 버튼
-                    if (onPlaySound != null && myWord.reading != myWord.word) {
-                        IconButton(
-                            onClick = { onPlaySound(myWord.reading) },
-                            modifier = Modifier.size(28.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "읽기 발음 듣기",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+                    // 읽기 발음 버튼 - 직접 TTS 처리
+                    if (myWord.reading != myWord.word) {
+                        TextToSpeechButton(
+                            text = myWord.reading,
+                            isSpeaking = isSpeaking,
+                            onSpeak = { originalText ->
+                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                                if (japaneseText.isNotEmpty()) {
+                                    speechManager.speakWithOriginalText(originalText, japaneseText)
+                                }
+                            },
+                            onStop = { speechManager.stopSpeaking() },
+                            size = 28.dp,
+                            speechManager = speechManager
+                        )
                     }
                 }
                 
@@ -118,22 +116,24 @@ fun MyWordCard(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                
+                // 레벨 정보
                 Text(
-                    text = "${myWord.type} • ${myWord.level}",
+                    text = "레벨: ${myWord.level}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
             
-            Row {
+            // 편집 및 삭제 버튼
+            Column {
                 IconButton(onClick = onEdit) {
                     Icon(
                         Icons.Default.Edit,
-                        contentDescription = "수정",
+                        contentDescription = "편집",
                         tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
-                
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
@@ -143,5 +143,26 @@ fun MyWordCard(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MyWordCardPreview() {
+    YomiYomiTheme {
+        MyWordCard(
+            myWord = MyWordItem(
+                id = 1,
+                word = "こんにちは",
+                reading = "こんにちは",
+                meaning = "안녕하세요",
+                level = "N5",
+                learningWeight = 0.9f,
+                timestamp = System.currentTimeMillis(),
+                type = "동사"
+            ),
+            onEdit = {},
+            onDelete = {}
+        )
     }
 } 

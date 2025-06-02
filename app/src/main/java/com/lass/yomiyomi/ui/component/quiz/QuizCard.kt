@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,9 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
 import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun QuizCard(
@@ -29,10 +28,8 @@ fun QuizCard(
 ) {
     val context = LocalContext.current
     
-    // TTS 기능 추가
-    val speechManager = remember {
-        SpeechManager(context)
-    }
+    // TTS 기능 - 직접 주입
+    val speechManager = rememberSpeechManager()
     val isSpeaking by speechManager.isSpeaking.collectAsState()
     
     Card(
@@ -74,14 +71,15 @@ fun QuizCard(
                 TextToSpeechButton(
                     text = question,
                     isSpeaking = isSpeaking,
-                    onSpeak = { 
-                        val japaneseText = JapaneseTextFilter.prepareTTSText(it)
+                    onSpeak = { originalText ->
+                        val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
                         if (japaneseText.isNotEmpty()) {
-                            speechManager.speak(japaneseText)
+                            speechManager.speakWithOriginalText(originalText, japaneseText)
                         }
                     },
                     onStop = { speechManager.stopSpeaking() },
-                    size = 32.dp
+                    size = 32.dp,
+                    speechManager = speechManager
                 )
             }
 

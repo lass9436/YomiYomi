@@ -9,14 +9,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.my.MyWordCard
 import com.lass.yomiyomi.ui.component.my.AddWordDialog
@@ -24,7 +21,6 @@ import com.lass.yomiyomi.ui.component.my.EditWordDialog
 import com.lass.yomiyomi.ui.state.MyWordState
 import com.lass.yomiyomi.ui.state.MyWordCallbacks
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
-import com.lass.yomiyomi.util.JapaneseTextFilter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,13 +30,6 @@ fun MyWordLayout(
     viewModel: MyWordViewModelInterface,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    
-    // TTS 기능 추가
-    val speechManager = remember {
-        SpeechManager(context)
-    }
-    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -122,13 +111,7 @@ fun MyWordLayout(
                         MyWordCard(
                             myWord = myWord,
                             onEdit = { callbacks.onEditWord(myWord) },
-                            onDelete = { callbacks.onDeleteWord(myWord) },
-                            onPlaySound = { text -> 
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(text)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speak(japaneseText)
-                                }
-                            }
+                            onDelete = { callbacks.onDeleteWord(myWord) }
                         )
                     }
                 }

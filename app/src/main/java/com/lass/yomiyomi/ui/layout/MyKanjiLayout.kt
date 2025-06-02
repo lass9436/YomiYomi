@@ -9,15 +9,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.my.MyKanjiCard
 import com.lass.yomiyomi.ui.component.my.AddKanjiDialog
@@ -25,7 +21,6 @@ import com.lass.yomiyomi.ui.component.my.EditKanjiDialog
 import com.lass.yomiyomi.ui.state.MyKanjiState
 import com.lass.yomiyomi.ui.state.MyKanjiCallbacks
 import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
-import com.lass.yomiyomi.util.JapaneseTextFilter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,13 +30,6 @@ fun MyKanjiLayout(
     viewModel: MyKanjiViewModelInterface,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    
-    // TTS 기능 추가
-    val speechManager = remember {
-        SpeechManager(context)
-    }
-    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -123,13 +111,7 @@ fun MyKanjiLayout(
                         MyKanjiCard(
                             myKanji = myKanji,
                             onEdit = { callbacks.onEditKanji(myKanji) },
-                            onDelete = { callbacks.onDeleteKanji(myKanji) },
-                            onPlaySound = { text -> 
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(text)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speak(japaneseText)
-                                }
-                            }
+                            onDelete = { callbacks.onDeleteKanji(myKanji) }
                         )
                     }
                 }
