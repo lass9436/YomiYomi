@@ -49,18 +49,33 @@ fun MyKanjiCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // 상단: 한자와 레벨
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Row 1: [N5] -------- [메인 한자] [TTS] -------- [수정/삭제]
+            // 절대 중앙 정렬을 위해 Box로 전체 감싸기
+            Box(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // 한자와 TTS 버튼을 Box로 중앙 정렬
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.Center
+                // 왼쪽: 레벨 박스
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.align(Alignment.CenterStart)
                 ) {
-                    // 한자 텍스트 - 정중앙
+                    Text(
+                        text = myKanji.level,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                // 절대 중앙: 메인 한자 + TTS
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
                     Text(
                         text = myKanji.kanji,
                         fontSize = 24.sp,
@@ -75,59 +90,67 @@ fun MyKanjiCard(
                         }
                     )
                     
-                    // 한자 발음 버튼 - 우측 절대 위치
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 8.dp)
-                    ) {
-                        TextToSpeechButton(
-                            text = myKanji.kanji,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { originalText ->
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speakWithOriginalText(originalText, japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 32.dp,
-                            speechManager = speechManager
-                        )
-                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
+                    TextToSpeechButton(
+                        text = myKanji.kanji,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 32.dp,
+                        speechManager = speechManager
+                    )
                 }
                 
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+                // 오른쪽: 편집/삭제 버튼
+                Row(
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
-                    Text(
-                        text = myKanji.level,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "편집",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "삭제",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 음독
+            // Row 2: 음독 [TTS]
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "음독: ${myKanji.onyomi}",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
-                // 음독 발음 버튼 - 직접 TTS 처리
                 if (myKanji.onyomi.isNotBlank()) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
                     TextToSpeechButton(
                         text = myKanji.onyomi,
                         isSpeaking = isSpeaking,
@@ -146,19 +169,19 @@ fun MyKanjiCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // 훈독
+            // Row 3: 훈독 [TTS]
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "훈독: ${myKanji.kunyomi}",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
-                // 훈독 발음 버튼 - 직접 TTS 처리
                 if (myKanji.kunyomi.isNotBlank()) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
                     TextToSpeechButton(
                         text = myKanji.kunyomi,
                         isSpeaking = isSpeaking,
@@ -177,35 +200,12 @@ fun MyKanjiCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // 의미
+            // Row 4: 의미
             Text(
                 text = "의미: ${myKanji.meaning}",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // 하단: 편집/삭제 버튼
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "편집",
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = "삭제",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
         }
     }
 }

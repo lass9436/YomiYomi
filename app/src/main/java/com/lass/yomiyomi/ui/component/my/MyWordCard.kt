@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
@@ -34,27 +35,47 @@ fun MyWordCard(
     val isSpeaking by speechManager.isSpeaking.collectAsState()
     
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                // 단어와 재생 버튼을 Box로 중앙 정렬
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+            // Row 1: [N5] -------- [메인 단어] [TTS] -------- [수정/삭제]
+            // 절대 중앙 정렬을 위해 Box로 전체 감싸기
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // 왼쪽: 레벨 박스
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.align(Alignment.CenterStart)
                 ) {
-                    // 단어 텍스트 - 정중앙
+                    Text(
+                        text = myWord.level,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                // 절대 중앙: 메인 단어 + TTS
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
                     Text(
                         text = myWord.word,
                         style = MaterialTheme.typography.headlineSmall,
@@ -69,85 +90,123 @@ fun MyWordCard(
                         }
                     )
                     
-                    // 단어 발음 버튼 - 우측 절대 위치
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 8.dp)
-                    ) {
-                        TextToSpeechButton(
-                            text = myWord.word,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { originalText ->
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speakWithOriginalText(originalText, japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 32.dp,
-                            speechManager = speechManager
-                        )
-                    }
-                }
-                
-                // 읽기와 재생 버튼
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = myWord.reading,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     
-                    // 읽기 발음 버튼 - 직접 TTS 처리
-                    if (myWord.reading != myWord.word) {
-                        TextToSpeechButton(
-                            text = myWord.reading,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { originalText ->
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speakWithOriginalText(originalText, japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 28.dp,
-                            speechManager = speechManager
+                    TextToSpeechButton(
+                        text = myWord.word,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 32.dp,
+                        speechManager = speechManager
+                    )
+                }
+                
+                // 오른쪽: 편집/삭제 버튼
+                Row(
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "편집",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "삭제",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
-                
-                Text(
-                    text = myWord.meaning,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                // 레벨 정보
-                Text(
-                    text = "레벨: ${myWord.level}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
             }
             
-            // 편집 및 삭제 버튼
-            Column {
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "편집",
-                        tint = MaterialTheme.colorScheme.tertiary
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Row 2: 읽기: [읽기] [TTS]
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "읽기: ${myWord.reading}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 14.sp
+                )
+                
+                if (myWord.reading != myWord.word && myWord.reading.isNotBlank()) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
+                    TextToSpeechButton(
+                        text = myWord.reading,
+                        isSpeaking = isSpeaking,
+                        onSpeak = { originalText ->
+                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                            if (japaneseText.isNotEmpty()) {
+                                speechManager.speakWithOriginalText(originalText, japaneseText)
+                            }
+                        },
+                        onStop = { speechManager.stopSpeaking() },
+                        size = 28.dp,
+                        speechManager = speechManager
                     )
                 }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = "삭제",
-                        tint = MaterialTheme.colorScheme.error
-                    )
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Row 3: 의미: [의미] ------------------------ [품사들을 작은 카드로]
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "의미: ${myWord.meaning}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // 품사를 쉼표로 split해서 작은 카드들로 표시
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    myWord.type.split(",").forEach { type ->
+                        val trimmedType = type.trim()
+                        if (trimmedType.isNotEmpty()) {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                ),
+                                shape = RoundedCornerShape(6.dp)
+                            ) {
+                                Text(
+                                    text = trimmedType,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
