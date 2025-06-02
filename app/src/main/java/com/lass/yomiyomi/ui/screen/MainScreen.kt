@@ -4,13 +4,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 // 네비게이션 경로를 Enum으로 정의
 enum class Routes(val route: String) {
     MAIN("main"),
+    MAIN_WITH_TAB("main/{tabIndex}"),
     KANJI_RANDOM("kanjiRandom"),
     KANJI_QUIZ("kanjiQuiz"),
     WORD_QUIZ("wordQuiz"),
@@ -37,6 +40,29 @@ fun MainScreen(
     ) {
         composable(Routes.MAIN.route) {
             MainMenuScreen(
+                initialTabIndex = 0,
+                onNavigateToKanji = { navController.navigate(Routes.KANJI_RANDOM.route) },
+                onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
+                onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
+                onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) },
+                onNavigateToMyWord = { navController.navigate(Routes.MY_WORD.route) },
+                onNavigateToMyKanji = { navController.navigate("${Routes.MAIN_WITH_TAB.route.replace("{tabIndex}", "1")}") },
+                onNavigateToMyWordRandom = { navController.navigate(Routes.MY_WORD_RANDOM.route) },
+                onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
+                onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
+                onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
+            )
+        }
+        composable(
+            route = Routes.MAIN_WITH_TAB.route,
+            arguments = listOf(navArgument("tabIndex") { 
+                type = NavType.IntType 
+                defaultValue = 0
+            })
+        ) { backStackEntry ->
+            val tabIndex = backStackEntry.arguments?.getInt("tabIndex") ?: 0
+            MainMenuScreen(
+                initialTabIndex = tabIndex,
                 onNavigateToKanji = { navController.navigate(Routes.KANJI_RANDOM.route) },
                 onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
                 onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
@@ -71,32 +97,44 @@ fun MainScreen(
         }
         composable(Routes.MY_WORD.route) {
             MyWordScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.navigate("main/1") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.MY_KANJI.route) {
             MyKanjiScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.navigate("main/1") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.MY_WORD_RANDOM.route) {
             MyWordRandomScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/1") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.MY_KANJI_RANDOM.route) {
             MyKanjiRandomScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/1") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.MY_KANJI_QUIZ.route) {
             MyKanjiQuizScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/1") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.MY_WORD_QUIZ.route) {
             MyWordQuizScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/1") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
     }

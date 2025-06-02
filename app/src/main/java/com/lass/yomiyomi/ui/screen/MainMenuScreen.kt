@@ -16,6 +16,7 @@ import com.lass.yomiyomi.ui.component.menu.CompactMenuCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainMenuScreen(
+    initialTabIndex: Int = 0,
     onNavigateToKanji: () -> Unit,
     onNavigateToQuiz: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
@@ -27,7 +28,7 @@ fun MainMenuScreen(
     onNavigateToMyKanjiQuiz: () -> Unit,
     onNavigateToMyWordQuiz: () -> Unit,
 ) {
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
     val tabs = listOf("학습", "내 학습")
 
     Scaffold(
@@ -172,6 +173,7 @@ fun MainMenuScreen(
 @Composable
 fun MainMenuScreen() {
     MainMenuScreen(
+        initialTabIndex = 0,
         onNavigateToKanji = {},
         onNavigateToQuiz = {},
         onNavigateToWordQuiz = {},
