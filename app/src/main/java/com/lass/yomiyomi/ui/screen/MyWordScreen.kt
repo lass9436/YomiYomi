@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,9 @@ fun MyWordScreen(
     var showMyWordSearch by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var editingWord by remember { mutableStateOf<MyWordItem?>(null) }
+
+    // 안드로이드 시스템 뒤로가기 버튼도 onNavigateBack과 같은 동작
+    BackHandler { onNavigateBack() }
 
     val state = MyWordState(
         myWords = myWords,

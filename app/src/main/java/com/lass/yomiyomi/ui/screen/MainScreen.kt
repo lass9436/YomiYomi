@@ -77,22 +77,30 @@ fun MainScreen(
         }
         composable(Routes.KANJI_RANDOM.route) {
             KanjiRandomScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/0") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.KANJI_QUIZ.route) {
             KanjiQuizScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/0") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.WORD_QUIZ.route) {
             WordQuizScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/0") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.WORD_RANDOM.route) {
             WordRandomScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigate("main/0") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.MY_WORD.route) {

@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -33,6 +34,9 @@ fun MyKanjiRandomScreen(
     val isLoading by myKanjiViewModel.isLoading.collectAsState()
     var selectedLevel by remember { mutableStateOf(Level.ALL) }
     var currentRandomKanji by remember { mutableStateOf<MyKanjiItem?>(null) }
+
+    // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
+    BackHandler { onBack() }
 
     // 레벨에 따라 필터링된 한자들
     val filteredKanji = remember(myKanji, selectedLevel) {

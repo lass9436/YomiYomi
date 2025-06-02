@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -26,6 +27,9 @@ fun KanjiRandomScreen(
 ) {
     val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
     var levelSelected by remember { mutableStateOf(Level.ALL) }
+
+    // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
+    BackHandler { onBack() }
 
     LaunchedEffect(levelSelected) {
         kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value)

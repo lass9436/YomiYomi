@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -35,6 +36,9 @@ fun WordQuizScreen(
     var levelSelected by remember { mutableStateOf(Level.ALL) }
     var quizTypeSelected by remember { mutableStateOf(WordQuizType.WORD_TO_MEANING_READING) }
     var isLearningMode by remember { mutableStateOf(false) }
+
+    // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
+    BackHandler { onBack() }
 
     LaunchedEffect(levelSelected, quizTypeSelected, isLearningMode) {
         wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
