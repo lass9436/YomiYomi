@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,8 @@ import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import com.lass.yomiyomi.util.rememberSpeechManager
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntSize
 
 @Composable
 fun MyWordCard(
@@ -71,9 +74,12 @@ fun MyWordCard(
                     )
                 }
                 
-                // 절대 중앙: 메인 단어 + TTS
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                // 절대 중앙: 메인 단어는 항상 완전 중앙, TTS는 정확한 위치에
+                var textWidth by remember { mutableStateOf(0.dp) }
+                val density = LocalDensity.current
+                
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.align(Alignment.Center)
                 ) {
                     Text(
@@ -81,17 +87,41 @@ fun MyWordCard(
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                "https://ja.dict.naver.com/#/search?range=word&query=${myWord.word}".toUri()
-                            )
-                            context.startActivity(intent)
-                        }
+                        modifier = Modifier
+                            .onSizeChanged { size: IntSize ->
+                                textWidth = with(density) { size.width.toDp() }
+                            }
+                            .clickable {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://ja.dict.naver.com/#/search?range=word&query=${myWord.word}".toUri()
+                                )
+                                context.startActivity(intent)
+                            }
                     )
                     
-                    Spacer(modifier = Modifier.width(8.dp))
-                    
+                    // 텍스트가 길면(4글자 이상) 아래에, 짧으면 옆에 배치
+                    if (myWord.word.length >= 4) {
+                        // 긴 텍스트: TTS를 바로 아래 중앙에
+                        Spacer(modifier = Modifier.height(4.dp))
+                        TextToSpeechButton(
+                            text = myWord.word,
+                            isSpeaking = isSpeaking,
+                            onSpeak = { originalText ->
+                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
+                                if (japaneseText.isNotEmpty()) {
+                                    speechManager.speakWithOriginalText(originalText, japaneseText)
+                                }
+                            },
+                            onStop = { speechManager.stopSpeaking() },
+                            size = 28.dp,
+                            speechManager = speechManager
+                        )
+                    }
+                }
+                
+                // 짧은 텍스트: TTS를 정확히 텍스트 끝점에서 15dp 떨어뜨림
+                if (myWord.word.length < 4 && textWidth > 0.dp) {
                     TextToSpeechButton(
                         text = myWord.word,
                         isSpeaking = isSpeaking,
@@ -103,7 +133,10 @@ fun MyWordCard(
                         },
                         onStop = { speechManager.stopSpeaking() },
                         size = 32.dp,
-                        speechManager = speechManager
+                        speechManager = speechManager,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .offset(x = textWidth / 2 + 15.dp) // 텍스트 끝점에서 정확히 15dp
                     )
                 }
                 
