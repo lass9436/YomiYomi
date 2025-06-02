@@ -12,12 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.domain.model.KanjiQuizType
-import com.lass.yomiyomi.speech.SpeechManager
-import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks
-import com.lass.yomiyomi.util.JapaneseTextFilter
 import com.lass.yomiyomi.viewmodel.myKanjiQuiz.MyKanjiQuizViewModel
 import com.lass.yomiyomi.viewmodel.myKanjiQuiz.MyKanjiQuizViewModelInterface
 
@@ -26,13 +23,6 @@ fun MyKanjiQuizScreen(
     onBack: () -> Unit,
     myKanjiQuizViewModel: MyKanjiQuizViewModelInterface = hiltViewModel<MyKanjiQuizViewModel>()
 ) {
-    val context = LocalContext.current
-    
-    // TTS 기능 추가
-    val speechManager = remember {
-        SpeechManager(context)
-    }
-    
     val quizState = myKanjiQuizViewModel.quizState.collectAsState()
     val isLoading = myKanjiQuizViewModel.isLoading.collectAsState()
     val hasInsufficientData = myKanjiQuizViewModel.hasInsufficientData.collectAsState()
@@ -42,9 +32,6 @@ fun MyKanjiQuizScreen(
     var levelSelected by remember { mutableStateOf(Level.ALL) }
     var quizTypeSelected by remember { mutableStateOf(KanjiQuizType.KANJI_TO_READING_MEANING) }
     var isLearningMode by remember { mutableStateOf(false) }
-
-    // TTS 상태
-    val isSpeaking by speechManager.isSpeaking.collectAsState()
 
     LaunchedEffect(levelSelected, quizTypeSelected, isLearningMode) {
         myKanjiQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
@@ -149,36 +136,6 @@ fun MyKanjiQuizScreen(
         title = "내 한자 퀴즈",
         state = state,
         callbacks = callbacks,
-        onBack = onBack,
-        extraContent = {
-            // 한자 발음 TTS 버튼 추가
-            quizState.value?.question?.let { question ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextToSpeechButton(
-                        text = question,
-                        isSpeaking = isSpeaking,
-                        onSpeak = { 
-                            val japaneseText = JapaneseTextFilter.prepareTTSText(it)
-                            if (japaneseText.isNotEmpty()) {
-                                speechManager.speak(japaneseText)
-                            }
-                        },
-                        onStop = { speechManager.stopSpeaking() },
-                        size = 40.dp
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "발음 듣기",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
+        onBack = onBack
     )
 }
