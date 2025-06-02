@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.ui.component.menu.MenuCard
+import com.lass.yomiyomi.ui.component.menu.CompactMenuCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,102 +27,140 @@ fun MainMenuScreen(
     onNavigateToMyKanjiQuiz: () -> Unit,
     onNavigateToMyWordQuiz: () -> Unit,
 ) {
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabs = listOf("학습", "내 학습")
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "요미요미",
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.Bold
+            Column {
+                TopAppBar(
+                    title = {
+                        Text(
+                            "요미요미",
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
                     )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
                 )
-            )
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    containerColor = MaterialTheme.colorScheme.background
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = { 
+                                Text(
+                                    title,
+                                    color = if (selectedTabIndex == index) 
+                                        MaterialTheme.colorScheme.primary 
+                                    else 
+                                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+                                )
+                            }
+                        )
+                    }
+                }
+            }
         },
         content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    item {
-                        MenuCard(
-                            title = "한자 카드",
-                            subtitle = "랜덤으로 한자를\n학습해보세요",
-                            onClick = onNavigateToKanji
-                        )
+            when (selectedTabIndex) {
+                0 -> {
+                    // 기본 학습 탭
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        item {
+                            MenuCard(
+                                title = "한자 카드",
+                                subtitle = "랜덤으로 한자를\n학습해보세요",
+                                onClick = onNavigateToKanji
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "한자 퀴즈",
+                                subtitle = "한자 실력을\n테스트해보세요",
+                                onClick = onNavigateToQuiz
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "단어 카드",
+                                subtitle = "랜덤으로 단어를\n학습해보세요",
+                                onClick = onNavigateToWordRandom
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "단어 퀴즈",
+                                subtitle = "단어 실력을\n테스트해보세요",
+                                onClick = onNavigateToWordQuiz
+                            )
+                        }
                     }
-                    item {
-                        MenuCard(
-                            title = "한자 퀴즈",
-                            subtitle = "한자 실력을\n테스트해보세요",
-                            onClick = onNavigateToQuiz
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "단어 카드",
-                            subtitle = "랜덤으로 단어를\n학습해보세요",
-                            onClick = onNavigateToWordRandom
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "단어 퀴즈",
-                            subtitle = "단어 실력을\n테스트해보세요",
-                            onClick = onNavigateToWordQuiz
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "내 한자",
-                            subtitle = "나만의 한자장을\n만들어보세요",
-                            onClick = onNavigateToMyKanji
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "내 단어",
-                            subtitle = "나만의 단어장을\n만들어보세요",
-                            onClick = onNavigateToMyWord
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "내 한자 랜덤",
-                            subtitle = "랜덤으로 한자를\n학습해보세요",
-                            onClick = onNavigateToMyKanjiRandom
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "내 단어 랜덤",
-                            subtitle = "랜덤으로 단어를\n학습해보세요",
-                            onClick = onNavigateToMyWordRandom
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "내 한자 퀴즈",
-                            subtitle = "내 한자 실력을\n테스트해보세요",
-                            onClick = onNavigateToMyKanjiQuiz
-                        )
-                    }
-                    item {
-                        MenuCard(
-                            title = "내 단어 퀴즈",
-                            subtitle = "내 단어 실력을\n테스트해보세요",
-                            onClick = onNavigateToMyWordQuiz
-                        )
+                }
+                1 -> {
+                    // 내 학습 탭
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        item {
+                            MenuCard(
+                                title = "내 한자",
+                                subtitle = "나만의 한자장을\n만들어보세요",
+                                onClick = onNavigateToMyKanji
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 단어",
+                                subtitle = "나만의 단어장을\n만들어보세요",
+                                onClick = onNavigateToMyWord
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 한자 랜덤",
+                                subtitle = "랜덤으로 한자를\n학습해보세요",
+                                onClick = onNavigateToMyKanjiRandom
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 단어 랜덤",
+                                subtitle = "랜덤으로 단어를\n학습해보세요",
+                                onClick = onNavigateToMyWordRandom
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 한자 퀴즈",
+                                subtitle = "내 한자 실력을\n테스트해보세요",
+                                onClick = onNavigateToMyKanjiQuiz
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 단어 퀴즈",
+                                subtitle = "내 단어 실력을\n테스트해보세요",
+                                onClick = onNavigateToMyWordQuiz
+                            )
+                        }
                     }
                 }
             }
@@ -131,7 +170,7 @@ fun MainMenuScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun MainMenuScreenPreview() {
+fun MainMenuScreen() {
     MainMenuScreen(
         onNavigateToKanji = {},
         onNavigateToQuiz = {},
