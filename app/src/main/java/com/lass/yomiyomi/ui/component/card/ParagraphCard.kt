@@ -89,17 +89,55 @@ fun ParagraphCard(
                     )
                 }
                 
-                // 문장 개수
+                // 문장 개수와 편집/삭제 버튼
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    // 편집/삭제 버튼들
+                    if (onEdit != null || onDelete != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // 편집 버튼
+                        onEdit?.let {
+                            IconButton(
+                                onClick = it,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = "편집",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
+
+                        // 삭제 버튼
+                        onDelete?.let {
+                            IconButton(
+                                onClick = it,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "삭제",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                    }
+
                     Icon(
                         Icons.AutoMirrored.Filled.List,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(16.dp)
                     )
+
                     Spacer(modifier = Modifier.width(4.dp))
+
                     Text(
                         text = "${sentenceCount}문장",
                         fontSize = 12.sp,
@@ -108,7 +146,7 @@ fun ParagraphCard(
                 }
             }
             
-            // 문장 진행 상황 (실제 vs 목표)
+            // 문장 진행 상황 (실제 vs 목표) - 별도 row
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -126,44 +164,6 @@ fun ParagraphCard(
                     color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = FontWeight.Medium
                 )
-            }
-            
-            // 액션 버튼들
-            if (onEdit != null || onDelete != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    // 편집 버튼
-                    onEdit?.let {
-                        AssistChip(
-                            onClick = it,
-                            label = { Text("편집", fontSize = 12.sp) },
-                            leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
-                            colors = AssistChipDefaults.assistChipColors(
-                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                labelColor = MaterialTheme.colorScheme.tertiary,
-                                leadingIconContentColor = MaterialTheme.colorScheme.tertiary
-                            )
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    
-                    // 삭제 버튼
-                    onDelete?.let {
-                        AssistChip(
-                            onClick = it,
-                            label = { Text("삭제", fontSize = 12.sp) },
-                            leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                            colors = AssistChipDefaults.assistChipColors(
-                                containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                                labelColor = MaterialTheme.colorScheme.error,
-                                leadingIconContentColor = MaterialTheme.colorScheme.error
-                            )
-                        )
-                    }
-                }
             }
         }
     }
