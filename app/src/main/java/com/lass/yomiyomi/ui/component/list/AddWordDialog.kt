@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component.my
+package com.lass.yomiyomi.ui.component.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @Composable

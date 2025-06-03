@@ -89,16 +89,16 @@ fun MainMenuScreen(
                         }
                         item {
                             MenuCard(
-                                title = "한자 퀴즈",
-                                subtitle = "한자 실력을\n테스트해보세요",
-                                onClick = onNavigateToQuiz
+                                title = "단어 카드",
+                                subtitle = "랜덤으로 단어를\n학습해보세요",
+                                onClick = onNavigateToWordRandom
                             )
                         }
                         item {
                             MenuCard(
-                                title = "단어 카드",
-                                subtitle = "랜덤으로 단어를\n학습해보세요",
-                                onClick = onNavigateToWordRandom
+                                title = "한자 퀴즈",
+                                subtitle = "한자 실력을\n테스트해보세요",
+                                onClick = onNavigateToQuiz
                             )
                         }
                         item {

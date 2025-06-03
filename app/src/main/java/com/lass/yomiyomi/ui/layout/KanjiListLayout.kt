@@ -15,9 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.common.LevelSelector
-import com.lass.yomiyomi.ui.component.my.MyKanjiCard
-import com.lass.yomiyomi.ui.component.my.AddKanjiDialog
-import com.lass.yomiyomi.ui.component.my.EditKanjiDialog
+import com.lass.yomiyomi.ui.component.list.MyKanjiCard
+import com.lass.yomiyomi.ui.component.list.AddKanjiDialog
+import com.lass.yomiyomi.ui.component.list.EditKanjiDialog
 import com.lass.yomiyomi.ui.state.MyKanjiState
 import com.lass.yomiyomi.ui.state.MyKanjiCallbacks
 import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface

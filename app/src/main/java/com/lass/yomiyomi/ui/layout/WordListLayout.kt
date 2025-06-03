@@ -15,9 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.common.LevelSelector
-import com.lass.yomiyomi.ui.component.my.MyWordCard
-import com.lass.yomiyomi.ui.component.my.AddWordDialog
-import com.lass.yomiyomi.ui.component.my.EditWordDialog
+import com.lass.yomiyomi.ui.component.list.MyWordCard
+import com.lass.yomiyomi.ui.component.list.AddWordDialog
+import com.lass.yomiyomi.ui.component.list.EditWordDialog
 import com.lass.yomiyomi.ui.state.MyWordState
 import com.lass.yomiyomi.ui.state.MyWordCallbacks
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
