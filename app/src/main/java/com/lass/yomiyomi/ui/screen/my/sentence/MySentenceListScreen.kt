@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.my.sentence
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -12,15 +12,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.SentenceItem
 import com.lass.yomiyomi.ui.component.*
+import com.lass.yomiyomi.ui.component.DisplayMode
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
-import com.lass.yomiyomi.viewmodel.sentence.SentenceViewModel
+import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SentenceListScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SentenceViewModel = hiltViewModel()
+    viewModel: MySentenceViewModel = hiltViewModel()
 ) {
     // Android 뒤로가기 버튼 처리
     BackHandler {
@@ -36,7 +37,7 @@ fun SentenceListScreen(
     var searchQuery by remember { mutableStateOf("") }
     
     // UI 상태
-    var displayMode by remember { mutableStateOf(com.lass.yomiyomi.ui.component.DisplayMode.FULL) }
+    var displayMode by remember { mutableStateOf(DisplayMode.FULL) }
     var showKorean by remember { mutableStateOf(true) }
     var showProgress by remember { mutableStateOf(true) }
     var showInputDialog by remember { mutableStateOf(false) }

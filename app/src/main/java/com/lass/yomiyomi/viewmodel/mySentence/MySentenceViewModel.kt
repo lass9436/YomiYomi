@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel.sentence
+package com.lass.yomiyomi.viewmodel.mySentence
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +10,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SentenceViewModel @Inject constructor(
+class MySentenceViewModel @Inject constructor(
     private val sentenceRepository: SentenceRepository
-) : ViewModel(), SentenceViewModelInterface {
+) : ViewModel(), MySentenceViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()

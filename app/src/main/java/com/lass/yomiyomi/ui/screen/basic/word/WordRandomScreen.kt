@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.basic.word
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.size
@@ -16,35 +16,34 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.random.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
-import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
+import com.lass.yomiyomi.viewmodel.wordRandom.DummyWordRandomViewModel
+import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModel
+import com.lass.yomiyomi.viewmodel.wordRandom.WordRandomViewModelInterface
 
 @Composable
-fun KanjiRandomScreen(
+fun WordRandomScreen(
     onBack: () -> Unit,
-    kanjiViewModel: KanjiRandomViewModelInterface = hiltViewModel<KanjiRandomViewModel>()
+    wordViewModel: WordRandomViewModelInterface = hiltViewModel<WordRandomViewModel>()
 ) {
-    val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
+    val randomWord = wordViewModel.randomWord.collectAsState().value
     var levelSelected by remember { mutableStateOf(Level.ALL) }
 
     // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
     BackHandler { onBack() }
 
     LaunchedEffect(levelSelected) {
-        kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value)
+        wordViewModel.fetchRandomWordByLevel(levelSelected.value)
     }
 
     RandomLayout(
-        title = "랜덤 한자 카드",
+        title = "랜덤 단어 카드",
         selectedLevel = levelSelected,
         onLevelSelected = { levelSelected = it },
-        onRefresh = { kanjiViewModel.fetchRandomKanjiByLevel(levelSelected.value) },
-        onBack = onBack,
-        availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
+        onRefresh = { wordViewModel.fetchRandomWordByLevel(levelSelected.value) },
+        onBack = onBack
     ) {
-        if (randomKanji != null) {
-            ItemCard(item = randomKanji)
+        if (randomWord != null) {
+            ItemCard(item = randomWord)
         } else {
             CircularProgressIndicator(modifier = Modifier.size(48.dp))
         }
@@ -52,9 +51,9 @@ fun KanjiRandomScreen(
 }
 
 @Composable
-fun KanjiRandomScreenPreview() {
-    KanjiRandomScreen(
+fun WordRandomScreenPreview() {
+    WordRandomScreen(
         onBack = {},
-        kanjiViewModel = DummyKanjiRandomViewModel()
+        wordViewModel = DummyWordRandomViewModel()
     )
 }

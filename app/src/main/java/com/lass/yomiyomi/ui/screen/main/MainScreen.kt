@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.main
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,6 +9,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.lass.yomiyomi.ui.screen.basic.kanji.KanjiListScreen
+import com.lass.yomiyomi.ui.screen.basic.kanji.KanjiQuizScreen
+import com.lass.yomiyomi.ui.screen.basic.kanji.KanjiRandomScreen
+import com.lass.yomiyomi.ui.screen.basic.word.WordListScreen
+import com.lass.yomiyomi.ui.screen.basic.word.WordQuizScreen
+import com.lass.yomiyomi.ui.screen.basic.word.WordRandomScreen
+import com.lass.yomiyomi.ui.screen.my.kanji.MyKanjiQuizScreen
+import com.lass.yomiyomi.ui.screen.my.kanji.MyKanjiRandomScreen
+import com.lass.yomiyomi.ui.screen.my.kanji.MyKanjiScreen
+import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphListScreen
+import com.lass.yomiyomi.ui.screen.my.sentence.SentenceListScreen
+import com.lass.yomiyomi.ui.screen.my.word.MyWordQuizScreen
+import com.lass.yomiyomi.ui.screen.my.word.MyWordRandomScreen
+import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
 
 // 네비게이션 경로를 Enum으로 정의
 enum class Routes(val route: String) {
@@ -89,100 +103,128 @@ fun MainScreen(
         }
         composable(Routes.KANJI_LIST.route) {
             KanjiListScreen(
-                onNavigateBack = { navController.navigate("main/0") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onNavigateBack = {
+                    navController.navigate("main/0") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.WORD_LIST.route) {
             WordListScreen(
-                onNavigateBack = { navController.navigate("main/0") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onNavigateBack = {
+                    navController.navigate("main/0") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.KANJI_RANDOM.route) {
             KanjiRandomScreen(
-                onBack = { navController.navigate("main/0") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/0") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.KANJI_QUIZ.route) {
             KanjiQuizScreen(
-                onBack = { navController.navigate("main/0") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/0") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.WORD_QUIZ.route) {
             WordQuizScreen(
-                onBack = { navController.navigate("main/0") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/0") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.WORD_RANDOM.route) {
             WordRandomScreen(
-                onBack = { navController.navigate("main/0") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/0") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.MY_WORD.route) {
             MyWordScreen(
-                onNavigateBack = { navController.navigate("main/1") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onNavigateBack = {
+                    navController.navigate("main/1") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.MY_KANJI.route) {
             MyKanjiScreen(
-                onNavigateBack = { navController.navigate("main/1") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onNavigateBack = {
+                    navController.navigate("main/1") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.MY_WORD_RANDOM.route) {
             MyWordRandomScreen(
-                onBack = { navController.navigate("main/1") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/1") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.MY_KANJI_RANDOM.route) {
             MyKanjiRandomScreen(
-                onBack = { navController.navigate("main/1") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/1") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.MY_KANJI_QUIZ.route) {
             MyKanjiQuizScreen(
-                onBack = { navController.navigate("main/1") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/1") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.MY_WORD_QUIZ.route) {
             MyWordQuizScreen(
-                onBack = { navController.navigate("main/1") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/1") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.SENTENCE_LIST.route) {
             SentenceListScreen(
-                onBack = { navController.navigate("main/2") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } }
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(Routes.PARAGRAPH_LIST.route) {
             ParagraphListScreen(
-                onBack = { navController.navigate("main/2") {
-                    popUpTo(Routes.MAIN.route) { inclusive = true }
-                } },
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                },
                 onParagraphClick = { paragraph ->
                     // TODO: 추후 문단 상세 화면으로 이동
                     // navController.navigate("paragraphDetail/${paragraph.paragraphId}")

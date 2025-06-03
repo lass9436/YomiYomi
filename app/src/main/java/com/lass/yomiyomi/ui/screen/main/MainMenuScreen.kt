@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,7 +11,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.ui.component.menu.MenuCard
-import com.lass.yomiyomi.ui.component.menu.CompactMenuCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

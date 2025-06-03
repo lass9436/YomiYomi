@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel.paragraph
+package com.lass.yomiyomi.viewmodel.myParagraph
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +10,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ParagraphViewModel @Inject constructor(
+class MyParagraphViewModel @Inject constructor(
     private val paragraphRepository: ParagraphRepository
-) : ViewModel(), ParagraphViewModelInterface {
+) : ViewModel(), MyParagraphViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()

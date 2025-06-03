@@ -1,10 +1,11 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.basic.word
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.ui.layout.WordListLayout
 import com.lass.yomiyomi.ui.state.WordState
 import com.lass.yomiyomi.ui.state.WordCallbacks
@@ -32,7 +33,7 @@ fun WordListScreen(
     val state = WordState(
         myWords = words.map { wordItem ->
             // WordItem을 MyWordItem으로 변환 (호환성을 위해)
-            com.lass.yomiyomi.domain.model.MyWordItem(
+            MyWordItem(
                 id = wordItem.id,
                 word = wordItem.word,
                 reading = wordItem.reading,

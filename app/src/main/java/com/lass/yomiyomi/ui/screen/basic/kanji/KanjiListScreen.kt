@@ -1,10 +1,11 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.basic.kanji
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.layout.KanjiListLayout
 import com.lass.yomiyomi.ui.state.KanjiState
 import com.lass.yomiyomi.ui.state.KanjiCallbacks
@@ -32,7 +33,7 @@ fun KanjiListScreen(
     val state = KanjiState(
         myKanji = kanji.map { kanjiItem ->
             // KanjiItem을 MyKanjiItem으로 변환 (호환성을 위해)
-            com.lass.yomiyomi.domain.model.MyKanjiItem(
+            MyKanjiItem(
                 id = kanjiItem.id,
                 kanji = kanjiItem.kanji,
                 onyomi = kanjiItem.onyomi,

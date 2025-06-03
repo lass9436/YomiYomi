@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.my.kanji
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.size

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.data.repository.WordRepository
-import com.lass.yomiyomi.ui.screen.MainScreen
+import com.lass.yomiyomi.ui.screen.main.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

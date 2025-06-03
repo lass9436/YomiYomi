@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.my.paragraph
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -13,7 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.ParagraphItem
 import com.lass.yomiyomi.ui.component.*
 import com.lass.yomiyomi.ui.layout.ParagraphListLayout
-import com.lass.yomiyomi.viewmodel.paragraph.ParagraphViewModel
+import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,7 +21,7 @@ fun ParagraphListScreen(
     onBack: () -> Unit,
     onParagraphClick: (ParagraphItem) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ParagraphViewModel = hiltViewModel()
+    viewModel: MyParagraphViewModel = hiltViewModel()
 ) {
     // Android 뒤로가기 버튼 처리
     BackHandler {

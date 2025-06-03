@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.my.word
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*

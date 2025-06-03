@@ -1,36 +1,25 @@
-package com.lass.yomiyomi.ui.screen
+package com.lass.yomiyomi.ui.screen.my.word
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.domain.model.WordQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks
-import com.lass.yomiyomi.viewmodel.wordQuiz.DummyWordQuizViewModel
-import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModel
-import com.lass.yomiyomi.viewmodel.wordQuiz.WordQuizViewModelInterface
+import com.lass.yomiyomi.viewmodel.myWordQuiz.MyWordQuizViewModel
+import com.lass.yomiyomi.viewmodel.myWordQuiz.MyWordQuizViewModelInterface
 
 @Composable
-fun WordQuizScreen(
+fun MyWordQuizScreen(
     onBack: () -> Unit,
-    wordQuizViewModel: WordQuizViewModelInterface = hiltViewModel<WordQuizViewModel>()
+    myWordQuizViewModel: MyWordQuizViewModelInterface = hiltViewModel<MyWordQuizViewModel>()
 ) {
-    val quizState = wordQuizViewModel.quizState.collectAsState()
-    val isLoading = wordQuizViewModel.isLoading.collectAsState()
+    val quizState = myWordQuizViewModel.quizState.collectAsState()
+    val isLoading = myWordQuizViewModel.isLoading.collectAsState()
+    val hasInsufficientData = myWordQuizViewModel.hasInsufficientData.collectAsState()
+    
     var answerResult by remember { mutableStateOf<String?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var levelSelected by remember { mutableStateOf(Level.ALL) }
@@ -41,7 +30,7 @@ fun WordQuizScreen(
     BackHandler { onBack() }
 
     LaunchedEffect(levelSelected, quizTypeSelected, isLearningMode) {
-        wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
+        myWordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
     }
 
     val quizTypes = listOf("단어→의미", "의미→단어")
@@ -53,12 +42,17 @@ fun WordQuizScreen(
         selectedQuizTypeIndex = selectedQuizTypeIndex,
         isLearningMode = isLearningMode,
         isLoading = isLoading.value,
-        question = quizState.value?.question,
-        options = quizState.value?.options ?: emptyList(),
+        question = if (hasInsufficientData.value) null else quizState.value?.question,
+        options = if (hasInsufficientData.value) emptyList() else (quizState.value?.options ?: emptyList()),
         showDialog = showDialog,
         answerResult = answerResult,
         searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=",
-        availableLevels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.ALL) // 단어 퀴즈에서는 N1 제외
+        insufficientDataMessage = if (hasInsufficientData.value) {
+            if (levelSelected == Level.ALL) 
+                "내 단어가 없습니다.\n+ 버튼을 눌러 단어를 추가해보세요!"
+            else 
+                "${levelSelected.value} 레벨의 내 단어가 없습니다."
+        } else null
     )
 
     val callbacks = QuizCallbacks(
@@ -80,33 +74,25 @@ fun WordQuizScreen(
                 answerResult = "오답입니다!\n정답: ${correct.answer}"
             }
             showDialog = true
-            wordQuizViewModel.checkAnswer(
+            myWordQuizViewModel.checkAnswer(
                 if (isCorrect) quizState.value!!.correctIndex else -1,
                 isLearningMode
             )
         },
         onRefresh = {
-            wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
+            myWordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
         },
         onDismissDialog = {
             showDialog = false
             answerResult = null
-            wordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
+            myWordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
         }
     )
 
     QuizLayout(
-        title = "단어 퀴즈",
+        title = "내 단어 퀴즈",
         state = state,
         callbacks = callbacks,
         onBack = onBack
     )
-}
-
-@Composable
-fun WordQuizScreenPreview() {
-    WordQuizScreen(
-        onBack = {},
-        wordQuizViewModel = DummyWordQuizViewModel()
-    )
-}
+} 
