@@ -4,8 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -155,20 +154,6 @@ fun KanjiCard(
             }
         }
     }
-}
-
-// 호환성을 위한 별칭
-@Composable
-fun MyKanjiCard(
-    myKanji: MyKanjiItem,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
-) {
-    KanjiCard(
-        kanji = myKanji,
-        onEdit = onEdit,
-        onDelete = onDelete
-    )
 }
 
 @Preview(showBackground = true)

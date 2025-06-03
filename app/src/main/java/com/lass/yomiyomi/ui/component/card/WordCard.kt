@@ -189,20 +189,6 @@ fun WordCard(
     }
 }
 
-// 호환성을 위한 별칭
-@Composable
-fun MyWordCard(
-    myWord: MyWordItem,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
-) {
-    WordCard(
-        word = myWord,
-        onEdit = onEdit,
-        onDelete = onDelete
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun WordCardEditablePreview() {
