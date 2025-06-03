@@ -49,6 +49,14 @@ class KanjiQuizViewModel @Inject constructor(
                     currentPriorityIndex = 0
                 }
 
+                // 우선순위 한자가 없으면 랜덤 모드로 폴백
+                if (priorityKanjiInMemory.isEmpty()) {
+                    currentKanji = null
+                    val quiz = generateRandomModeQuiz(level, quizType)
+                    _quizState.value = quiz
+                    return@launch
+                }
+
                 // 현재 한자 저장
                 currentKanji = priorityKanjiInMemory[currentPriorityIndex]
                 
@@ -63,6 +71,7 @@ class KanjiQuizViewModel @Inject constructor(
                 
             } catch (e: Exception) {
                 e.printStackTrace()
+                _quizState.value = null
             } finally {
                 _isLoading.value = false
             }

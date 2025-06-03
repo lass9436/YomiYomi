@@ -11,7 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class KanjiRandomRandomViewModel @Inject constructor(
+class KanjiRandomViewModel @Inject constructor(
     private val repository: KanjiRepository
 ) : ViewModel(), KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow<KanjiItem?>(null)
@@ -19,13 +19,25 @@ class KanjiRandomRandomViewModel @Inject constructor(
 
     override fun fetchRandomKanji() {
         viewModelScope.launch {
-            _randomKanji.value = repository.getRandomKanji()
+            try {
+                _randomKanji.value = repository.getRandomKanji()
+            } catch (e: Exception) {
+                // Log error but don't crash - keep state as null
+                e.printStackTrace()
+                _randomKanji.value = null
+            }
         }
     }
 
     override fun fetchRandomKanjiByLevel(level: String?) {
         viewModelScope.launch {
-            _randomKanji.value = repository.getRandomKanjiByLevel(level)
+            try {
+                _randomKanji.value = repository.getRandomKanjiByLevel(level)
+            } catch (e: Exception) {
+                // Log error but don't crash - keep state as null
+                e.printStackTrace()
+                _randomKanji.value = null
+            }
         }
     }
 }

@@ -16,14 +16,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.random.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
-import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomRandomViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomRandomViewModel
+import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomViewModel
+import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModel
 import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
 
 @Composable
 fun KanjiRandomScreen(
     onBack: () -> Unit,
-    kanjiViewModel: KanjiRandomViewModelInterface = hiltViewModel<KanjiRandomRandomViewModel>()
+    kanjiViewModel: KanjiRandomViewModelInterface = hiltViewModel<KanjiRandomViewModel>()
 ) {
     val randomKanji = kanjiViewModel.randomKanji.collectAsState().value
     var levelSelected by remember { mutableStateOf(Level.ALL) }
@@ -55,6 +55,6 @@ fun KanjiRandomScreen(
 fun KanjiRandomScreenPreview() {
     KanjiRandomScreen(
         onBack = {},
-        kanjiViewModel = DummyKanjiRandomRandomViewModel()
+        kanjiViewModel = DummyKanjiRandomViewModel()
     )
 }

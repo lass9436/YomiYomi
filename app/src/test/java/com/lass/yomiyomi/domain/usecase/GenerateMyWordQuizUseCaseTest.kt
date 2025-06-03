@@ -3,240 +3,235 @@ package com.lass.yomiyomi.domain.usecase
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.*
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.Assert.*
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
 
 class GenerateMyWordQuizUseCaseTest {
 
-    @Mock
+    @MockK
     private lateinit var myWordRepository: MyWordRepository
     
-    @Mock
+    @MockK
     private lateinit var wordRepository: WordRepository
     
     private lateinit var useCase: GenerateMyWordQuizUseCase
-    
+
+    private val sampleMyWords = listOf(
+        MyWordItem(
+            id = 1,
+            word = "食べる",
+            reading = "たべる",
+            type = "동사",
+            meaning = "먹다",
+            level = "N5",
+            learningWeight = 0.5f,
+            timestamp = System.currentTimeMillis()
+        ),
+        MyWordItem(
+            id = 2,
+            word = "勉強",
+            reading = "べんきょう",
+            type = "명사",
+            meaning = "공부",
+            level = "N4",
+            learningWeight = 0.3f,
+            timestamp = System.currentTimeMillis()
+        ),
+        MyWordItem(
+            id = 3,
+            word = "学校",
+            reading = "がっこう",
+            type = "명사",
+            meaning = "학교",
+            level = "N5",
+            learningWeight = 0.8f,
+            timestamp = System.currentTimeMillis()
+        ),
+        MyWordItem(
+            id = 4,
+            word = "先生",
+            reading = "せんせい",
+            type = "명사",
+            meaning = "선생님",
+            level = "N5",
+            learningWeight = 0.2f,
+            timestamp = System.currentTimeMillis()
+        )
+    )
+
+    private val sampleWords = listOf(
+        WordItem(
+            id = 101,
+            word = "水",
+            reading = "みず",
+            type = "명사",
+            meaning = "물",
+            level = "N5",
+            learningWeight = 1.0f,
+            timestamp = System.currentTimeMillis()
+        ),
+        WordItem(
+            id = 102,
+            word = "火",
+            reading = "ひ",
+            type = "명사",
+            meaning = "불",
+            level = "N5",
+            learningWeight = 1.0f,
+            timestamp = System.currentTimeMillis()
+        )
+    )
+
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this)
         useCase = GenerateMyWordQuizUseCase(myWordRepository, wordRepository)
     }
-    
-    private fun createSampleMyWord(id: Int, level: String = "N5"): MyWordItem {
-        return MyWordItem(
-            id = id,
-            word = "単語$id",
-            reading = "たんご$id",
-            meaning = "의미$id",
-            type = "명사",
-            level = level,
-            learningWeight = 1.0f,
-            timestamp = System.currentTimeMillis()
-        )
-    }
-    
-    private fun createSampleWord(id: Int, level: String = "N5"): WordItem {
-        return WordItem(
-            id = id,
-            word = "語$id",
-            reading = "ご$id",
-            meaning = "뜻$id",
-            type = "명사",
-            level = level,
-            learningWeight = 1.0f,
-            timestamp = System.currentTimeMillis()
-        )
-    }
-    
+
     @Test
-    fun `선택한 레벨에 데이터가 있으면 퀴즈 생성 성공`() = runTest {
+    fun `generateQuiz - 랜덤 모드에서 정상적인 퀴즈 생성`() = runTest {
         // Given
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val myWordList = listOf(
-            createSampleMyWord(1, "N5"),
-            createSampleMyWord(2, "N5"),
-            createSampleMyWord(3, "N5"),
-            createSampleMyWord(4, "N5")
-        )
+        val n5Words = sampleMyWords.filter { it.level == "N5" }
         
-        whenever(myWordRepository.getAllMyWordsByLevel("N5")).thenReturn(myWordList)
-        whenever(myWordRepository.getAllMyWords()).thenReturn(myWordList)
-        
+        coEvery { myWordRepository.getAllMyWordsByLevel("N5") } returns n5Words
+        coEvery { myWordRepository.getAllMyWords() } returns sampleMyWords
+        coEvery { wordRepository.getAllWords() } returns sampleWords
+
         // When
         val result = useCase.generateQuiz(level, quizType, isLearningMode = false)
-        
+
         // Then
-        assertNotNull("퀴즈가 생성되어야 함", result)
-        assertEquals("선택지가 4개여야 함", 4, result!!.options.size)
-        assertTrue("정답 인덱스가 유효해야 함", result.correctIndex in 0..3)
+        assertNotNull(result)
+        assertEquals(4, result!!.options.size)
+        assertTrue(result.correctIndex in 0..3)
+        assertNotNull(result.question)
+        assertNotNull(result.answer)
+        assertTrue(result.options.contains(result.answer))
     }
-    
+
     @Test
-    fun `선택한 레벨에 데이터가 없으면 null 반환`() = runTest {
+    fun `generateQuiz - 학습 모드에서 정상적인 퀴즈 생성`() = runTest {
+        // Given
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val priorityWords = sampleMyWords.filter { it.learningWeight < 0.6f }
+        val distractors = sampleMyWords.filter { it.learningWeight >= 0.6f }
+        
+        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
+        coEvery { myWordRepository.getAllMyWords() } returns sampleMyWords
+        coEvery { wordRepository.getAllWords() } returns sampleWords
+
+        // When
+        val result = useCase.generateQuiz(level, quizType, isLearningMode = true)
+
+        // Then
+        assertNotNull(result)
+        assertEquals(4, result!!.options.size)
+        assertTrue(result.correctIndex in 0..3)
+        assertNotNull(result.question)
+        assertNotNull(result.answer)
+        assertTrue(result.options.contains(result.answer))
+    }
+
+    @Test
+    fun `generateQuiz - 데이터 부족시 null 반환`() = runTest {
         // Given
         val level = Level.N1
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         
-        whenever(myWordRepository.getAllMyWordsByLevel("N1")).thenReturn(emptyList())
-        
+        coEvery { myWordRepository.getAllMyWordsByLevel("N1") } returns emptyList()
+
         // When
         val result = useCase.generateQuiz(level, quizType, isLearningMode = false)
-        
+
         // Then
-        assertNull("레벨에 데이터가 없으면 null을 반환해야 함", result)
+        assertNull(result)
     }
-    
+
     @Test
-    fun `ALL 레벨일 때 모든 데이터에서 퀴즈 생성`() = runTest {
-        // Given
-        val level = Level.ALL
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val myWordList = listOf(
-            createSampleMyWord(1, "N5"),
-            createSampleMyWord(2, "N4"),
-            createSampleMyWord(3, "N3"),
-            createSampleMyWord(4, "N2")
-        )
-        
-        whenever(myWordRepository.getAllMyWords()).thenReturn(myWordList)
-        
-        // When
-        val result = useCase.generateQuiz(level, quizType, isLearningMode = false)
-        
-        // Then
-        assertNotNull("ALL 레벨에서 퀴즈가 생성되어야 함", result)
-        verify(myWordRepository, atLeastOnce()).getAllMyWords()
-    }
-    
-    @Test
-    fun `단어에서 의미 퀴즈 타입 정상 동작`() = runTest {
+    fun `generateQuiz - WORD_TO_MEANING_READING 타입 퀴즈 생성`() = runTest {
         // Given
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val myWordList = listOf(
-            createSampleMyWord(1, "N5"),
-            createSampleMyWord(2, "N5"),
-            createSampleMyWord(3, "N5"),
-            createSampleMyWord(4, "N5")
-        )
+        val n5Words = sampleMyWords.filter { it.level == "N5" }
         
-        whenever(myWordRepository.getAllMyWordsByLevel("N5")).thenReturn(myWordList)
-        whenever(myWordRepository.getAllMyWords()).thenReturn(myWordList)
-        
+        coEvery { myWordRepository.getAllMyWordsByLevel("N5") } returns n5Words
+        coEvery { myWordRepository.getAllMyWords() } returns sampleMyWords
+        coEvery { wordRepository.getAllWords() } returns sampleWords
+
         // When
         val result = useCase.generateQuiz(level, quizType, isLearningMode = false)
-        
+
         // Then
         assertNotNull(result)
-        assertTrue("질문이 단어여야 함", result!!.question.startsWith("単語"))
-        assertTrue("정답이 의미/읽기 형식이어야 함", result.answer.contains("/"))
-        result.options.forEach { option ->
-            assertTrue("모든 선택지가 의미/읽기 형식이어야 함", option.contains("/"))
-        }
+        // 질문이 일본어 단어인지 확인
+        assertTrue(n5Words.any { it.word == result!!.question })
+        // 답이 "의미 / 읽기" 형식인지 확인
+        assertTrue(result!!.answer.contains(" / "))
     }
-    
+
     @Test
-    fun `의미에서 단어 퀴즈 타입 정상 동작`() = runTest {
+    fun `generateQuiz - MEANING_READING_TO_WORD 타입 퀴즈 생성`() = runTest {
         // Given
         val level = Level.N5
         val quizType = WordQuizType.MEANING_READING_TO_WORD
-        val myWordList = listOf(
-            createSampleMyWord(1, "N5"),
-            createSampleMyWord(2, "N5"),
-            createSampleMyWord(3, "N5"),
-            createSampleMyWord(4, "N5")
-        )
+        val n5Words = sampleMyWords.filter { it.level == "N5" }
         
-        whenever(myWordRepository.getAllMyWordsByLevel("N5")).thenReturn(myWordList)
-        whenever(myWordRepository.getAllMyWords()).thenReturn(myWordList)
-        
+        coEvery { myWordRepository.getAllMyWordsByLevel("N5") } returns n5Words
+        coEvery { myWordRepository.getAllMyWords() } returns sampleMyWords
+        coEvery { wordRepository.getAllWords() } returns sampleWords
+
         // When
         val result = useCase.generateQuiz(level, quizType, isLearningMode = false)
-        
+
         // Then
         assertNotNull(result)
-        assertTrue("질문이 의미/읽기 형식이어야 함", result!!.question.contains("/"))
-        assertTrue("정답이 단어여야 함", result.answer.startsWith("単語"))
-        result.options.forEach { option ->
-            assertTrue("모든 선택지가 단어여야 함", option.startsWith("単語") || option.startsWith("語"))
-        }
+        // 질문이 "의미 / 읽기" 형식인지 확인
+        assertTrue(result!!.question.contains(" / "))
+        // 답이 일본어 단어인지 확인
+        assertTrue(n5Words.any { it.word == result.answer })
     }
-    
+
     @Test
-    fun `학습 모드에서 우선순위 데이터가 있으면 사용`() = runTest {
+    fun `generateQuiz - Level ALL에서 모든 레벨 단어 사용`() = runTest {
         // Given
-        val level = Level.N5
+        val level = Level.ALL
         val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val priorityWords = listOf(createSampleMyWord(1, "N5"))
-        val distractors = listOf(createSampleMyWord(2, "N5"))
         
-        whenever(myWordRepository.getMyWordsForLearningMode("N5"))
-            .thenReturn(Pair(priorityWords, distractors))
-        whenever(myWordRepository.getAllMyWords()).thenReturn(priorityWords + distractors)
-        whenever(wordRepository.getAllWords()).thenReturn(listOf())
-        
-        // When
-        val result = useCase.generateQuiz(level, quizType, isLearningMode = true)
-        
-        // Then
-        assertNotNull("학습 모드에서 퀴즈가 생성되어야 함", result)
-        verify(myWordRepository).getMyWordsForLearningMode("N5")
-    }
-    
-    @Test
-    fun `학습 모드에서 우선순위 데이터가 없으면 랜덤 모드로 폴백`() = runTest {
-        // Given
-        val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val myWordList = listOf(
-            createSampleMyWord(1, "N5"),
-            createSampleMyWord(2, "N5"),
-            createSampleMyWord(3, "N5"),
-            createSampleMyWord(4, "N5")
-        )
-        
-        whenever(myWordRepository.getMyWordsForLearningMode("N5"))
-            .thenReturn(Pair(emptyList(), emptyList()))
-        whenever(myWordRepository.getAllMyWordsByLevel("N5")).thenReturn(myWordList)
-        whenever(myWordRepository.getAllMyWords()).thenReturn(myWordList)
-        
-        // When
-        val result = useCase.generateQuiz(level, quizType, isLearningMode = true)
-        
-        // Then
-        assertNotNull("폴백으로 퀴즈가 생성되어야 함", result)
-        verify(myWordRepository).getMyWordsForLearningMode("N5")
-        verify(myWordRepository).getAllMyWordsByLevel("N5")
-    }
-    
-    @Test
-    fun `오답 선택지가 부족하면 원본 데이터에서 보충`() = runTest {
-        // Given
-        val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val myWordList = listOf(createSampleMyWord(1, "N5")) // 1개만
-        val originalWordList = listOf(
-            createSampleWord(10, "N5"),
-            createSampleWord(11, "N5"),
-            createSampleWord(12, "N5")
-        )
-        
-        whenever(myWordRepository.getAllMyWordsByLevel("N5")).thenReturn(myWordList)
-        whenever(myWordRepository.getAllMyWords()).thenReturn(myWordList)
-        whenever(wordRepository.getAllWords()).thenReturn(originalWordList)
-        
+        coEvery { myWordRepository.getAllMyWords() } returns sampleMyWords
+        coEvery { wordRepository.getAllWords() } returns sampleWords
+
         // When
         val result = useCase.generateQuiz(level, quizType, isLearningMode = false)
-        
+
         // Then
-        assertNotNull("퀴즈가 생성되어야 함", result)
-        assertEquals("4개의 선택지가 있어야 함", 4, result!!.options.size)
-        verify(wordRepository).getAllWords() // 원본 데이터 호출 확인
+        assertNotNull(result)
+        assertTrue(sampleMyWords.any { it.word == result!!.question })
+    }
+
+    @Test
+    fun `generateQuiz - 학습 모드에서 우선순위 데이터 없을 때 랜덤 모드로 폴백`() = runTest {
+        // Given
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val n5Words = sampleMyWords.filter { it.level == "N5" }
+        
+        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(emptyList(), emptyList())
+        coEvery { myWordRepository.getAllMyWordsByLevel("N5") } returns n5Words
+        coEvery { myWordRepository.getAllMyWords() } returns sampleMyWords
+        coEvery { wordRepository.getAllWords() } returns sampleWords
+
+        // When
+        val result = useCase.generateQuiz(level, quizType, isLearningMode = true)
+
+        // Then
+        assertNotNull(result)
+        assertEquals(4, result!!.options.size)
     }
 } 

@@ -52,7 +52,7 @@ class MyKanjiViewModel @Inject constructor(
         }
 
         filteredKanji
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         loadMyKanji()

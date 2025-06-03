@@ -52,6 +52,14 @@ class WordQuizViewModel @Inject constructor(
                     currentPriorityIndex = 0
                 }
 
+                // 우선순위 단어가 없으면 랜덤 모드로 폴백
+                if (priorityWordsInMemory.isEmpty()) {
+                    currentQuizWord = null
+                    val quiz = generateRandomModeQuiz(level, quizType)
+                    _quizState.value = quiz
+                    return@launch
+                }
+
                 // 현재 단어 저장
                 currentQuizWord = priorityWordsInMemory[currentPriorityIndex]
                 
@@ -66,6 +74,7 @@ class WordQuizViewModel @Inject constructor(
                 
             } catch (e: Exception) {
                 e.printStackTrace()
+                _quizState.value = null
             } finally {
                 _isLoading.value = false
             }
@@ -117,9 +126,19 @@ class WordQuizViewModel @Inject constructor(
         return repository.getWordsForLearningMode(level.toString())
     }
 
-    private fun generateStudyModeQuiz(correctWord: WordItem, distractors: List<WordItem>, quizType: WordQuizType): WordQuiz {
+    private suspend fun generateStudyModeQuiz(correctWord: WordItem, distractors: List<WordItem>, quizType: WordQuizType): WordQuiz {
         // 오답 3개 선택 (매번 다르게)
-        val wrongOptions = distractors.shuffled().take(3)
+        var wrongOptions = distractors.filter { it.id != correctWord.id }.shuffled().take(3)
+        
+        // 만약 distractors가 3개 미만이면 전체 단어에서 추가로 가져오기
+        if (wrongOptions.size < 3) {
+            val allWords = repository.getAllWords()
+            val additionalOptions = allWords
+                .filter { it.id != correctWord.id && !wrongOptions.any { existing -> existing.id == it.id } }
+                .shuffled()
+                .take(3 - wrongOptions.size)
+            wrongOptions = wrongOptions + additionalOptions
+        }
         
         // 4개의 보기를 만들고 섞기
         val allOptions = (wrongOptions + correctWord).shuffled()

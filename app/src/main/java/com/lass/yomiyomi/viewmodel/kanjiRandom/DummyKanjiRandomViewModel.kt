@@ -4,7 +4,7 @@ import com.lass.yomiyomi.domain.model.KanjiItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class DummyKanjiRandomRandomViewModel : KanjiRandomViewModelInterface {
+class DummyKanjiRandomViewModel : KanjiRandomViewModelInterface {
     private val _randomKanji = MutableStateFlow(
         KanjiItem(
             id = 1,

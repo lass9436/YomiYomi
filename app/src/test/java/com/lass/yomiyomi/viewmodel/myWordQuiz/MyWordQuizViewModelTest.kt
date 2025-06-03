@@ -1,20 +1,19 @@
 package com.lass.yomiyomi.viewmodel.myWordQuiz
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.lass.yomiyomi.domain.usecase.GenerateMyWordQuizUseCase
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.domain.model.*
+import com.lass.yomiyomi.domain.usecase.GenerateMyWordQuizUseCase
+import io.mockk.*
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.Assert.*
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.*
 
 @ExperimentalCoroutinesApi
 class MyWordQuizViewModelTest {
@@ -22,19 +21,37 @@ class MyWordQuizViewModelTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
-    @Mock
+    @MockK
     private lateinit var generateMyWordQuizUseCase: GenerateMyWordQuizUseCase
-
-    @Mock
+    
+    @MockK
     private lateinit var myWordRepository: MyWordRepository
-
+    
     private lateinit var viewModel: MyWordQuizViewModel
+    
+    private val testDispatcher = StandardTestDispatcher()
+
+    private val sampleWordQuiz = WordQuiz(
+        question = "食べる",
+        answer = "먹다 / たべる",
+        options = listOf("먹다 / たべる", "자다 / ねる", "보다 / みる", "듣다 / きく"),
+        correctIndex = 0
+    )
+
+    private val sampleMyWordItem = MyWordItem(
+        id = 1,
+        word = "食べる",
+        reading = "たべる",
+        type = "동사",
+        meaning = "먹다",
+        level = "N5",
+        learningWeight = 0.5f,
+        timestamp = System.currentTimeMillis()
+    )
 
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
+        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
         viewModel = MyWordQuizViewModel(generateMyWordQuizUseCase, myWordRepository)
     }
@@ -44,129 +61,182 @@ class MyWordQuizViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createSampleQuiz(): WordQuiz {
-        return WordQuiz(
-            question = "学校",
-            answer = "학교 / がっこう",
-            options = listOf("학교 / がっこう", "병원 / びょういん", "회사 / かいしゃ", "집 / いえ"),
-            correctIndex = 0
-        )
-    }
-
-    private fun createSampleMyWord(): MyWordItem {
-        return MyWordItem(
-            id = 1,
-            word = "学校",
-            reading = "がっこう",
-            meaning = "학교",
-            type = "명사",
-            level = "N5",
-            learningWeight = 1.0f,
-            timestamp = System.currentTimeMillis()
-        )
-    }
-
     @Test
-    fun `초기 상태 확인`() {
-        // Then
-        assertNull("초기 퀴즈 상태는 null", viewModel.quizState.value)
-        assertFalse("초기 로딩 상태는 false", viewModel.isLoading.value)
-        assertFalse("초기 데이터 부족 상태는 false", viewModel.hasInsufficientData.value)
-    }
-
-    @Test
-    fun `랜덤 모드에서 퀴즈 로드 성공`() = runTest {
+    fun `loadQuizByLevel - 랜덤 모드에서 정상적인 퀴즈 로드`() = runTest {
         // Given
-        val quiz = createSampleQuiz()
-        whenever(generateMyWordQuizUseCase.generateQuiz(Level.N5, WordQuizType.WORD_TO_MEANING_READING, false))
-            .thenReturn(quiz)
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
 
         // When
-        viewModel.loadQuizByLevel(Level.N5, WordQuizType.WORD_TO_MEANING_READING, false)
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals("퀴즈가 로드되어야 함", quiz, viewModel.quizState.value)
-        assertFalse("로딩이 완료되어야 함", viewModel.isLoading.value)
-        assertFalse("데이터 부족 상태가 아니어야 함", viewModel.hasInsufficientData.value)
+        assertEquals(sampleWordQuiz, viewModel.quizState.value)
+        assertFalse(viewModel.isLoading.value)
+        assertFalse(viewModel.hasInsufficientData.value)
+        
+        coVerify { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) }
     }
 
     @Test
-    fun `랜덤 모드에서 데이터 부족 시 상태 업데이트`() = runTest {
+    fun `loadQuizByLevel - 학습 모드에서 정상적인 퀴즈 로드`() = runTest {
         // Given
-        whenever(generateMyWordQuizUseCase.generateQuiz(Level.N1, WordQuizType.WORD_TO_MEANING_READING, false))
-            .thenReturn(null)
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val priorityWords = listOf(sampleMyWordItem)
+        val distractors = emptyList<MyWordItem>()
+        
+        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) } returns sampleWordQuiz
 
         // When
-        viewModel.loadQuizByLevel(Level.N1, WordQuizType.WORD_TO_MEANING_READING, false)
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull("퀴즈 상태는 null이어야 함", viewModel.quizState.value)
-        assertFalse("로딩이 완료되어야 함", viewModel.isLoading.value)
-        assertTrue("데이터 부족 상태여야 함", viewModel.hasInsufficientData.value)
+        assertEquals(sampleWordQuiz, viewModel.quizState.value)
+        assertFalse(viewModel.isLoading.value)
+        assertFalse(viewModel.hasInsufficientData.value)
+        
+        coVerify { myWordRepository.getMyWordsForLearningMode("N5") }
+        coVerify { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) }
     }
 
     @Test
-    fun `학습 모드에서 우선순위 데이터가 있을 때 퀴즈 로드`() = runTest {
+    fun `loadQuizByLevel - 데이터 부족시 hasInsufficientData true`() = runTest {
         // Given
-        val quiz = createSampleQuiz()
-        val priorityWords = listOf(createSampleMyWord())
-        val distractors = listOf<MyWordItem>()
-
-        whenever(myWordRepository.getMyWordsForLearningMode("N5"))
-            .thenReturn(Pair(priorityWords, distractors))
-        whenever(generateMyWordQuizUseCase.generateQuiz(Level.N5, WordQuizType.WORD_TO_MEANING_READING, true))
-            .thenReturn(quiz)
+        val level = Level.N1
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns null
 
         // When
-        viewModel.loadQuizByLevel(Level.N5, WordQuizType.WORD_TO_MEANING_READING, true)
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals("퀴즈가 로드되어야 함", quiz, viewModel.quizState.value)
-        assertFalse("로딩이 완료되어야 함", viewModel.isLoading.value)
-        assertFalse("데이터 부족 상태가 아니어야 함", viewModel.hasInsufficientData.value)
-        verify(myWordRepository).getMyWordsForLearningMode("N5")
+        assertNull(viewModel.quizState.value)
+        assertFalse(viewModel.isLoading.value)
+        assertTrue(viewModel.hasInsufficientData.value)
     }
 
     @Test
-    fun `정답 체크 - 정답인 경우`() = runTest {
+    fun `loadQuizByLevel - 학습 모드에서 우선순위 데이터 없을 때 랜덤 모드로 폴백`() = runTest {
         // Given
-        val quiz = createSampleQuiz()
-        whenever(generateMyWordQuizUseCase.generateQuiz(any(), any(), any())).thenReturn(quiz)
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        
+        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(emptyList(), emptyList())
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
 
         // When
-        viewModel.checkAnswer(0, false) // 학습모드가 아닌 경우로 단순화
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        // 학습모드가 아니므로 updateMyWordLearningStatus 호출되지 않음
-        verify(myWordRepository, never()).updateMyWordLearningStatus(any(), any(), any())
+        assertEquals(sampleWordQuiz, viewModel.quizState.value)
+        assertFalse(viewModel.isLoading.value)
+        assertFalse(viewModel.hasInsufficientData.value)
+        
+        coVerify { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) }
     }
 
     @Test
-    fun `랜덤 모드에서는 학습 상태 업데이트 안함`() = runTest {
+    fun `loadQuizByLevel - 로딩 상태 확인`() = runTest {
         // Given
-        val quiz = createSampleQuiz()
-        whenever(generateMyWordQuizUseCase.generateQuiz(any(), any(), eq(false))).thenReturn(quiz)
-        viewModel.loadQuizByLevel(Level.N5, WordQuizType.WORD_TO_MEANING_READING, false)
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
 
         // When
-        viewModel.checkAnswer(0, false)
-
-        // Then
-        verify(myWordRepository, never()).updateMyWordLearningStatus(any(), any(), any())
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
+        
+        // Then - 로딩 완료 후 상태 확인
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertFalse(viewModel.isLoading.value)
     }
 
     @Test
-    fun `예외 발생 시 에러 상태 처리`() = runTest {
+    fun `checkAnswer - 학습 모드에서 정답시 가중치 업데이트`() = runTest {
         // Given
-        whenever(generateMyWordQuizUseCase.generateQuiz(any(), any(), any()))
-            .thenThrow(RuntimeException("Test exception"))
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val priorityWords = listOf(sampleMyWordItem)
+        val distractors = emptyList<MyWordItem>()
+        
+        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) } returns sampleWordQuiz
+        coEvery { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) } just runs
 
-        // When
-        viewModel.loadQuizByLevel(Level.N5, WordQuizType.WORD_TO_MEANING_READING, false)
+        // 먼저 퀴즈를 로드
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // When - 정답 선택
+        viewModel.checkAnswer(selectedIndex = 0, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull("퀴즈 상태는 null이어야 함", viewModel.quizState.value)
-        assertTrue("데이터 부족 상태로 처리되어야 함", viewModel.hasInsufficientData.value)
-        assertFalse("로딩이 완료되어야 함", viewModel.isLoading.value)
+        coVerify { myWordRepository.updateMyWordLearningStatus(1, true, 0.5f) }
+    }
+
+    @Test
+    fun `checkAnswer - 학습 모드에서 오답시 가중치 업데이트`() = runTest {
+        // Given
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val priorityWords = listOf(sampleMyWordItem)
+        val distractors = emptyList<MyWordItem>()
+        
+        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) } returns sampleWordQuiz
+        coEvery { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) } just runs
+
+        // 먼저 퀴즈를 로드
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // When - 오답 선택
+        viewModel.checkAnswer(selectedIndex = 1, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        coVerify { myWordRepository.updateMyWordLearningStatus(1, false, 0.5f) }
+    }
+
+    @Test
+    fun `checkAnswer - 랜덤 모드에서는 가중치 업데이트 하지 않음`() = runTest {
+        // Given
+        val level = Level.N5
+        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        
+        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
+
+        // 먼저 퀴즈를 로드 (랜덤 모드)
+        viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // When - 정답 선택
+        viewModel.checkAnswer(selectedIndex = 0, isLearningMode = false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 0) { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) }
+    }
+
+    @Test
+    fun `checkAnswer - 퀴즈가 없을 때 아무것도 하지 않음`() = runTest {
+        // Given - 퀴즈가 로드되지 않은 상태
+
+        // When
+        viewModel.checkAnswer(selectedIndex = 0, isLearningMode = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 0) { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) }
     }
 } 

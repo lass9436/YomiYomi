@@ -19,13 +19,25 @@ class WordRandomViewModel @Inject constructor(
 
     override fun fetchRandomWord() {
         viewModelScope.launch {
-            _randomWord.value = repository.getRandomWord()
+            try {
+                _randomWord.value = repository.getRandomWord()
+            } catch (e: Exception) {
+                // Log error but don't crash - keep state as null
+                e.printStackTrace()
+                _randomWord.value = null
+            }
         }
     }
 
     override fun fetchRandomWordByLevel(level: String?) {
         viewModelScope.launch {
-            _randomWord.value = repository.getRandomWordByLevel(level)
+            try {
+                _randomWord.value = repository.getRandomWordByLevel(level)
+            } catch (e: Exception) {
+                // Log error but don't crash - keep state as null
+                e.printStackTrace()
+                _randomWord.value = null
+            }
         }
     }
 }
