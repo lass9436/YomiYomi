@@ -245,45 +245,78 @@ private fun ParagraphSentenceItem(
                 )
             }
             
-            // 한국어
+            // 한국어 + 인라인 버튼들
             if ((showKorean && displayMode != DisplayMode.JAPANESE_ONLY && displayMode != DisplayMode.JAPANESE_NO_FURIGANA) || displayMode == DisplayMode.KOREAN_ONLY) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = sentence.korean,
-                    fontSize = if (displayMode == DisplayMode.KOREAN_ONLY) 18.sp else 16.sp,
-                    color = if (displayMode == DisplayMode.KOREAN_ONLY) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            // 편집/삭제 버튼 (오른쪽 정렬)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(
-                    onClick = onEdit,
-                    modifier = Modifier.size(32.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = "편집",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.tertiary
+                    Text(
+                        text = sentence.korean,
+                        fontSize = if (displayMode == DisplayMode.KOREAN_ONLY) 18.sp else 16.sp,
+                        color = if (displayMode == DisplayMode.KOREAN_ONLY) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f)
                     )
+                    
+                    // 편집/삭제 버튼들을 문장 끝에 inline으로
+                    Row {
+                        IconButton(
+                            onClick = onEdit,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "편집",
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        
+                        IconButton(
+                            onClick = onDelete,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "삭제",
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                 }
-                
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.size(32.dp)
+            } else {
+                // Korean이 안 보이는 모드일 때는 일본어 아래에 버튼들 배치
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = "삭제",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.error
-                    )
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "편집",
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "삭제",
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
