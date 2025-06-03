@@ -18,15 +18,15 @@ import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.list.MyWordCard
 import com.lass.yomiyomi.ui.component.list.AddWordDialog
 import com.lass.yomiyomi.ui.component.list.EditWordDialog
-import com.lass.yomiyomi.ui.state.MyWordState
-import com.lass.yomiyomi.ui.state.MyWordCallbacks
+import com.lass.yomiyomi.ui.state.WordState
+import com.lass.yomiyomi.ui.state.WordCallbacks
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyWordLayout(
-    state: MyWordState,
-    callbacks: MyWordCallbacks,
+    state: WordState,
+    callbacks: WordCallbacks,
     viewModel: MyWordViewModelInterface,
     modifier: Modifier = Modifier
 ) {

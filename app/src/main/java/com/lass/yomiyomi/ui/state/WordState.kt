@@ -3,7 +3,7 @@ package com.lass.yomiyomi.ui.state
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.domain.model.MyWordItem
 
-data class MyWordState(
+data class WordState(
     val myWords: List<MyWordItem>,
     val isLoading: Boolean,
     val selectedLevel: Level,
@@ -13,7 +13,7 @@ data class MyWordState(
     val editingWord: MyWordItem?
 )
 
-data class MyWordCallbacks(
+data class WordCallbacks(
     val onNavigateBack: () -> Unit,
     val onLevelSelected: (Level) -> Unit,
     val onSearchQueryChanged: (String) -> Unit,

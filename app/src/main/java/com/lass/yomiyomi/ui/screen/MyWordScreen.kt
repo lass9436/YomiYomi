@@ -7,8 +7,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.ui.layout.MyWordLayout
-import com.lass.yomiyomi.ui.state.MyWordState
-import com.lass.yomiyomi.ui.state.MyWordCallbacks
+import com.lass.yomiyomi.ui.state.WordState
+import com.lass.yomiyomi.ui.state.WordCallbacks
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.myWord.DummyMyWordViewModel
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
@@ -32,7 +32,7 @@ fun MyWordScreen(
     // 안드로이드 시스템 뒤로가기 버튼도 onNavigateBack과 같은 동작
     BackHandler { onNavigateBack() }
 
-    val state = MyWordState(
+    val state = WordState(
         myWords = myWords,
         isLoading = isLoading,
         selectedLevel = selectedLevel,
@@ -42,7 +42,7 @@ fun MyWordScreen(
         editingWord = editingWord
     )
 
-    val callbacks = MyWordCallbacks(
+    val callbacks = WordCallbacks(
         onNavigateBack = onNavigateBack,
         onLevelSelected = { myWordViewModel.setSelectedLevel(it) },
         onSearchQueryChanged = { 

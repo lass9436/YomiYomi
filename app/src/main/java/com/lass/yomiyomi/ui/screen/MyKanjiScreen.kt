@@ -7,8 +7,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.MyKanjiItem
 import com.lass.yomiyomi.ui.layout.MyKanjiLayout
-import com.lass.yomiyomi.ui.state.MyKanjiState
-import com.lass.yomiyomi.ui.state.MyKanjiCallbacks
+import com.lass.yomiyomi.ui.state.KanjiState
+import com.lass.yomiyomi.ui.state.KanjiCallbacks
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.myKanji.DummyMyKanjiViewModel
 import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModel
@@ -32,7 +32,7 @@ fun MyKanjiScreen(
     // 안드로이드 시스템 뒤로가기 버튼도 onNavigateBack과 같은 동작
     BackHandler { onNavigateBack() }
 
-    val state = MyKanjiState(
+    val state = KanjiState(
         myKanji = myKanji,
         isLoading = isLoading,
         selectedLevel = selectedLevel,
@@ -42,7 +42,7 @@ fun MyKanjiScreen(
         editingKanji = editingKanji
     )
 
-    val callbacks = MyKanjiCallbacks(
+    val callbacks = KanjiCallbacks(
         onNavigateBack = onNavigateBack,
         onLevelSelected = { myKanjiViewModel.setSelectedLevel(it) },
         onSearchQueryChanged = { 

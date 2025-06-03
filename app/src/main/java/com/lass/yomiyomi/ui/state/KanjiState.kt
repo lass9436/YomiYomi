@@ -3,7 +3,7 @@ package com.lass.yomiyomi.ui.state
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.domain.model.MyKanjiItem
 
-data class MyKanjiState(
+data class KanjiState(
     val myKanji: List<MyKanjiItem>,
     val isLoading: Boolean,
     val selectedLevel: Level,
@@ -13,7 +13,7 @@ data class MyKanjiState(
     val editingKanji: MyKanjiItem?
 )
 
-data class MyKanjiCallbacks(
+data class KanjiCallbacks(
     val onNavigateBack: () -> Unit,
     val onLevelSelected: (Level) -> Unit,
     val onSearchQueryChanged: (String) -> Unit,

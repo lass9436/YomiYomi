@@ -18,15 +18,15 @@ import com.lass.yomiyomi.ui.component.common.LevelSelector
 import com.lass.yomiyomi.ui.component.list.MyKanjiCard
 import com.lass.yomiyomi.ui.component.list.AddKanjiDialog
 import com.lass.yomiyomi.ui.component.list.EditKanjiDialog
-import com.lass.yomiyomi.ui.state.MyKanjiState
-import com.lass.yomiyomi.ui.state.MyKanjiCallbacks
+import com.lass.yomiyomi.ui.state.KanjiState
+import com.lass.yomiyomi.ui.state.KanjiCallbacks
 import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyKanjiLayout(
-    state: MyKanjiState,
-    callbacks: MyKanjiCallbacks,
+    state: KanjiState,
+    callbacks: KanjiCallbacks,
     viewModel: MyKanjiViewModelInterface,
     modifier: Modifier = Modifier
 ) {
