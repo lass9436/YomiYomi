@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 
@@ -19,6 +20,7 @@ import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 @Composable
 fun SentenceCard(
     sentence: SentenceItem,
+    paragraph: ParagraphItem? = null,
     displayMode: DisplayMode = DisplayMode.FULL,
     showKorean: Boolean = true,
     showProgress: Boolean = true,
@@ -27,6 +29,19 @@ fun SentenceCard(
     onDisplayModeChange: ((DisplayMode) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    // 문단 소속이면 문단의 카테고리/난이도 사용, 아니면 문장 자체 값 사용
+    val effectiveCategory = if (sentence.paragraphId != null) {
+        paragraph?.category ?: sentence.category
+    } else {
+        sentence.category
+    }
+    
+    val effectiveDifficulty = if (sentence.paragraphId != null) {
+        paragraph?.difficulty ?: sentence.difficulty
+    } else {
+        sentence.difficulty
+    }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -70,7 +85,7 @@ fun SentenceCard(
                 Row {
                     AssistChip(
                         onClick = { },
-                        label = { Text(sentence.category, fontSize = 12.sp) },
+                        label = { Text(effectiveCategory, fontSize = 12.sp) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             labelColor = MaterialTheme.colorScheme.tertiary
@@ -79,7 +94,7 @@ fun SentenceCard(
                     Spacer(modifier = Modifier.width(4.dp))
                     AssistChip(
                         onClick = { },
-                        label = { Text(sentence.difficulty, fontSize = 12.sp) },
+                        label = { Text(effectiveDifficulty, fontSize = 12.sp) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             labelColor = MaterialTheme.colorScheme.tertiary

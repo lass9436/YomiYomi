@@ -27,11 +27,11 @@ fun ParagraphInputDialog(
     var title by remember(paragraph) { mutableStateOf(paragraph?.title ?: "") }
     var description by remember(paragraph) { mutableStateOf(paragraph?.description ?: "") }
     var category by remember(paragraph) { mutableStateOf(paragraph?.category ?: "일반") }
-    var difficulty by remember(paragraph) { mutableStateOf(paragraph?.difficulty ?: "초급") }
+    var difficulty by remember(paragraph) { mutableStateOf(paragraph?.difficulty ?: "N5") }
     var totalSentences by remember(paragraph) { mutableStateOf(paragraph?.totalSentences?.toString() ?: "5") }
     
     val categories = listOf("일반", "자기소개", "면접", "회화", "비즈니스", "일상", "여행")
-    val difficulties = listOf("초급", "중급", "고급")
+    val difficulties = listOf("N5", "N4", "N3", "N2", "N1")
     
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -103,9 +103,9 @@ fun ParagraphInputDialog(
                 ) {
                     OutlinedTextField(
                         value = category,
-                        onValueChange = { },
-                        readOnly = true,
+                        onValueChange = { category = it },
                         label = { Text("카테고리") },
+                        placeholder = { Text("카테고리를 선택하거나 새로 입력하세요") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()

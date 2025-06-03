@@ -33,7 +33,7 @@ fun SentenceInputDialog(
     var japanese by remember(sentence) { mutableStateOf(sentence?.japanese ?: "") }
     var korean by remember(sentence) { mutableStateOf(sentence?.korean ?: "") }
     var category by remember(sentence) { mutableStateOf(sentence?.category ?: availableCategories.firstOrNull() ?: "일반") }
-    var difficulty by remember(sentence) { mutableStateOf(sentence?.difficulty ?: availableDifficulties.firstOrNull() ?: "초급") }
+    var difficulty by remember(sentence) { mutableStateOf(sentence?.difficulty ?: availableDifficulties.firstOrNull() ?: "N5") }
     var showPreview by remember { mutableStateOf(false) }
     
     // 기본값을 포함한 카테고리/난이도 목록 (기존 값이 없으면 기본값 추가)
@@ -46,7 +46,7 @@ fun SentenceInputDialog(
     val difficulties = if (availableDifficulties.isNotEmpty()) {
         availableDifficulties 
     } else {
-        listOf("초급", "중급", "고급") // 폴백 옵션
+        listOf("N5", "N4", "N3", "N2", "N1") // 폴백 옵션
     }
     
     Dialog(onDismissRequest = onDismiss) {
@@ -145,72 +145,95 @@ fun SentenceInputDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // 카테고리 선택
-                var categoryExpanded by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
-                    expanded = categoryExpanded,
-                    onExpandedChange = { categoryExpanded = !categoryExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = category,
-                        onValueChange = { category = it },
-                        label = { Text("카테고리") },
-                        placeholder = { Text("카테고리를 선택하거나 새로 입력하세요") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    
-                    ExposedDropdownMenu(
+                // 카테고리 선택 (독립 문장일 때만 표시)
+                if (availableCategories.isNotEmpty()) {
+                    var categoryExpanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
                         expanded = categoryExpanded,
-                        onDismissRequest = { categoryExpanded = false }
+                        onExpandedChange = { categoryExpanded = !categoryExpanded }
                     ) {
-                        categories.forEach { cat ->
-                            DropdownMenuItem(
-                                text = { Text(cat) },
-                                onClick = {
-                                    category = cat
-                                    categoryExpanded = false
-                                }
-                            )
+                        OutlinedTextField(
+                            value = category,
+                            onValueChange = { category = it },
+                            label = { Text("카테고리") },
+                            placeholder = { Text("카테고리를 선택하거나 새로 입력하세요") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
+                        )
+                        
+                        ExposedDropdownMenu(
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false }
+                        ) {
+                            categories.forEach { cat ->
+                                DropdownMenuItem(
+                                    text = { Text(cat) },
+                                    onClick = {
+                                        category = cat
+                                        categoryExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // 난이도 선택
-                var difficultyExpanded by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
-                    expanded = difficultyExpanded,
-                    onExpandedChange = { difficultyExpanded = !difficultyExpanded }
-                ) {
-                    OutlinedTextField(
-                        value = difficulty,
-                        onValueChange = { difficulty = it },
-                        label = { Text("난이도") },
-                        placeholder = { Text("난이도를 선택하거나 새로 입력하세요") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = difficultyExpanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    
-                    ExposedDropdownMenu(
+                // 난이도 선택 (독립 문장일 때만 표시)
+                if (availableDifficulties.isNotEmpty()) {
+                    var difficultyExpanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
                         expanded = difficultyExpanded,
-                        onDismissRequest = { difficultyExpanded = false }
+                        onExpandedChange = { difficultyExpanded = !difficultyExpanded }
                     ) {
-                        difficulties.forEach { diff ->
-                            DropdownMenuItem(
-                                text = { Text(diff) },
-                                onClick = {
-                                    difficulty = diff
-                                    difficultyExpanded = false
-                                }
-                            )
+                        OutlinedTextField(
+                            value = difficulty,
+                            onValueChange = { difficulty = it },
+                            label = { Text("난이도") },
+                            placeholder = { Text("난이도를 선택하거나 새로 입력하세요") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = difficultyExpanded) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
+                        )
+                        
+                        ExposedDropdownMenu(
+                            expanded = difficultyExpanded,
+                            onDismissRequest = { difficultyExpanded = false }
+                        ) {
+                            difficulties.forEach { diff ->
+                                DropdownMenuItem(
+                                    text = { Text(diff) },
+                                    onClick = {
+                                        difficulty = diff
+                                        difficultyExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                } else {
+                    // 문단 소속 문장일 때 안내 텍스트
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Text(
+                            text = "📝 이 문장은 문단에 속하므로 문단의 카테고리와 난이도를 따릅니다.",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
                 
                 Spacer(modifier = Modifier.height(32.dp))

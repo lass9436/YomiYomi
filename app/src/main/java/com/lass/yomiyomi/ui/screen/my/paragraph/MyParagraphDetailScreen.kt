@@ -167,15 +167,19 @@ fun ParagraphDetailScreen(
     SentenceInputDialog(
         isOpen = showInputDialog,
         sentence = editingSentence,
-        availableCategories = availableCategories,
-        availableDifficulties = availableDifficulties,
+        availableCategories = emptyList(), // 문단 소속 문장은 카테고리 선택 불가
+        availableDifficulties = emptyList(), // 문단 소속 문장은 난이도 선택 불가
         onDismiss = {
             showInputDialog = false
             editingSentence = null
         },
         onSave = { sentence ->
-            // 문단 ID 설정
-            val sentenceWithParagraph = sentence.copy(paragraphId = paragraphId)
+            // 문단 ID와 문단의 카테고리/난이도 설정
+            val sentenceWithParagraph = sentence.copy(
+                paragraphId = paragraphId,
+                category = paragraph?.category ?: "",
+                difficulty = paragraph?.difficulty ?: ""
+            )
             
             if (editingSentence != null) {
                 viewModel.updateSentence(sentenceWithParagraph)
