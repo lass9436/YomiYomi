@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -24,50 +25,55 @@ fun FuriganaText(
         FuriganaParser.parse(japaneseText) 
     }
     
-    Row(modifier = modifier) {
+    // 각 세그먼트를 하나의 인라인 블록으로 처리
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.Bottom
+    ) {
         segments.forEach { segment ->
             when {
                 // 한자 + 요미가나 세그먼트
                 segment.furigana != null -> {
                     when (displayMode) {
                         DisplayMode.FULL -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.padding(horizontal = 1.dp)
+                            // Box를 사용해서 후리가나를 한자 위에 정확히 배치
+                            Box(
+                                modifier = Modifier.padding(horizontal = 1.dp),
+                                contentAlignment = Alignment.BottomCenter
                             ) {
-                                Text(
-                                    text = segment.furigana,
-                                    fontSize = furiganaSize,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    textAlign = TextAlign.Center
-                                )
-                                Text(
-                                    text = segment.text,
-                                    fontSize = fontSize,
-                                    textAlign = TextAlign.Center
-                                )
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = segment.furigana,
+                                        fontSize = furiganaSize,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = segment.text,
+                                        fontSize = fontSize,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
                         }
                         DisplayMode.JAPANESE_ONLY -> {
                             Text(
                                 text = segment.text,
-                                fontSize = fontSize,
-                                modifier = Modifier.alignByBaseline()
+                                fontSize = fontSize
                             )
                         }
                         DisplayMode.FURIGANA_ONLY -> {
                             Text(
                                 text = segment.furigana,
-                                fontSize = fontSize,
-                                modifier = Modifier.alignByBaseline()
+                                fontSize = fontSize
                             )
                         }
                         DisplayMode.KANJI_ONLY -> {
-                            // 한자만 표시 (요미가나 숨김)
                             Text(
                                 text = segment.text.filter { FuriganaParser.isKanji(it) },
-                                fontSize = fontSize,
-                                modifier = Modifier.alignByBaseline()
+                                fontSize = fontSize
                             )
                         }
                     }
@@ -81,8 +87,7 @@ fun FuriganaText(
                         else -> {
                             Text(
                                 text = segment.text,
-                                fontSize = fontSize,
-                                modifier = Modifier.alignByBaseline()
+                                fontSize = fontSize
                             )
                         }
                     }

@@ -7,15 +7,6 @@ import androidx.room.Index
 
 @Entity(
     tableName = "sentence",
-    foreignKeys = [
-        ForeignKey(
-            entity = Paragraph::class,
-            parentColumns = ["paragraphId"],
-            childColumns = ["paragraphId"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        )
-    ],
     indices = [Index(value = ["paragraphId"])]
 )
 data class Sentence(
