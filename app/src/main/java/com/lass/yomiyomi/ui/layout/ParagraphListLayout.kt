@@ -16,6 +16,8 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.ui.component.card.ParagraphCard
 import com.lass.yomiyomi.ui.component.search.SearchTextField
 import com.lass.yomiyomi.ui.component.filter.ParagraphFilterPanel
+import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
+import com.lass.yomiyomi.ui.component.empty.EmptyView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,51 +69,19 @@ fun ParagraphListLayout(
         
         // 문단 목록
         if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            LoadingIndicator(modifier = Modifier.weight(1f))
         } else if (paragraphs.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = if (searchQuery.isNotEmpty() || selectedCategory != "전체") {
-                            "검색 결과가 없습니다"
-                        } else {
-                            "아직 문단이 없습니다"
-                        },
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                    if (searchQuery.isEmpty() && selectedCategory == "전체") {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "오른쪽 위 + 버튼을 눌러 문단을 추가해보세요!",
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                    }
-                }
-            }
+            EmptyView(
+                title = if (searchQuery.isNotEmpty() || selectedCategory != "전체") {
+                    "검색 결과가 없습니다"
+                } else {
+                    "아직 문단이 없습니다"
+                },
+                subtitle = if (searchQuery.isEmpty() && selectedCategory == "전체") {
+                    "오른쪽 위 + 버튼을 눌러 문단을 추가해보세요!"
+                } else null,
+                modifier = Modifier.weight(1f)
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.weight(1f),
