@@ -38,21 +38,23 @@ fun SentenceCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // 상단: 일본어 (후리가나 포함)
-            FuriganaText(
-                japaneseText = sentence.japanese,
-                displayMode = displayMode,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
+            // 상단: 일본어 (후리가나 포함) - KOREAN_ONLY 모드에서는 숨김
+            if (displayMode != DisplayMode.KOREAN_ONLY) {
+                FuriganaText(
+                    japaneseText = sentence.japanese,
+                    displayMode = displayMode,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
             
-            // 한국어 번역 (showKorean이 true일 때만)
-            if (showKorean) {
+            // 한국어 번역 (showKorean이 true이고 일본어 전용 모드가 아니거나, KOREAN_ONLY 모드일 때)
+            if ((showKorean && displayMode != DisplayMode.JAPANESE_ONLY && displayMode != DisplayMode.JAPANESE_NO_FURIGANA) || displayMode == DisplayMode.KOREAN_ONLY) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = sentence.korean,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = if (displayMode == DisplayMode.KOREAN_ONLY) 18.sp else 14.sp,
+                    color = if (displayMode == DisplayMode.KOREAN_ONLY) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -182,16 +184,16 @@ fun SentenceCard(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("요미가나만") },
+                            text = { Text("요미가나 없이") },
                             onClick = {
-                                onChange(DisplayMode.FURIGANA_ONLY)
+                                onChange(DisplayMode.JAPANESE_NO_FURIGANA)
                                 expanded = false
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("한자만") },
+                            text = { Text("한국어만") },
                             onClick = {
-                                onChange(DisplayMode.KANJI_ONLY)
+                                onChange(DisplayMode.KOREAN_ONLY)
                                 expanded = false
                             }
                         )

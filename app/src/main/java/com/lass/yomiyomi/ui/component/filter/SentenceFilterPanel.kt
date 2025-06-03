@@ -104,8 +104,8 @@ fun SentenceFilterPanel(
                         value = when (displayMode) {
                             DisplayMode.FULL -> "전체 표시"
                             DisplayMode.JAPANESE_ONLY -> "일본어만"
-                            DisplayMode.FURIGANA_ONLY -> "요미가나만"
-                            DisplayMode.KANJI_ONLY -> "한자만"
+                            DisplayMode.JAPANESE_NO_FURIGANA -> "요미가나 없이"
+                            DisplayMode.KOREAN_ONLY -> "한국어만"
                         },
                         onValueChange = { },
                         readOnly = true,
@@ -137,16 +137,16 @@ fun SentenceFilterPanel(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("요미가나만") },
+                            text = { Text("요미가나 없이") },
                             onClick = {
-                                onDisplayModeChange(DisplayMode.FURIGANA_ONLY)
+                                onDisplayModeChange(DisplayMode.JAPANESE_NO_FURIGANA)
                                 displayExpanded = false
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("한자만") },
+                            text = { Text("한국어만") },
                             onClick = {
-                                onDisplayModeChange(DisplayMode.KANJI_ONLY)
+                                onDisplayModeChange(DisplayMode.KOREAN_ONLY)
                                 displayExpanded = false
                             }
                         )

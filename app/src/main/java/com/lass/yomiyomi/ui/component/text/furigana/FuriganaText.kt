@@ -52,7 +52,7 @@ fun FuriganaText(
                             // 한자 + 요미가나 세그먼트
                             segment.furigana != null -> {
                                 when (displayMode) {
-                                    DisplayMode.FULL -> {
+                                    DisplayMode.FULL, DisplayMode.JAPANESE_ONLY -> {
                                         Box(
                                             modifier = Modifier.padding(horizontal = 1.dp),
                                             contentAlignment = Alignment.BottomCenter
@@ -77,31 +77,22 @@ fun FuriganaText(
                                             }
                                         }
                                     }
-                                    DisplayMode.JAPANESE_ONLY -> {
+                                    DisplayMode.JAPANESE_NO_FURIGANA -> {
                                         Text(
                                             text = segment.text,
                                             fontSize = fontSize
                                         )
                                     }
-                                    DisplayMode.FURIGANA_ONLY -> {
-                                        Text(
-                                            text = segment.furigana,
-                                            fontSize = fontSize
-                                        )
-                                    }
-                                    DisplayMode.KANJI_ONLY -> {
-                                        Text(
-                                            text = segment.text.filter { FuriganaParser.isKanji(it) },
-                                            fontSize = fontSize
-                                        )
+                                    DisplayMode.KOREAN_ONLY -> {
+                                        // 한국어만 모드에서는 일본어 텍스트 숨김
                                     }
                                 }
                             }
                             // 일반 텍스트 (히라가나/카타카나)
                             else -> {
                                 when (displayMode) {
-                                    DisplayMode.FURIGANA_ONLY, DisplayMode.KANJI_ONLY -> {
-                                        // 이 모드들에서는 히라가나/카타카나 숨김
+                                    DisplayMode.KOREAN_ONLY -> {
+                                        // 한국어만 모드에서는 히라가나/카타카나 숨김
                                     }
                                     else -> {
                                         Text(
@@ -137,7 +128,7 @@ private fun calculateLines(
         val segmentWidth = when {
             segment.furigana != null -> {
                 when (displayMode) {
-                    DisplayMode.FULL -> {
+                    DisplayMode.FULL, DisplayMode.JAPANESE_ONLY -> {
                         val kanjiWidth = textMeasurer.measure(
                             text = segment.text,
                             style = TextStyle(fontSize = fontSize)
@@ -148,32 +139,21 @@ private fun calculateLines(
                         ).size.width.toFloat()
                         maxOf(kanjiWidth, furiganaWidth) + 8f // padding 고려
                     }
-                    DisplayMode.JAPANESE_ONLY -> {
+                    DisplayMode.JAPANESE_NO_FURIGANA -> {
                         textMeasurer.measure(
                             text = segment.text,
                             style = TextStyle(fontSize = fontSize)
                         ).size.width.toFloat()
                     }
-                    DisplayMode.FURIGANA_ONLY -> {
-                        textMeasurer.measure(
-                            text = segment.furigana,
-                            style = TextStyle(fontSize = fontSize)
-                        ).size.width.toFloat()
-                    }
-                    DisplayMode.KANJI_ONLY -> {
-                        val kanjiOnly = segment.text.filter { FuriganaParser.isKanji(it) }
-                        if (kanjiOnly.isNotEmpty()) {
-                            textMeasurer.measure(
-                                text = kanjiOnly,
-                                style = TextStyle(fontSize = fontSize)
-                            ).size.width.toFloat()
-                        } else 0f
+                    DisplayMode.KOREAN_ONLY -> {
+                        // 한국어만 모드에서는 일본어 텍스트 숨김 - 너비 0
+                        0f
                     }
                 }
             }
             else -> {
                 when (displayMode) {
-                    DisplayMode.FURIGANA_ONLY, DisplayMode.KANJI_ONLY -> 0f
+                    DisplayMode.KOREAN_ONLY -> 0f
                     else -> {
                         textMeasurer.measure(
                             text = segment.text,
