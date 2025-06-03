@@ -9,45 +9,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// 텍스트 세그먼트 데이터 클래스
-data class TextSegment(
-    val text: String,
-    val furigana: String? = null  // null이면 일반 텍스트
-)
-
-// 표시 모드 열거형
-enum class DisplayMode {
-    FULL,           // 전체 표시 (한자 + 요미가나 + 히라가나)
-    JAPANESE_ONLY,  // 일본어만 (한자 + 히라가나, 요미가나 숨김)
-    FURIGANA_ONLY,  // 요미가나만 (한자 숨김)
-    KANJI_ONLY      // 한자만 (요미가나 + 히라가나 숨김)
-}
-
-object FuriganaParser {
-    fun parse(text: String): List<TextSegment> {
-        val segments = mutableListOf<TextSegment>()
-        val pattern = """([^[\]]+)(?:\[([^\]]+)\])?""".toRegex()
-        
-        pattern.findAll(text).forEach { match ->
-            val baseText = match.groupValues[1]
-            val furigana = match.groupValues[2].takeIf { it.isNotEmpty() }
-            segments.add(TextSegment(baseText, furigana))
-        }
-        
-        return segments
-    }
-    
-    // 한자인지 판별 (간단한 유니코드 범위 체크)
-    fun isKanji(char: Char): Boolean {
-        return char.code in 0x4E00..0x9FAF || // CJK Unified Ideographs
-               char.code in 0x3400..0x4DBF    // CJK Extension A
-    }
-    
-    fun hasKanji(text: String): Boolean {
-        return text.any { isKanji(it) }
-    }
-}
+import com.lass.yomiyomi.domain.model.DisplayMode
+import com.lass.yomiyomi.util.FuriganaParser
 
 @Composable
 fun FuriganaText(
@@ -127,4 +90,4 @@ fun FuriganaText(
             }
         }
     }
-} 
+}

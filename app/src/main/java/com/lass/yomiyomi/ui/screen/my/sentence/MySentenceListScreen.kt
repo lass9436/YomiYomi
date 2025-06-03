@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.SentenceItem
-import com.lass.yomiyomi.ui.component.*
-import com.lass.yomiyomi.ui.component.text.furigana.DisplayMode
+import com.lass.yomiyomi.domain.model.DisplayMode
+import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
 import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
 

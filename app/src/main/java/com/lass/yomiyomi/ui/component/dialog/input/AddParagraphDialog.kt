@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.dialog.input
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState

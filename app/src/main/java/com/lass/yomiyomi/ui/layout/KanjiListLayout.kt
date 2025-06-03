@@ -15,9 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.button.LevelSelector
-import com.lass.yomiyomi.ui.component.list.KanjiCard
-import com.lass.yomiyomi.ui.component.list.AddKanjiDialog
-import com.lass.yomiyomi.ui.component.list.EditKanjiDialog
+import com.lass.yomiyomi.ui.component.card.KanjiCard
+import com.lass.yomiyomi.ui.component.dialog.edit.EditKanjiDialog
+import com.lass.yomiyomi.ui.component.dialog.input.AddKanjiDialog
 import com.lass.yomiyomi.ui.state.KanjiState
 import com.lass.yomiyomi.ui.state.KanjiCallbacks
 import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
@@ -120,8 +120,12 @@ fun KanjiListLayout(
                         KanjiCard(
                             kanji = myKanji,
                             // 읽기 전용 모드가 아닐 때만 편집/삭제 기능 제공
-                            onEdit = if (!isReadOnly) { { callbacks.onEditKanji(myKanji) } } else null,
-                            onDelete = if (!isReadOnly) { { callbacks.onDeleteKanji(myKanji) } } else null
+                            onEdit = if (!isReadOnly) {
+                                { callbacks.onEditKanji(myKanji) }
+                            } else null,
+                            onDelete = if (!isReadOnly) {
+                                { callbacks.onDeleteKanji(myKanji) }
+                            } else null
                         )
                     }
                 }

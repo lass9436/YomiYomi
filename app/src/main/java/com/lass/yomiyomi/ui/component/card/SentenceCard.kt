@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.ui.component
+package com.lass.yomiyomi.ui.component.card
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.SentenceItem
-import com.lass.yomiyomi.ui.component.text.furigana.DisplayMode
+import com.lass.yomiyomi.domain.model.DisplayMode
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 
 @OptIn(ExperimentalMaterial3Api::class)

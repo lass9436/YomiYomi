@@ -13,7 +13,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.SentenceItem
-import com.lass.yomiyomi.ui.component.*
+import com.lass.yomiyomi.domain.model.DisplayMode
+import com.lass.yomiyomi.ui.component.card.SentenceCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,8 +25,8 @@ fun SentenceListLayout(
     onSearchQueryChange: (String) -> Unit = {},
     selectedCategory: String = "전체",
     onCategoryChange: (String) -> Unit = {},
-    displayMode: com.lass.yomiyomi.ui.component.DisplayMode = com.lass.yomiyomi.ui.component.DisplayMode.FULL,
-    onDisplayModeChange: (com.lass.yomiyomi.ui.component.DisplayMode) -> Unit = {},
+    displayMode: DisplayMode = DisplayMode.FULL,
+    onDisplayModeChange: (DisplayMode) -> Unit = {},
     showKorean: Boolean = true,
     onShowKoreanChange: (Boolean) -> Unit = {},
     showProgress: Boolean = true,
@@ -138,10 +139,10 @@ fun SentenceListLayout(
                     ) {
                         OutlinedTextField(
                             value = when (displayMode) {
-                                com.lass.yomiyomi.ui.component.DisplayMode.FULL -> "전체 표시"
-                                com.lass.yomiyomi.ui.component.DisplayMode.JAPANESE_ONLY -> "일본어만"
-                                com.lass.yomiyomi.ui.component.DisplayMode.FURIGANA_ONLY -> "요미가나만"
-                                com.lass.yomiyomi.ui.component.DisplayMode.KANJI_ONLY -> "한자만"
+                                DisplayMode.FULL -> "전체 표시"
+                                DisplayMode.JAPANESE_ONLY -> "일본어만"
+                                DisplayMode.FURIGANA_ONLY -> "요미가나만"
+                                DisplayMode.KANJI_ONLY -> "한자만"
                             },
                             onValueChange = { },
                             readOnly = true,
@@ -161,28 +162,28 @@ fun SentenceListLayout(
                             DropdownMenuItem(
                                 text = { Text("전체 표시") },
                                 onClick = {
-                                    onDisplayModeChange(com.lass.yomiyomi.ui.component.DisplayMode.FULL)
+                                    onDisplayModeChange(DisplayMode.FULL)
                                     displayExpanded = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("일본어만") },
                                 onClick = {
-                                    onDisplayModeChange(com.lass.yomiyomi.ui.component.DisplayMode.JAPANESE_ONLY)
+                                    onDisplayModeChange(DisplayMode.JAPANESE_ONLY)
                                     displayExpanded = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("요미가나만") },
                                 onClick = {
-                                    onDisplayModeChange(com.lass.yomiyomi.ui.component.DisplayMode.FURIGANA_ONLY)
+                                    onDisplayModeChange(DisplayMode.FURIGANA_ONLY)
                                     displayExpanded = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("한자만") },
                                 onClick = {
-                                    onDisplayModeChange(com.lass.yomiyomi.ui.component.DisplayMode.KANJI_ONLY)
+                                    onDisplayModeChange(DisplayMode.KANJI_ONLY)
                                     displayExpanded = false
                                 }
                             )
