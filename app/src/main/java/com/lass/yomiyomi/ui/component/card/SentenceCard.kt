@@ -85,14 +85,50 @@ fun SentenceCard(
                     )
                 }
                 
-                // 학습 진도 (showProgress가 true일 때만)
-                if (showProgress) {
-                    Text(
-                        text = "${(sentence.learningProgress * 100).toInt()}%",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.Medium
-                    )
+                // 편집/삭제 버튼들과 학습 진도
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    // 편집 버튼 (작은 아이콘 버튼)
+                    onEdit?.let { editCallback ->
+                        IconButton(
+                            onClick = editCallback,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "편집",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                    
+                    // 삭제 버튼 (작은 아이콘 버튼)
+                    onDelete?.let { deleteCallback ->
+                        IconButton(
+                            onClick = deleteCallback,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "삭제",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                    
+                    // 학습 진도 (showProgress가 true일 때만)
+                    if (showProgress) {
+                        Text(
+                            text = "${(sentence.learningProgress * 100).toInt()}%",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
             
@@ -106,96 +142,58 @@ fun SentenceCard(
                 )
             }
             
-            // 액션 버튼들
-            if (onEdit != null || onDelete != null || onDisplayModeChange != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // 표시 모드 변경 버튼만 별도로 (필요한 경우)
+            onDisplayModeChange?.let { onChange ->
+                Spacer(modifier = Modifier.height(8.dp))
+                var expanded by remember { mutableStateOf(false) }
+                
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
                 ) {
-                    // 표시 모드 변경 버튼
-                    onDisplayModeChange?.let { onChange ->
-                        var expanded by remember { mutableStateOf(false) }
-                        
-                        ExposedDropdownMenuBox(
-                            expanded = expanded,
-                            onExpandedChange = { expanded = !expanded }
-                        ) {
-                            AssistChip(
-                                onClick = { expanded = true },
-                                label = { Text("표시", fontSize = 12.sp) },
-                                leadingIcon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-                                modifier = Modifier.menuAnchor(),
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    labelColor = MaterialTheme.colorScheme.tertiary,
-                                    leadingIconContentColor = MaterialTheme.colorScheme.tertiary
-                                )
-                            )
-                            
-                            ExposedDropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("전체 표시") },
-                                    onClick = {
-                                        onChange(DisplayMode.FULL)
-                                        expanded = false
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("일본어만") },
-                                    onClick = {
-                                        onChange(DisplayMode.JAPANESE_ONLY)
-                                        expanded = false
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("요미가나만") },
-                                    onClick = {
-                                        onChange(DisplayMode.FURIGANA_ONLY)
-                                        expanded = false
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("한자만") },
-                                    onClick = {
-                                        onChange(DisplayMode.KANJI_ONLY)
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    
-                    Spacer(modifier = Modifier.weight(1f))
-                    
-                    // 편집 버튼
-                    onEdit?.let {
-                        AssistChip(
-                            onClick = it,
-                            label = { Text("편집", fontSize = 12.sp) },
-                            leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
-                            colors = AssistChipDefaults.assistChipColors(
-                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                labelColor = MaterialTheme.colorScheme.tertiary,
-                                leadingIconContentColor = MaterialTheme.colorScheme.tertiary
-                            )
+                    AssistChip(
+                        onClick = { expanded = true },
+                        label = { Text("표시 모드", fontSize = 12.sp) },
+                        leadingIcon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
+                        modifier = Modifier.menuAnchor(),
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            labelColor = MaterialTheme.colorScheme.tertiary,
+                            leadingIconContentColor = MaterialTheme.colorScheme.tertiary
                         )
-                    }
+                    )
                     
-                    // 삭제 버튼
-                    onDelete?.let {
-                        AssistChip(
-                            onClick = it,
-                            label = { Text("삭제", fontSize = 12.sp) },
-                            leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                            colors = AssistChipDefaults.assistChipColors(
-                                containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                                labelColor = MaterialTheme.colorScheme.error,
-                                leadingIconContentColor = MaterialTheme.colorScheme.error
-                            )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("전체 표시") },
+                            onClick = {
+                                onChange(DisplayMode.FULL)
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("일본어만") },
+                            onClick = {
+                                onChange(DisplayMode.JAPANESE_ONLY)
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("요미가나만") },
+                            onClick = {
+                                onChange(DisplayMode.FURIGANA_ONLY)
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("한자만") },
+                            onClick = {
+                                onChange(DisplayMode.KANJI_ONLY)
+                                expanded = false
+                            }
                         )
                     }
                 }
