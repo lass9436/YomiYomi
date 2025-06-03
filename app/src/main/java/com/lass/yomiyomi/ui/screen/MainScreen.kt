@@ -14,6 +14,8 @@ import androidx.navigation.navArgument
 enum class Routes(val route: String) {
     MAIN("main"),
     MAIN_WITH_TAB("main/{tabIndex}"),
+    KANJI_LIST("kanjiList"),
+    WORD_LIST("wordList"),
     KANJI_RANDOM("kanjiRandom"),
     KANJI_QUIZ("kanjiQuiz"),
     WORD_QUIZ("wordQuiz"),
@@ -42,9 +44,11 @@ fun MainScreen(
             MainMenuScreen(
                 initialTabIndex = 0,
                 onNavigateToKanji = { navController.navigate(Routes.KANJI_RANDOM.route) },
+                onNavigateToKanjiList = { navController.navigate(Routes.KANJI_LIST.route) },
                 onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
                 onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
                 onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) },
+                onNavigateToWordList = { navController.navigate(Routes.WORD_LIST.route) },
                 onNavigateToMyWord = { navController.navigate(Routes.MY_WORD.route) },
                 onNavigateToMyKanji = { navController.navigate("${Routes.MAIN_WITH_TAB.route.replace("{tabIndex}", "1")}") },
                 onNavigateToMyWordRandom = { navController.navigate(Routes.MY_WORD_RANDOM.route) },
@@ -64,15 +68,31 @@ fun MainScreen(
             MainMenuScreen(
                 initialTabIndex = tabIndex,
                 onNavigateToKanji = { navController.navigate(Routes.KANJI_RANDOM.route) },
+                onNavigateToKanjiList = { navController.navigate(Routes.KANJI_LIST.route) },
                 onNavigateToQuiz = { navController.navigate(Routes.KANJI_QUIZ.route) },
                 onNavigateToWordQuiz = { navController.navigate(Routes.WORD_QUIZ.route) },
                 onNavigateToWordRandom = { navController.navigate(Routes.WORD_RANDOM.route) },
+                onNavigateToWordList = { navController.navigate(Routes.WORD_LIST.route) },
                 onNavigateToMyWord = { navController.navigate(Routes.MY_WORD.route) },
                 onNavigateToMyKanji = { navController.navigate(Routes.MY_KANJI.route) },
                 onNavigateToMyWordRandom = { navController.navigate(Routes.MY_WORD_RANDOM.route) },
                 onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
                 onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
+            )
+        }
+        composable(Routes.KANJI_LIST.route) {
+            KanjiListScreen(
+                onNavigateBack = { navController.navigate("main/0") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
+            )
+        }
+        composable(Routes.WORD_LIST.route) {
+            WordListScreen(
+                onNavigateBack = { navController.navigate("main/0") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
             )
         }
         composable(Routes.KANJI_RANDOM.route) {

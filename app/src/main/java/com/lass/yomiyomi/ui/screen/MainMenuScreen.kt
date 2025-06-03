@@ -18,9 +18,11 @@ import com.lass.yomiyomi.ui.component.menu.CompactMenuCard
 fun MainMenuScreen(
     initialTabIndex: Int = 0,
     onNavigateToKanji: () -> Unit,
+    onNavigateToKanjiList: () -> Unit,
     onNavigateToQuiz: () -> Unit,
     onNavigateToWordQuiz: () -> Unit,
     onNavigateToWordRandom: () -> Unit,
+    onNavigateToWordList: () -> Unit,
     onNavigateToMyWord: () -> Unit,
     onNavigateToMyKanji: () -> Unit,
     onNavigateToMyWordRandom: () -> Unit,
@@ -80,6 +82,20 @@ fun MainMenuScreen(
                             .padding(paddingValues)
                             .background(MaterialTheme.colorScheme.background)
                     ) {
+                        item {
+                            MenuCard(
+                                title = "한자 목록",
+                                subtitle = "모든 한자를\n둘러보세요",
+                                onClick = onNavigateToKanjiList
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "단어 목록",
+                                subtitle = "모든 단어를\n둘러보세요",
+                                onClick = onNavigateToWordList
+                            )
+                        }
                         item {
                             MenuCard(
                                 title = "한자 카드",
@@ -175,9 +191,11 @@ fun MainMenuScreen() {
     MainMenuScreen(
         initialTabIndex = 0,
         onNavigateToKanji = {},
+        onNavigateToKanjiList = {},
         onNavigateToQuiz = {},
         onNavigateToWordQuiz = {},
         onNavigateToWordRandom = {},
+        onNavigateToWordList = {},
         onNavigateToMyWord = {},
         onNavigateToMyKanji = {},
         onNavigateToMyWordRandom = {},
