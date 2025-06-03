@@ -23,6 +23,7 @@ import com.lass.yomiyomi.ui.screen.my.sentence.SentenceListScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordQuizScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordRandomScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
+import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphDetailScreen
 
 // 네비게이션 경로를 Enum으로 정의
 enum class Routes(val route: String) {
@@ -42,6 +43,7 @@ enum class Routes(val route: String) {
     MY_WORD_QUIZ("myWordQuiz"),
     SENTENCE_LIST("sentenceList"),
     PARAGRAPH_LIST("paragraphList"),
+    PARAGRAPH_DETAIL("paragraphDetail/{paragraphId}"),
 }
 
 @Composable
@@ -226,9 +228,20 @@ fun MainScreen(
                     }
                 },
                 onParagraphClick = { paragraph ->
-                    // TODO: 추후 문단 상세 화면으로 이동
-                    // navController.navigate("paragraphDetail/${paragraph.paragraphId}")
+                    navController.navigate("paragraphDetail/${paragraph.paragraphId}")
                 }
+            )
+        }
+        composable(
+            route = Routes.PARAGRAPH_DETAIL.route,
+            arguments = listOf(navArgument("paragraphId") { 
+                type = NavType.StringType 
+            })
+        ) { backStackEntry ->
+            val paragraphId = backStackEntry.arguments?.getString("paragraphId") ?: ""
+            ParagraphDetailScreen(
+                paragraphId = paragraphId,
+                onBack = { navController.popBackStack() }
             )
         }
     }

@@ -2,17 +2,17 @@ package com.lass.yomiyomi.data.database
 
 import android.content.Context
 import com.lass.yomiyomi.R
-import com.lass.yomiyomi.data.model.Sentence
+import com.lass.yomiyomi.data.model.MySentence
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-object SentenceDataImporter {
+object MySentenceDataImporter {
 
     /**
      * raw 리소스 폴더에서 sentence_list 데이터를 읽어와 Sentence 리스트로 변환
      */
-    fun importSentencesFromCsv(context: Context): List<Sentence> {
-        val sentenceList = mutableListOf<Sentence>()
+    fun importSentencesFromCsv(context: Context): List<MySentence> {
+        val mySentenceList = mutableListOf<MySentence>()
 
         // raw 폴더의 리소스 파일 열기
         val inputStream = context.resources.openRawResource(R.raw.sentence_list)
@@ -26,8 +26,8 @@ object SentenceDataImporter {
             val parts = regex.findAll(line).map { it.value.trim('"') }.toList()
 
             if (parts.size >= 7) { // 데이터 유효성 검사 (7개 이상의 항목이 있어야 함)
-                sentenceList.add(
-                    Sentence(
+                mySentenceList.add(
+                    MySentence(
                         id = Integer.parseInt(parts[0].trim()), // ID
                         japanese = parts[1].trim(), // 일본어 문장
                         korean = parts[2].trim(), // 한국어 번역
@@ -46,6 +46,6 @@ object SentenceDataImporter {
 
         reader.close() // BufferedReader 닫기
 
-        return sentenceList
+        return mySentenceList
     }
 } 

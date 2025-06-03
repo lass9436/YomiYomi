@@ -14,11 +14,11 @@ import com.lass.yomiyomi.data.model.Word
 import com.lass.yomiyomi.data.dao.MyWordDao
 import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.data.dao.MyKanjiDao
+import com.lass.yomiyomi.data.dao.MyParagraphDao
+import com.lass.yomiyomi.data.dao.MySentenceDao
 import com.lass.yomiyomi.data.model.MyKanji
-import com.lass.yomiyomi.data.dao.SentenceDao
-import com.lass.yomiyomi.data.model.Sentence
-import com.lass.yomiyomi.data.dao.ParagraphDao
-import com.lass.yomiyomi.data.model.Paragraph
+import com.lass.yomiyomi.data.model.MySentence
+import com.lass.yomiyomi.data.model.MyParagraph
 
 @Database(
     entities = [
@@ -27,8 +27,8 @@ import com.lass.yomiyomi.data.model.Paragraph
         Word::class,
         MyWord::class,
         MyKanji::class,
-        Paragraph::class,
-        Sentence::class,
+        MyParagraph::class,
+        MySentence::class,
     ],
     version = 8,
     exportSchema = false
@@ -40,8 +40,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun wordDao(): WordDao
     abstract fun myWordDao(): MyWordDao
     abstract fun myKanjiDao(): MyKanjiDao
-    abstract fun sentenceDao(): SentenceDao
-    abstract fun paragraphDao(): ParagraphDao
+    abstract fun mySentenceDao(): MySentenceDao
+    abstract fun myParagraphDao(): MyParagraphDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null

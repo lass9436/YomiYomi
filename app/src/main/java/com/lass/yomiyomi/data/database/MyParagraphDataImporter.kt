@@ -2,17 +2,17 @@ package com.lass.yomiyomi.data.database
 
 import android.content.Context
 import com.lass.yomiyomi.R
-import com.lass.yomiyomi.data.model.Paragraph
+import com.lass.yomiyomi.data.model.MyParagraph
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-object ParagraphDataImporter {
+object MyParagraphDataImporter {
 
     /**
      * raw 리소스 폴더에서 paragraph_list 데이터를 읽어와 Paragraph 리스트로 변환
      */
-    fun importParagraphsFromCsv(context: Context): List<Paragraph> {
-        val paragraphList = mutableListOf<Paragraph>()
+    fun importParagraphsFromCsv(context: Context): List<MyParagraph> {
+        val myParagraphList = mutableListOf<MyParagraph>()
 
         // raw 폴더의 리소스 파일 열기
         val inputStream = context.resources.openRawResource(R.raw.paragraph_list)
@@ -26,8 +26,8 @@ object ParagraphDataImporter {
             val parts = regex.findAll(line).map { it.value.trim('"') }.toList()
 
             if (parts.size >= 7) { // 데이터 유효성 검사 (7개 이상의 항목이 있어야 함)
-                paragraphList.add(
-                    Paragraph(
+                myParagraphList.add(
+                    MyParagraph(
                         paragraphId = parts[1].trim(), // paragraphId
                         title = parts[2].trim(), // 제목
                         description = parts[3].trim(), // 설명
@@ -42,6 +42,6 @@ object ParagraphDataImporter {
 
         reader.close() // BufferedReader 닫기
 
-        return paragraphList
+        return myParagraphList
     }
 } 

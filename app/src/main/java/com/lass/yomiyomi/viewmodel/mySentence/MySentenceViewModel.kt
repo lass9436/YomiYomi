@@ -3,7 +3,7 @@ package com.lass.yomiyomi.viewmodel.mySentence
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.data.repository.SentenceRepository
+import com.lass.yomiyomi.data.repository.MySentenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MySentenceViewModel @Inject constructor(
-    private val sentenceRepository: SentenceRepository
+    private val mySentenceRepository: MySentenceRepository
 ) : ViewModel(), MySentenceViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
@@ -60,14 +60,15 @@ class MySentenceViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val sentenceList = sentenceRepository.getAllSentences()
+                // 문단에 속하지 않은 독립 문장들만 가져오기
+                val sentenceList = mySentenceRepository.getIndividualSentences()
                 _allSentences.value = sentenceList
                 
                 // 카테고리와 난이도 목록도 함께 업데이트
-                val categories = sentenceRepository.getDistinctCategories()
+                val categories = mySentenceRepository.getDistinctCategories()
                 _availableCategories.value = categories
                 
-                val difficulties = sentenceRepository.getDistinctDifficulties()
+                val difficulties = mySentenceRepository.getDistinctDifficulties()
                 _availableDifficulties.value = difficulties
             } catch (e: Exception) {
                 // Handle error
@@ -88,7 +89,7 @@ class MySentenceViewModel @Inject constructor(
     override fun updateLearningProgress(id: Int, progress: Float) {
         viewModelScope.launch {
             try {
-                sentenceRepository.updateLearningProgress(id, progress)
+                mySentenceRepository.updateLearningProgress(id, progress)
                 // 진도 업데이트 후 데이터 새로고침
                 loadSentences()
             } catch (e: Exception) {
@@ -101,7 +102,7 @@ class MySentenceViewModel @Inject constructor(
     fun insertSentence(sentence: SentenceItem) {
         viewModelScope.launch {
             try {
-                sentenceRepository.insertSentence(sentence)
+                mySentenceRepository.insertSentence(sentence)
                 loadSentences()
             } catch (e: Exception) {
                 // Handle error
@@ -112,7 +113,7 @@ class MySentenceViewModel @Inject constructor(
     fun updateSentence(sentence: SentenceItem) {
         viewModelScope.launch {
             try {
-                sentenceRepository.updateSentence(sentence)
+                mySentenceRepository.updateSentence(sentence)
                 loadSentences()
             } catch (e: Exception) {
                 // Handle error
@@ -123,7 +124,7 @@ class MySentenceViewModel @Inject constructor(
     fun deleteSentence(sentenceId: Int) {
         viewModelScope.launch {
             try {
-                sentenceRepository.deleteSentenceById(sentenceId)
+                mySentenceRepository.deleteSentenceById(sentenceId)
                 loadSentences()
             } catch (e: Exception) {
                 // Handle error

@@ -1,22 +1,25 @@
 package com.lass.yomiyomi.data.repository
 
 import android.content.Context
+import androidx.room.Transaction
+import com.lass.yomiyomi.data.dao.MyParagraphWithCount
 import com.lass.yomiyomi.data.database.AppDatabase
-import com.lass.yomiyomi.data.database.ParagraphDataImporter
-import com.lass.yomiyomi.data.dao.ParagraphWithCount
+import com.lass.yomiyomi.data.database.MyParagraphDataImporter
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphItems
 import com.lass.yomiyomi.domain.model.mapper.toParagraphEntity
 
-class ParagraphRepository(private val context: Context) {
-    private val paragraphDao = AppDatabase.getInstance(context).paragraphDao()
+class MyParagraphRepository(private val context: Context) {
+    private val database = AppDatabase.getInstance(context)
+    private val paragraphDao = database.myParagraphDao()
+    private val sentenceDao = database.mySentenceDao()
 
     /**
      * CSV 파일을 불러와 Room 데이터베이스로 삽입
      */
     suspend fun importParagraphData(context: Context) {
-        val paragraphList = ParagraphDataImporter.importParagraphsFromCsv(context)
+        val paragraphList = MyParagraphDataImporter.importParagraphsFromCsv(context)
         paragraphDao.insertAll(paragraphList)
     }
 
@@ -33,11 +36,17 @@ class ParagraphRepository(private val context: Context) {
         paragraphDao.updateParagraph(paragraphItem.toParagraphEntity())
     }
 
+    @Transaction
     suspend fun deleteParagraph(paragraphItem: ParagraphItem) {
+        // 관련 문장들도 함께 삭제
+        sentenceDao.deleteSentencesByParagraphId(paragraphItem.paragraphId)
         paragraphDao.deleteParagraph(paragraphItem.toParagraphEntity())
     }
 
+    @Transaction
     suspend fun deleteParagraphById(paragraphId: String) {
+        // 관련 문장들도 함께 삭제
+        sentenceDao.deleteSentencesByParagraphId(paragraphId)
         paragraphDao.deleteParagraphById(paragraphId)
     }
 
@@ -72,7 +81,7 @@ class ParagraphRepository(private val context: Context) {
 }
 
 // ParagraphWithCount -> ParagraphItem 변환 확장 함수
-private fun ParagraphWithCount.toParagraphItem(): ParagraphItem = ParagraphItem(
+private fun MyParagraphWithCount.toParagraphItem(): ParagraphItem = ParagraphItem(
     paragraphId = paragraphId,
     title = title,
     description = description,

@@ -2,14 +2,13 @@ package com.lass.yomiyomi.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.ForeignKey
 import androidx.room.Index
 
 @Entity(
     tableName = "sentence",
     indices = [Index(value = ["paragraphId"])]
 )
-data class Sentence(
+data class MySentence(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val japanese: String,           // "私[わたし]は学生[がくせい]です"

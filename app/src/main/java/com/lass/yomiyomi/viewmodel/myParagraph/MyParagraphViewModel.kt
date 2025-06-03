@@ -2,8 +2,8 @@ package com.lass.yomiyomi.viewmodel.myParagraph
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lass.yomiyomi.data.repository.MyParagraphRepository
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
-import com.lass.yomiyomi.data.repository.ParagraphRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyParagraphViewModel @Inject constructor(
-    private val paragraphRepository: ParagraphRepository
+    private val myParagraphRepository: MyParagraphRepository
 ) : ViewModel(), MyParagraphViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
@@ -54,7 +54,7 @@ class MyParagraphViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 // 문장 개수와 함께 조회
-                val paragraphList = paragraphRepository.getParagraphsWithSentenceCounts()
+                val paragraphList = myParagraphRepository.getParagraphsWithSentenceCounts()
                 _allParagraphs.value = paragraphList
             } catch (e: Exception) {
                 // Handle error
@@ -76,7 +76,7 @@ class MyParagraphViewModel @Inject constructor(
     fun insertParagraph(paragraph: ParagraphItem) {
         viewModelScope.launch {
             try {
-                paragraphRepository.insertParagraph(paragraph)
+                myParagraphRepository.insertParagraph(paragraph)
                 loadParagraphs()
             } catch (e: Exception) {
                 // Handle error
@@ -87,7 +87,7 @@ class MyParagraphViewModel @Inject constructor(
     fun updateParagraph(paragraph: ParagraphItem) {
         viewModelScope.launch {
             try {
-                paragraphRepository.updateParagraph(paragraph)
+                myParagraphRepository.updateParagraph(paragraph)
                 loadParagraphs()
             } catch (e: Exception) {
                 // Handle error
@@ -98,7 +98,7 @@ class MyParagraphViewModel @Inject constructor(
     fun deleteParagraph(paragraphId: String) {
         viewModelScope.launch {
             try {
-                paragraphRepository.deleteParagraphById(paragraphId)
+                myParagraphRepository.deleteParagraphById(paragraphId)
                 loadParagraphs()
             } catch (e: Exception) {
                 // Handle error
@@ -109,7 +109,7 @@ class MyParagraphViewModel @Inject constructor(
     // 특정 문단 조회
     suspend fun getParagraphById(paragraphId: String): ParagraphItem? {
         return try {
-            paragraphRepository.getParagraphById(paragraphId)
+            myParagraphRepository.getParagraphById(paragraphId)
         } catch (e: Exception) {
             null
         }
