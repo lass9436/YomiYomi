@@ -44,20 +44,35 @@ fun WordListLayout(
                 },
                 navigationIcon = {
                     IconButton(onClick = callbacks.onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "뒤로가기",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = callbacks.onToggleSearch) {
-                        Icon(Icons.Default.Search, contentDescription = "검색")
+                        Icon(
+                            Icons.Default.Search, 
+                            contentDescription = "검색",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
                     // 읽기 전용 모드가 아닐 때만 추가 버튼 표시
                     if (!isReadOnly) {
                         IconButton(onClick = callbacks.onShowAddDialog) {
-                            Icon(Icons.Default.Add, contentDescription = "단어 추가")
+                            Icon(
+                                Icons.Default.Add, 
+                                contentDescription = "단어 추가",
+                                tint = MaterialTheme.colorScheme.tertiary
+                            )
                         }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
         modifier = modifier

@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,19 +53,30 @@ fun MainMenuScreen(
                 )
                 TabRow(
                     selectedTabIndex = selectedTabIndex,
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.primary
                 ) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
                             selected = selectedTabIndex == index,
                             onClick = { selectedTabIndex = index },
+                            modifier = Modifier.background(
+                                if (selectedTabIndex == index) 
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                else 
+                                    Color.Transparent
+                            ),
                             text = { 
                                 Text(
                                     title,
                                     color = if (selectedTabIndex == index) 
                                         MaterialTheme.colorScheme.primary 
                                     else 
-                                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    fontWeight = if (selectedTabIndex == index) 
+                                        FontWeight.Bold 
+                                    else 
+                                        FontWeight.Normal
                                 )
                             }
                         )

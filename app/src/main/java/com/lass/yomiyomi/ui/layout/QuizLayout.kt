@@ -41,11 +41,15 @@ fun QuizLayout(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "뒤로가기"
+                                contentDescription = "뒤로가기",
+                                tint = MaterialTheme.colorScheme.tertiary
                             )
                         }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
         modifier = modifier
