@@ -84,4 +84,13 @@ class SentenceRepository(private val context: Context) {
     suspend fun getTotalSentenceCount(): Int {
         return sentenceDao.getTotalSentenceCount()
     }
+
+    // 카테고리와 난이도 목록 가져오기 (동적)
+    suspend fun getDistinctCategories(): List<String> {
+        return sentenceDao.getAllSentences().map { it.category }.distinct().sorted()
+    }
+
+    suspend fun getDistinctDifficulties(): List<String> {
+        return sentenceDao.getAllSentences().map { it.difficulty }.distinct().sorted()
+    }
 } 

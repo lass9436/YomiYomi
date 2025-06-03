@@ -23,6 +23,13 @@ class MySentenceViewModel @Inject constructor(
     private val _allSentences = MutableStateFlow<List<SentenceItem>>(emptyList())
     private val _searchQuery = MutableStateFlow("")
 
+    // 동적 카테고리와 난이도 목록
+    private val _availableCategories = MutableStateFlow<List<String>>(emptyList())
+    val availableCategories: StateFlow<List<String>> = _availableCategories.asStateFlow()
+
+    private val _availableDifficulties = MutableStateFlow<List<String>>(emptyList())
+    val availableDifficulties: StateFlow<List<String>> = _availableDifficulties.asStateFlow()
+
     override val sentences: StateFlow<List<SentenceItem>> = combine(
         _allSentences,
         _selectedCategory,
@@ -55,6 +62,13 @@ class MySentenceViewModel @Inject constructor(
             try {
                 val sentenceList = sentenceRepository.getAllSentences()
                 _allSentences.value = sentenceList
+                
+                // 카테고리와 난이도 목록도 함께 업데이트
+                val categories = sentenceRepository.getDistinctCategories()
+                _availableCategories.value = categories
+                
+                val difficulties = sentenceRepository.getDistinctDifficulties()
+                _availableDifficulties.value = difficulties
             } catch (e: Exception) {
                 // Handle error
             } finally {

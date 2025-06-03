@@ -32,6 +32,8 @@ fun SentenceListScreen(
     val sentences by viewModel.sentences.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val availableCategories by viewModel.availableCategories.collectAsStateWithLifecycle()
+    val availableDifficulties by viewModel.availableDifficulties.collectAsStateWithLifecycle()
     
     // 검색 쿼리는 로컬 상태로 관리
     var searchQuery by remember { mutableStateOf("") }
@@ -101,6 +103,8 @@ fun SentenceListScreen(
     SentenceInputDialog(
         isOpen = showInputDialog,
         sentence = editingSentence,
+        availableCategories = availableCategories,
+        availableDifficulties = availableDifficulties,
         onDismiss = {
             showInputDialog = false
             editingSentence = null

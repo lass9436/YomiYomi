@@ -22,6 +22,8 @@ import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 fun SentenceInputDialog(
     isOpen: Boolean,
     sentence: SentenceItem? = null,
+    availableCategories: List<String> = emptyList(),
+    availableDifficulties: List<String> = emptyList(),
     onDismiss: () -> Unit,
     onSave: (SentenceItem) -> Unit,
     modifier: Modifier = Modifier
@@ -30,12 +32,22 @@ fun SentenceInputDialog(
     
     var japanese by remember(sentence) { mutableStateOf(sentence?.japanese ?: "") }
     var korean by remember(sentence) { mutableStateOf(sentence?.korean ?: "") }
-    var category by remember(sentence) { mutableStateOf(sentence?.category ?: "일반") }
-    var difficulty by remember(sentence) { mutableStateOf(sentence?.difficulty ?: "초급") }
+    var category by remember(sentence) { mutableStateOf(sentence?.category ?: availableCategories.firstOrNull() ?: "일반") }
+    var difficulty by remember(sentence) { mutableStateOf(sentence?.difficulty ?: availableDifficulties.firstOrNull() ?: "초급") }
     var showPreview by remember { mutableStateOf(false) }
     
-    val categories = listOf("일반", "자기소개", "면접", "회화", "비즈니스", "일상", "여행")
-    val difficulties = listOf("초급", "중급", "고급")
+    // 기본값을 포함한 카테고리/난이도 목록 (기존 값이 없으면 기본값 추가)
+    val categories = if (availableCategories.isNotEmpty()) {
+        availableCategories
+    } else {
+        listOf("일반", "자기소개", "면접", "회화", "비즈니스", "일상", "여행") // 폴백 옵션
+    }
+    
+    val difficulties = if (availableDifficulties.isNotEmpty()) {
+        availableDifficulties 
+    } else {
+        listOf("초급", "중급", "고급") // 폴백 옵션
+    }
     
     Dialog(onDismissRequest = onDismiss) {
         Card(
