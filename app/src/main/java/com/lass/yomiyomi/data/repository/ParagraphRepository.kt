@@ -2,6 +2,7 @@ package com.lass.yomiyomi.data.repository
 
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
+import com.lass.yomiyomi.data.database.ParagraphDataImporter
 import com.lass.yomiyomi.data.dao.ParagraphWithCount
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphItem
@@ -10,6 +11,14 @@ import com.lass.yomiyomi.domain.model.mapper.toParagraphEntity
 
 class ParagraphRepository(private val context: Context) {
     private val paragraphDao = AppDatabase.getInstance(context).paragraphDao()
+
+    /**
+     * CSV 파일을 불러와 Room 데이터베이스로 삽입
+     */
+    suspend fun importParagraphData(context: Context) {
+        val paragraphList = ParagraphDataImporter.importParagraphsFromCsv(context)
+        paragraphDao.insertAll(paragraphList)
+    }
 
     // 기본 CRUD
     suspend fun insertParagraph(paragraphItem: ParagraphItem): Long {

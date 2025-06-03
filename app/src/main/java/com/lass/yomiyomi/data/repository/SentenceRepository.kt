@@ -2,6 +2,7 @@ package com.lass.yomiyomi.data.repository
 
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
+import com.lass.yomiyomi.data.database.SentenceDataImporter
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.mapper.toSentenceItem
 import com.lass.yomiyomi.domain.model.mapper.toSentenceItems
@@ -9,6 +10,14 @@ import com.lass.yomiyomi.domain.model.mapper.toSentenceEntity
 
 class SentenceRepository(private val context: Context) {
     private val sentenceDao = AppDatabase.getInstance(context).sentenceDao()
+
+    /**
+     * CSV 파일을 불러와 Room 데이터베이스로 삽입
+     */
+    suspend fun importSentenceData(context: Context) {
+        val sentenceList = SentenceDataImporter.importSentencesFromCsv(context)
+        sentenceDao.insertAll(sentenceList)
+    }
 
     // 기본 CRUD
     suspend fun insertSentence(sentenceItem: SentenceItem): Long {

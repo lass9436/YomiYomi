@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.data.repository.WordRepository
+import com.lass.yomiyomi.data.repository.SentenceRepository
+import com.lass.yomiyomi.data.repository.ParagraphRepository
 import com.lass.yomiyomi.ui.screen.main.MainScreen
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +25,12 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var wordRepository: WordRepository
 
+    @Inject
+    lateinit var sentenceRepository: SentenceRepository
+
+    @Inject
+    lateinit var paragraphRepository: ParagraphRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,6 +38,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             kanjiRepository.importKanjiData(this@MainActivity)
             wordRepository.importWordData(this@MainActivity)
+            paragraphRepository.importParagraphData(this@MainActivity)
+            sentenceRepository.importSentenceData(this@MainActivity)
         }
 
         setContent {

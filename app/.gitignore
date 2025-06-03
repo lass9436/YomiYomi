@@ -1,3 +1,5 @@
 /build
 /src/main/res/raw/kanji_list.csv
 /src/main/res/raw/word_list.csv
+/src/main/res/raw/sentence_list.csv
+/src/main/res/raw/paragraph_list.csv
