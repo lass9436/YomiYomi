@@ -14,6 +14,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.ui.component.dialog.input.ParagraphInputDialog
 import com.lass.yomiyomi.ui.layout.ParagraphListLayout
+import com.lass.yomiyomi.util.handleBackNavigation
+import com.lass.yomiyomi.util.rememberSpeechManager
 import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphViewModel
 import androidx.compose.ui.text.font.FontWeight
 
@@ -25,9 +27,11 @@ fun ParagraphListScreen(
     modifier: Modifier = Modifier,
     viewModel: MyParagraphViewModel = hiltViewModel()
 ) {
+    val speechManager = rememberSpeechManager()
+    
     // Android 뒤로가기 버튼 처리
     BackHandler {
-        onBack()
+        speechManager.handleBackNavigation(onBack)
     }
 
     // ViewModel 상태 수집
@@ -60,7 +64,7 @@ fun ParagraphListScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { speechManager.handleBackNavigation(onBack) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = "뒤로 가기",

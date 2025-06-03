@@ -15,6 +15,8 @@ import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
+import com.lass.yomiyomi.ui.component.text.tts.UnifiedTTSButton
+import com.lass.yomiyomi.util.rememberSpeechManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,8 @@ fun SentenceCard(
     onDisplayModeChange: ((DisplayMode) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val speechManager = rememberSpeechManager()
+    
     // 문단 소속이면 문단의 카테고리/난이도 사용, 아니면 문장 자체 값 사용
     val effectiveCategory = if (sentence.paragraphId != null) {
         paragraph?.category ?: sentence.category
@@ -55,12 +59,24 @@ fun SentenceCard(
         ) {
             // 상단: 일본어 (후리가나 포함) - KOREAN_ONLY 모드에서는 숨김
             if (displayMode != DisplayMode.KOREAN_ONLY) {
-                FuriganaText(
-                    japaneseText = sentence.japanese,
-                    displayMode = displayMode,
-                    fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FuriganaText(
+                        japaneseText = sentence.japanese,
+                        displayMode = displayMode,
+                        fontSize = 18.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    UnifiedTTSButton(
+                        text = sentence.japanese,
+                        speechManager = speechManager,
+                        size = 28.dp
+                    )
+                }
             }
             
             // 한국어 번역 (showKorean이 true이고 일본어 전용 모드가 아니거나, KOREAN_ONLY 모드일 때)

@@ -1,6 +1,7 @@
 package com.lass.yomiyomi.ui.screen.my.paragraph
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,9 +11,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +29,11 @@ import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
 import com.lass.yomiyomi.ui.component.empty.EmptyView
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
+import com.lass.yomiyomi.ui.component.text.tts.UnifiedTTSButton
+import com.lass.yomiyomi.util.rememberSpeechManager
+import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.util.handleBackNavigation
+import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +45,8 @@ fun ParagraphDetailScreen(
     viewModel: MyParagraphDetailViewModel = hiltViewModel()
 ) {
     // Android 뒤로가기 버튼 처리
-    BackHandler { onBack() }
+    val speechManager = rememberSpeechManager()
+    BackHandler { speechManager.handleBackNavigation(onBack) }
     
     // ViewModel 상태 수집
     val paragraph by viewModel.paragraph.collectAsStateWithLifecycle()
@@ -67,7 +78,7 @@ fun ParagraphDetailScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { speechManager.handleBackNavigation(onBack) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = "뒤로 가기",
@@ -76,6 +87,51 @@ fun ParagraphDetailScreen(
                     }
                 },
                 actions = {
+                    // 전체 문장 읽기 버튼
+                    paragraph?.let {
+                        if (sentences.isNotEmpty()) {
+                            val isSpeaking by speechManager.isSpeaking.collectAsState()
+                            val currentSpeakingText by speechManager.currentSpeakingText.collectAsState()
+                            val allJapanese = sentences.joinToString("。") { it.japanese }
+                            val isThisParagraphSpeaking = isSpeaking && currentSpeakingText == allJapanese
+                            
+                            val rotation by animateFloatAsState(
+                                targetValue = if (isThisParagraphSpeaking) 360f else 0f,
+                                animationSpec = if (isThisParagraphSpeaking) {
+                                    infiniteRepeatable(
+                                        animation = tween(2000, easing = LinearEasing),
+                                        repeatMode = RepeatMode.Restart
+                                    )
+                                } else {
+                                    tween(200)
+                                },
+                                label = "rotation"
+                            )
+                            
+                            IconButton(
+                                onClick = {
+                                    if (isThisParagraphSpeaking) {
+                                        speechManager.stopSpeaking()
+                                    } else {
+                                        val filteredText = JapaneseTextFilter.prepareTTSText(allJapanese)
+                                        if (filteredText.isNotEmpty()) {
+                                            speechManager.speakWithOriginalText(allJapanese, filteredText, "paragraph_all")
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    if (isThisParagraphSpeaking) Icons.Default.Close else Icons.Default.PlayArrow,
+                                    contentDescription = if (isThisParagraphSpeaking) "전체 문장 읽기 중지" else "전체 문장 읽기",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.graphicsLayer(
+                                        rotationZ = rotation
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    
                     IconButton(
                         onClick = {
                             editingSentence = null
@@ -164,6 +220,7 @@ fun ParagraphDetailScreen(
                             sentence = sentence,
                             displayMode = displayMode,
                             showKorean = showKorean,
+                            speechManager = speechManager,
                             onEdit = {
                                 editingSentence = sentence
                                 showInputDialog = true
@@ -238,6 +295,7 @@ private fun ParagraphSentenceItem(
     sentence: SentenceItem,
     displayMode: DisplayMode,
     showKorean: Boolean,
+    speechManager: SpeechManager,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
@@ -256,12 +314,24 @@ private fun ParagraphSentenceItem(
         ) {
             // 일본어
             if (displayMode != DisplayMode.KOREAN_ONLY) {
-                FuriganaText(
-                    japaneseText = sentence.japanese,
-                    displayMode = displayMode,
-                    fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FuriganaText(
+                        japaneseText = sentence.japanese,
+                        displayMode = displayMode,
+                        fontSize = 18.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    UnifiedTTSButton(
+                        text = sentence.japanese,
+                        speechManager = speechManager,
+                        size = 24.dp
+                    )
+                }
             }
             
             // 한국어 + 인라인 버튼들

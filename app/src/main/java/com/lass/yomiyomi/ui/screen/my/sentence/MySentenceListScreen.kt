@@ -15,6 +15,8 @@ import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
+import com.lass.yomiyomi.util.handleBackNavigation
+import com.lass.yomiyomi.util.rememberSpeechManager
 import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
 import androidx.compose.ui.text.font.FontWeight
 
@@ -25,9 +27,11 @@ fun SentenceListScreen(
     modifier: Modifier = Modifier,
     viewModel: MySentenceViewModel = hiltViewModel()
 ) {
+    val speechManager = rememberSpeechManager()
+    
     // Android 뒤로가기 버튼 처리
     BackHandler {
-        onBack()
+        speechManager.handleBackNavigation(onBack)
     }
 
     // ViewModel 상태 수집
@@ -65,7 +69,7 @@ fun SentenceListScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { speechManager.handleBackNavigation(onBack) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = "뒤로 가기",
