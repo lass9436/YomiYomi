@@ -42,9 +42,13 @@ enum class Routes(val route: String) {
     MY_KANJI_RANDOM("myKanjiRandom"),
     MY_KANJI_QUIZ("myKanjiQuiz"),
     MY_WORD_QUIZ("myWordQuiz"),
-    SENTENCE_LIST("sentenceList"),
-    PARAGRAPH_LIST("paragraphList"),
-    PARAGRAPH_DETAIL("paragraphDetail/{paragraphId}"),
+    MY_SENTENCE_LIST("mySentenceList"),
+    MY_PARAGRAPH_LIST("myParagraphList"),
+    MY_PARAGRAPH_DETAIL("myParagraphDetail/{paragraphId}"),
+    MY_SENTENCE_RANDOM("mySentenceRandom"),
+    MY_PARAGRAPH_RANDOM("myParagraphRandom"),
+    MY_SENTENCE_QUIZ("mySentenceQuiz"),
+    MY_PARAGRAPH_QUIZ("myParagraphQuiz"),
 }
 
 @Composable
@@ -77,8 +81,12 @@ fun MainScreen(
                 onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
                 onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
-                onNavigateToSentenceList = { navController.navigate(Routes.SENTENCE_LIST.route) },
-                onNavigateToParagraphList = { navController.navigate(Routes.PARAGRAPH_LIST.route) },
+                onNavigateToSentenceList = { navController.navigate(Routes.MY_SENTENCE_LIST.route) },
+                onNavigateToParagraphList = { navController.navigate(Routes.MY_PARAGRAPH_LIST.route) },
+                onNavigateToSentenceRandom = { navController.navigate(Routes.MY_SENTENCE_RANDOM.route) },
+                onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) },
+                onNavigateToSentenceQuiz = { navController.navigate(Routes.MY_SENTENCE_QUIZ.route) },
+                onNavigateToParagraphQuiz = { navController.navigate(Routes.MY_PARAGRAPH_QUIZ.route) },
             )
         }
         composable(
@@ -103,8 +111,12 @@ fun MainScreen(
                 onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
                 onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
-                onNavigateToSentenceList = { navController.navigate(Routes.SENTENCE_LIST.route) },
-                onNavigateToParagraphList = { navController.navigate(Routes.PARAGRAPH_LIST.route) },
+                onNavigateToSentenceList = { navController.navigate(Routes.MY_SENTENCE_LIST.route) },
+                onNavigateToParagraphList = { navController.navigate(Routes.MY_PARAGRAPH_LIST.route) },
+                onNavigateToSentenceRandom = { navController.navigate(Routes.MY_SENTENCE_RANDOM.route) },
+                onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) },
+                onNavigateToSentenceQuiz = { navController.navigate(Routes.MY_SENTENCE_QUIZ.route) },
+                onNavigateToParagraphQuiz = { navController.navigate(Routes.MY_PARAGRAPH_QUIZ.route) },
             )
         }
         composable(Routes.KANJI_LIST.route) {
@@ -215,7 +227,7 @@ fun MainScreen(
                 }
             )
         }
-        composable(Routes.SENTENCE_LIST.route) {
+        composable(Routes.MY_SENTENCE_LIST.route) {
             SentenceListScreen(
                 onBack = {
                     navController.navigate("main/2") {
@@ -224,7 +236,7 @@ fun MainScreen(
                 }
             )
         }
-        composable(Routes.PARAGRAPH_LIST.route) {
+        composable(Routes.MY_PARAGRAPH_LIST.route) {
             ParagraphListScreen(
                 onBack = {
                     navController.navigate("main/2") {
@@ -232,12 +244,12 @@ fun MainScreen(
                     }
                 },
                 onParagraphClick = { paragraph ->
-                    navController.navigate("paragraphDetail/${paragraph.paragraphId}")
+                    navController.navigate("myParagraphDetail/${paragraph.paragraphId}")
                 }
             )
         }
         composable(
-            route = Routes.PARAGRAPH_DETAIL.route,
+            route = Routes.MY_PARAGRAPH_DETAIL.route,
             arguments = listOf(navArgument("paragraphId") { 
                 type = NavType.StringType 
             })
@@ -248,5 +260,46 @@ fun MainScreen(
                 onBack = { navController.popBackStack() }
             )
         }
+        
+        // 🚀 새로 추가되는 문장/문단 랜덤 & 퀴즈 화면들
+        // TODO: 아직 구현되지 않은 화면들 - 나중에 import와 함께 구현 예정
+        /*
+        composable(Routes.MY_SENTENCE_RANDOM.route) {
+            MySentenceRandomScreen(
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Routes.MY_PARAGRAPH_RANDOM.route) {
+            MyParagraphRandomScreen(
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Routes.MY_SENTENCE_QUIZ.route) {
+            MySentenceQuizScreen(
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Routes.MY_PARAGRAPH_QUIZ.route) {
+            MyParagraphQuizScreen(
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        */
     }
 }

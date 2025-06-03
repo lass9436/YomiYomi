@@ -32,6 +32,10 @@ fun MainMenuScreen(
     onNavigateToMyWordQuiz: () -> Unit,
     onNavigateToSentenceList: () -> Unit = {},
     onNavigateToParagraphList: () -> Unit = {},
+    onNavigateToSentenceRandom: () -> Unit = {},
+    onNavigateToParagraphRandom: () -> Unit = {},
+    onNavigateToSentenceQuiz: () -> Unit = {},
+    onNavigateToParagraphQuiz: () -> Unit = {},
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
     val tabs = listOf("기초 학습", "단어 / 한자", "문장 / 문단")
@@ -206,16 +210,44 @@ fun MainMenuScreen(
                     ) {
                         item {
                             MenuCard(
-                                title = "문장 학습",
-                                subtitle = "일본어 문장을\n학습해보세요",
+                                title = "내 문장",
+                                subtitle = "나만의 문장을\n학습해보세요",
                                 onClick = onNavigateToSentenceList
                             )
                         }
                         item {
                             MenuCard(
-                                title = "문단 학습",
-                                subtitle = "긴 문장과 문단을\n연습해보세요",
+                                title = "내 문단",
+                                subtitle = "나만의 문단을\n연습해보세요",
                                 onClick = onNavigateToParagraphList
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 문장 랜덤",
+                                subtitle = "랜덤으로 내 문장을\n학습해보세요",
+                                onClick = onNavigateToSentenceRandom
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 문단 랜덤",
+                                subtitle = "랜덤으로 내 문단을\n학습해보세요",
+                                onClick = onNavigateToParagraphRandom
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 문장 퀴즈",
+                                subtitle = "내 문장 실력을\n테스트해보세요",
+                                onClick = onNavigateToSentenceQuiz
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "내 문단 퀴즈",
+                                subtitle = "내 문단 실력을\n테스트해보세요",
+                                onClick = onNavigateToParagraphQuiz
                             )
                         }
                     }
@@ -244,5 +276,9 @@ fun MainMenuScreenPreview() {
         onNavigateToMyWordQuiz = {},
         onNavigateToSentenceList = {},
         onNavigateToParagraphList = {},
+        onNavigateToSentenceRandom = {},
+        onNavigateToParagraphRandom = {},
+        onNavigateToSentenceQuiz = {},
+        onNavigateToParagraphQuiz = {},
     )
 }
