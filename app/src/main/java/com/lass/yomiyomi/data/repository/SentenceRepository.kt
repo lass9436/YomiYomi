@@ -1,0 +1,79 @@
+package com.lass.yomiyomi.data.repository
+
+import android.content.Context
+import com.lass.yomiyomi.data.database.AppDatabase
+import com.lass.yomiyomi.data.dao.SentenceCountByParagraph
+import com.lass.yomiyomi.domain.model.SentenceItem
+import com.lass.yomiyomi.domain.model.toSentenceItem
+import com.lass.yomiyomi.domain.model.toSentenceItems
+import com.lass.yomiyomi.domain.model.toSentenceEntity
+
+class SentenceRepository(private val context: Context) {
+    private val sentenceDao = AppDatabase.getInstance(context).sentenceDao()
+
+    // 기본 CRUD
+    suspend fun insertSentence(sentenceItem: SentenceItem): Long {
+        return sentenceDao.insertSentence(sentenceItem.toSentenceEntity())
+    }
+
+    suspend fun insertAll(sentenceItems: List<SentenceItem>) {
+        sentenceDao.insertAll(sentenceItems.map { it.toSentenceEntity() })
+    }
+
+    suspend fun updateSentence(sentenceItem: SentenceItem) {
+        sentenceDao.updateSentence(sentenceItem.toSentenceEntity())
+    }
+
+    suspend fun deleteSentence(sentenceItem: SentenceItem) {
+        sentenceDao.deleteSentence(sentenceItem.toSentenceEntity())
+    }
+
+    suspend fun deleteSentenceById(id: Int) {
+        sentenceDao.deleteSentenceById(id)
+    }
+
+    // 조회
+    suspend fun getSentenceById(id: Int): SentenceItem? {
+        return sentenceDao.getSentenceById(id)?.toSentenceItem()
+    }
+
+    suspend fun getAllSentences(): List<SentenceItem> {
+        return sentenceDao.getAllSentences().toSentenceItems()
+    }
+
+    // 문단별 조회
+    suspend fun getSentencesByParagraph(paragraphId: String): List<SentenceItem> {
+        return sentenceDao.getSentencesByParagraph(paragraphId).toSentenceItems()
+    }
+
+    // 개별 문장들만 조회 (문단에 속하지 않은)
+    suspend fun getIndividualSentences(): List<SentenceItem> {
+        return sentenceDao.getIndividualSentences().toSentenceItems()
+    }
+
+    // 카테고리별 조회
+    suspend fun getSentencesByCategory(category: String): List<SentenceItem> {
+        return sentenceDao.getSentencesByCategory(category).toSentenceItems()
+    }
+
+    // 검색
+    suspend fun searchSentences(query: String): List<SentenceItem> {
+        return sentenceDao.searchSentences(query).toSentenceItems()
+    }
+
+    // 학습 관련
+    suspend fun updateLearningProgress(id: Int, progress: Float) {
+        val timestamp = System.currentTimeMillis()
+        sentenceDao.updateLearningProgress(id, progress, timestamp)
+    }
+
+    // 통계
+    suspend fun getSentenceCountsByParagraph(): Map<String, Int> {
+        return sentenceDao.getSentenceCountsByParagraph()
+            .associate { it.paragraphId to it.count }
+    }
+
+    suspend fun getTotalSentenceCount(): Int {
+        return sentenceDao.getTotalSentenceCount()
+    }
+} 

@@ -7,6 +7,8 @@ import com.lass.yomiyomi.data.repository.KanjiRepository
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
+import com.lass.yomiyomi.data.repository.SentenceRepository
+import com.lass.yomiyomi.data.repository.ParagraphRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,5 +53,17 @@ object DatabaseModule {
     @Singleton
     fun provideMyKanjiRepository(@ApplicationContext context: Context): MyKanjiRepository {
         return MyKanjiRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSentenceRepository(@ApplicationContext context: Context): SentenceRepository {
+        return SentenceRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideParagraphRepository(@ApplicationContext context: Context): ParagraphRepository {
+        return ParagraphRepository(context)
     }
 } 
