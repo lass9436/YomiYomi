@@ -153,9 +153,9 @@ fun SentenceInputDialog(
                 ) {
                     OutlinedTextField(
                         value = category,
-                        onValueChange = { },
-                        readOnly = true,
+                        onValueChange = { category = it },
                         label = { Text("카테고리") },
+                        placeholder = { Text("카테고리를 선택하거나 새로 입력하세요") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -188,9 +188,9 @@ fun SentenceInputDialog(
                 ) {
                     OutlinedTextField(
                         value = difficulty,
-                        onValueChange = { },
-                        readOnly = true,
+                        onValueChange = { difficulty = it },
                         label = { Text("난이도") },
+                        placeholder = { Text("난이도를 선택하거나 새로 입력하세요") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = difficultyExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
