@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.ParagraphItem
 import com.lass.yomiyomi.ui.component.*
+import com.lass.yomiyomi.ui.component.dialog.input.ParagraphInputDialog
 import com.lass.yomiyomi.ui.layout.ParagraphListLayout
 import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphViewModel
 

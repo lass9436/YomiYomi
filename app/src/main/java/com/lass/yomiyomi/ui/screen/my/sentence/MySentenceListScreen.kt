@@ -12,7 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.SentenceItem
 import com.lass.yomiyomi.ui.component.*
-import com.lass.yomiyomi.ui.component.DisplayMode
+import com.lass.yomiyomi.ui.component.text.furigana.DisplayMode
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
 import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
 
