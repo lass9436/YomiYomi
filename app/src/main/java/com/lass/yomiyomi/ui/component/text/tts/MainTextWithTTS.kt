@@ -10,7 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.speech.SpeechManager
 
 /**
  * 메인 텍스트와 TTS 버튼을 함께 표시하는 컴포넌트
@@ -19,7 +18,6 @@ import com.lass.yomiyomi.speech.SpeechManager
 @Composable
 fun MainTextWithTTS(
     text: String,
-    speechManager: SpeechManager,
     fontSize: TextUnit = 48.sp,
     onTextClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -50,7 +48,6 @@ fun MainTextWithTTS(
         ) {
             UnifiedTTSButton(
                 text = text,
-                speechManager = speechManager,
                 size = 32.dp
             )
         }

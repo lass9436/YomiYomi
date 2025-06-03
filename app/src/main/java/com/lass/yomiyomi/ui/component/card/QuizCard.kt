@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.ui.component.button.QuizOptionButton
 import com.lass.yomiyomi.ui.component.text.tts.MainTextWithTTS
-import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun QuizCard(
@@ -22,7 +21,6 @@ fun QuizCard(
     searchUrl: String
 ) {
     val context = LocalContext.current
-    val speechManager = rememberSpeechManager()
     
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -42,7 +40,6 @@ fun QuizCard(
             // 통일된 메인 텍스트 + TTS 컴포넌트 사용
             MainTextWithTTS(
                 text = question,
-                speechManager = speechManager,
                 fontSize = 32.sp,
                 onTextClick = {
                     val intent = Intent(

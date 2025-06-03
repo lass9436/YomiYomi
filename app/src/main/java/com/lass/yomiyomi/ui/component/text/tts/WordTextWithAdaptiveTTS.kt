@@ -10,7 +10,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.speech.SpeechManager
 
 /**
  * 단어 카드의 복잡한 TTS 레이아웃을 위한 컴포넌트
@@ -19,7 +18,6 @@ import com.lass.yomiyomi.speech.SpeechManager
 @Composable
 fun WordTextWithAdaptiveTTS(
     text: String,
-    speechManager: SpeechManager,
     onTextClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -48,7 +46,6 @@ fun WordTextWithAdaptiveTTS(
             
             UnifiedTTSButton(
                 text = text,
-                speechManager = speechManager,
                 size = 28.dp
             )
         }
@@ -79,7 +76,6 @@ fun WordTextWithAdaptiveTTS(
             if (textWidth > 0.dp) {
                 UnifiedTTSButton(
                     text = text,
-                    speechManager = speechManager,
                     size = 32.dp,
                     modifier = Modifier.offset(x = textWidth / 2 + 15.dp)
                 )

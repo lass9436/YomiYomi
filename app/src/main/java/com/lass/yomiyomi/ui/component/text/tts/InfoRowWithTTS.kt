@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.speech.SpeechManager
 
 /**
  * 정보 행과 TTS 버튼을 함께 표시하는 컴포넌트
@@ -17,7 +16,6 @@ import com.lass.yomiyomi.speech.SpeechManager
 fun InfoRowWithTTS(
     label: String,
     value: String,
-    speechManager: SpeechManager,
     modifier: Modifier = Modifier,
     labelWidth: Dp = 60.dp,
     showTTS: Boolean = true
@@ -37,7 +35,6 @@ fun InfoRowWithTTS(
             Spacer(modifier = Modifier.width(8.dp))
             UnifiedTTSButton(
                 text = value,
-                speechManager = speechManager,
                 size = 28.dp
             )
         }

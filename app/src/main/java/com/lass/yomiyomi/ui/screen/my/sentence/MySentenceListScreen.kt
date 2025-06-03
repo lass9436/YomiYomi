@@ -1,6 +1,5 @@
 package com.lass.yomiyomi.ui.screen.my.sentence
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -15,8 +14,6 @@ import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
-import com.lass.yomiyomi.util.handleBackNavigation
-import com.lass.yomiyomi.util.rememberSpeechManager
 import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
 import androidx.compose.ui.text.font.FontWeight
 
@@ -27,13 +24,6 @@ fun SentenceListScreen(
     modifier: Modifier = Modifier,
     viewModel: MySentenceViewModel = hiltViewModel()
 ) {
-    val speechManager = rememberSpeechManager()
-    
-    // Android 뒤로가기 버튼 처리
-    BackHandler {
-        speechManager.handleBackNavigation(onBack)
-    }
-
     // ViewModel 상태 수집
     val sentences by viewModel.sentences.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -69,7 +59,7 @@ fun SentenceListScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { speechManager.handleBackNavigation(onBack) }) {
+                    IconButton(onClick = { onBack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack, 
                             contentDescription = "뒤로 가기",

@@ -24,6 +24,7 @@ import com.lass.yomiyomi.ui.screen.my.word.MyWordQuizScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordRandomScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphDetailScreen
+import com.lass.yomiyomi.util.NavigationTTSManager
 
 // 네비게이션 경로를 Enum으로 정의
 enum class Routes(val route: String) {
@@ -51,6 +52,9 @@ fun MainScreen(
     contentPadding: PaddingValues,
 ) {
     val navController = rememberNavController()
+    
+    // 🚀 Navigation-Level TTS 관리 - 모든 화면 전환 시 TTS 자동 정지
+    NavigationTTSManager(navController)
 
     NavHost(
         navController = navController, 

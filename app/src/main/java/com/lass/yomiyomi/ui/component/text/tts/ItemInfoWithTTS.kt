@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.Item
-import com.lass.yomiyomi.speech.SpeechManager
 
 /**
  * Item 인터페이스를 활용한 통합 TTS 컴포넌트
@@ -14,7 +13,6 @@ import com.lass.yomiyomi.speech.SpeechManager
 @Composable
 fun ItemInfoWithTTS(
     item: Item,
-    speechManager: SpeechManager,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -23,14 +21,12 @@ fun ItemInfoWithTTS(
                 InfoRowWithTTS(
                     label = infoRow.label,
                     value = infoRow.value,
-                    speechManager = speechManager,
                     labelWidth = 60.dp
                 )
             } else {
                 InfoRowWithTTS(
                     label = infoRow.label,
                     value = infoRow.value,
-                    speechManager = speechManager,
                     labelWidth = 60.dp,
                     showTTS = false // 일본어가 아닌 경우 TTS 숨김
                 )

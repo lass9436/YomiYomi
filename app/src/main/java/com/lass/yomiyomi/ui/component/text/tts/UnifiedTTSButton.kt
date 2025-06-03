@@ -11,25 +11,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.util.rememberSpeechManager
 
 /**
  * 통일된 TTS 버튼 컴포넌트
- * 모든 UI 컴포넌트에서 공통으로 사용
+ * 단일 텍스트와 문장 리스트 모두 지원하는 범용 TTS 버튼
  */
 @Composable
 fun UnifiedTTSButton(
-    text: String,
-    speechManager: SpeechManager,
+    text: String = "",
+    sentences: List<SentenceItem> = emptyList(),
     modifier: Modifier = Modifier,
     size: Dp = 32.dp,
-    isEnabled: Boolean = true
+    isEnabled: Boolean = true,
+    speechManager: SpeechManager? = null
 ) {
-    val isSpeaking by speechManager.isSpeaking.collectAsState()
-    val currentSpeakingText by speechManager.currentSpeakingText.collectAsState()
+    // 🎯 speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
+    val finalSpeechManager = speechManager ?: rememberSpeechManager()
     
-    val isThisTextSpeaking = isSpeaking && currentSpeakingText == text
+    // 🎯 입력 데이터 검증 및 텍스트 생성
+    val finalText = when {
+        text.isNotBlank() -> text
+        sentences.isNotEmpty() -> sentences.joinToString("。") { it.japanese }
+        else -> ""
+    }
+    
+    if (finalText.isBlank()) return
+    
+    val isSpeaking by finalSpeechManager.isSpeaking.collectAsState()
+    val currentSpeakingText by finalSpeechManager.currentSpeakingText.collectAsState()
+    
+    val isThisTextSpeaking = isSpeaking && currentSpeakingText == finalText
     
     val rotation by animateFloatAsState(
         targetValue = if (isThisTextSpeaking) 360f else 0f,
@@ -47,21 +62,21 @@ fun UnifiedTTSButton(
     IconButton(
         onClick = {
             if (isThisTextSpeaking) {
-                speechManager.stopSpeaking()
+                finalSpeechManager.stopSpeaking()
             } else {
-                val japaneseText = JapaneseTextFilter.prepareTTSText(text)
+                val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
                 if (japaneseText.isNotEmpty()) {
-                    speechManager.speakWithOriginalText(text, japaneseText)
+                    finalSpeechManager.speakWithOriginalText(finalText, japaneseText)
                 }
             }
         },
-        enabled = isEnabled && text.isNotBlank(),
+        enabled = isEnabled && finalText.isNotBlank(),
         modifier = modifier.size(size)
     ) {
         Icon(
             imageVector = if (isThisTextSpeaking) Icons.Default.Close else Icons.Default.PlayArrow,
             contentDescription = if (isThisTextSpeaking) "음성 중지" else "음성 재생",
-            tint = if (isEnabled && text.isNotBlank()) {
+            tint = if (isEnabled && finalText.isNotBlank()) {
                 MaterialTheme.colorScheme.primary
             } else {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)

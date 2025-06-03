@@ -13,7 +13,6 @@ import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.entity.Item
 import com.lass.yomiyomi.ui.component.text.tts.MainTextWithTTS
 import com.lass.yomiyomi.ui.component.text.tts.ItemInfoWithTTS
-import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun ItemCard(
@@ -21,7 +20,6 @@ fun ItemCard(
     onCardClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val speechManager = rememberSpeechManager()
     
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -49,7 +47,6 @@ fun ItemCard(
             // 통일된 메인 텍스트 + TTS 컴포넌트 사용
             MainTextWithTTS(
                 text = item.getMainText(),
-                speechManager = speechManager,
                 onTextClick = {
                     val searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=${item.getMainText()}"
                     val intent = Intent(Intent.ACTION_VIEW, searchUrl.toUri())
@@ -61,8 +58,7 @@ fun ItemCard(
             
             // 통일된 Item 정보 + TTS 컴포넌트 사용
             ItemInfoWithTTS(
-                item = item,
-                speechManager = speechManager
+                item = item
             )
         }
     }

@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.speech.SpeechManager
 
 /**
  * 한자 카드의 TTS 레이아웃을 위한 컴포넌트
@@ -20,7 +19,6 @@ import com.lass.yomiyomi.speech.SpeechManager
 @Composable
 fun KanjiTextWithAdaptiveTTS(
     text: String,
-    speechManager: SpeechManager,
     onTextClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -50,7 +48,6 @@ fun KanjiTextWithAdaptiveTTS(
             
             UnifiedTTSButton(
                 text = text,
-                speechManager = speechManager,
                 size = 28.dp
             )
         }
@@ -82,7 +79,6 @@ fun KanjiTextWithAdaptiveTTS(
             if (textWidth > 0.dp) {
                 UnifiedTTSButton(
                     text = text,
-                    speechManager = speechManager,
                     size = 32.dp,
                     modifier = Modifier.offset(x = textWidth / 2 + 15.dp)
                 )

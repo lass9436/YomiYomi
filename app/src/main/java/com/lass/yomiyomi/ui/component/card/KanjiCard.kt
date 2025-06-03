@@ -21,7 +21,6 @@ import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import com.lass.yomiyomi.ui.component.text.tts.KanjiTextWithAdaptiveTTS
 import com.lass.yomiyomi.ui.component.text.tts.InfoRowWithTTS
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun KanjiCard(
@@ -30,7 +29,6 @@ fun KanjiCard(
     onDelete: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val speechManager = rememberSpeechManager()
     
     // Item 인터페이스를 통해 정보 가져오기
     val infoRows = kanji.toInfoRows()
@@ -78,15 +76,10 @@ fun KanjiCard(
                 // 중앙: 한자 + TTS
                 KanjiTextWithAdaptiveTTS(
                     text = mainText,
-                    speechManager = speechManager,
                     onTextClick = {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://ja.dict.naver.com/#/search?range=word&query=${mainText}".toUri()
-                        )
-                        context.startActivity(intent)
-                    },
-                    modifier = Modifier.align(Alignment.Center)
+                        val searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=${mainText}"
+                        context.startActivity(Intent(Intent.ACTION_VIEW, searchUrl.toUri()))
+                    }
                 )
                 
                 // 오른쪽: 편집/삭제 버튼 (있을 때만)
@@ -132,8 +125,7 @@ fun KanjiCard(
                     if (infoRow.isJapanese) {
                         InfoRowWithTTS(
                             label = infoRow.label,
-                            value = infoRow.value,
-                            speechManager = speechManager
+                            value = infoRow.value
                         )
                     } else {
                         Row(

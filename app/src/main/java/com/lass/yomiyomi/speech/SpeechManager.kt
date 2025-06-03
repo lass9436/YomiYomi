@@ -8,6 +8,9 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class SpeechManager @Inject constructor(
     private val context: Context
-) {
+) : DefaultLifecycleObserver {
     private var speechRecognizer: SpeechRecognizer? = null
     private var textToSpeech: TextToSpeech? = null
     
@@ -41,6 +44,15 @@ class SpeechManager @Inject constructor(
     init {
         initializeTTS()
         initializeSpeechRecognizer()
+        
+        // 🚀 앱 라이프사이클 관찰자 등록 - 백그라운드 시 TTS 자동 정지
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+    }
+    
+    // 🎯 앱이 백그라운드로 갈 때 TTS 자동 정지
+    override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+        stopSpeaking() // 홈 버튼, 최근 앱 버튼 등으로 백그라운드 갈 때 즉시 정지
     }
 
     private fun initializeTTS() {
@@ -262,6 +274,9 @@ class SpeechManager @Inject constructor(
      * 리소스 정리
      */
     fun destroy() {
+        // 🧹 라이프사이클 관찰자 해제
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(this)
+        
         speechRecognizer?.destroy()
         textToSpeech?.shutdown()
         speechRecognizer = null

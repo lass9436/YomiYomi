@@ -21,7 +21,6 @@ import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.ui.component.text.tts.WordTextWithAdaptiveTTS
 import com.lass.yomiyomi.ui.component.text.tts.InfoRowWithTTS
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
 fun WordCard(
@@ -30,7 +29,6 @@ fun WordCard(
     onDelete: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val speechManager = rememberSpeechManager()
     
     // Item 인터페이스를 통해 정보 가져오기
     val infoRows = word.toInfoRows()
@@ -79,7 +77,6 @@ fun WordCard(
                 // 중앙: 단어 + TTS
                 WordTextWithAdaptiveTTS(
                     text = mainText,
-                    speechManager = speechManager,
                     onTextClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
@@ -133,8 +130,7 @@ fun WordCard(
                     if (infoRow.isJapanese) {
                         InfoRowWithTTS(
                             label = infoRow.label,
-                            value = infoRow.value,
-                            speechManager = speechManager
+                            value = infoRow.value
                         )
                     } else {
                         Row(
