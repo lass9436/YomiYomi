@@ -54,7 +54,7 @@ fun MainMenuScreen(
                 TabRow(
                     selectedTabIndex = selectedTabIndex,
                     containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.tertiary
                 ) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
@@ -62,7 +62,7 @@ fun MainMenuScreen(
                             onClick = { selectedTabIndex = index },
                             modifier = Modifier.background(
                                 if (selectedTabIndex == index) 
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                    MaterialTheme.colorScheme.primaryContainer
                                 else 
                                     Color.Transparent
                             ),
@@ -70,7 +70,7 @@ fun MainMenuScreen(
                                 Text(
                                     title,
                                     color = if (selectedTabIndex == index) 
-                                        MaterialTheme.colorScheme.primary 
+                                        MaterialTheme.colorScheme.onPrimaryContainer
                                     else 
                                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     fontWeight = if (selectedTabIndex == index) 

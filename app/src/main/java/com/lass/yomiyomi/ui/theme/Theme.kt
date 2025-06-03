@@ -23,7 +23,9 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = Color.Black,           // 강조색 위의 텍스트
     onBackground = Color(0xFFE3E3DC),   // 배경 위의 텍스트
     onSurface = Color(0xFFE3E3DC),      // surface 위의 텍스트
-    onSurfaceVariant = Color(0xFFE3E3DC) // surfaceVariant 위의 텍스트
+    onSurfaceVariant = Color(0xFFE3E3DC), // surfaceVariant 위의 텍스트
+    primaryContainer = Color(0xFF1E3A22), // 어두운 테마용 탭 배경 (더 진하게)
+    onPrimaryContainer = Color.White // 흰색 텍스트로 대비 강화
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -38,7 +40,9 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color.Black,          // 강조색 위의 텍스트
     onBackground = Color(0xFF1A1C19),  // 배경 위의 텍스트
     onSurface = Color(0xFF1A1C19),     // surface 위의 텍스트
-    onSurfaceVariant = Color(0xFF1A1C19) // surfaceVariant 위의 텍스트
+    onSurfaceVariant = Color(0xFF1A1C19), // surfaceVariant 위의 텍스트
+    primaryContainer = Color(0xFF4A7B4E), // 밝은 테마용 탭 배경 (더 진한 녹색)
+    onPrimaryContainer = Color.White // 흰색 텍스트로 대비 강화
 )
 
 @Composable
