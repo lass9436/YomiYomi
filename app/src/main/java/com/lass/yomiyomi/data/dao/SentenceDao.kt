@@ -1,45 +1,45 @@
 package com.lass.yomiyomi.data.dao
 
 import androidx.room.*
-import com.lass.yomiyomi.data.model.SentenceEntity
+import com.lass.yomiyomi.data.model.Sentence
 
 @Dao
 interface SentenceDao {
     
     // 기본 CRUD
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSentence(sentence: SentenceEntity): Long
+    suspend fun insertSentence(sentence: Sentence): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(sentences: List<SentenceEntity>)
+    suspend fun insertAll(sentences: List<Sentence>)
 
     @Update
-    suspend fun updateSentence(sentence: SentenceEntity)
+    suspend fun updateSentence(sentence: Sentence)
 
     @Delete
-    suspend fun deleteSentence(sentence: SentenceEntity)
+    suspend fun deleteSentence(sentence: Sentence)
 
     @Query("DELETE FROM sentence WHERE id = :id")
     suspend fun deleteSentenceById(id: Int)
 
     // 조회
     @Query("SELECT * FROM sentence WHERE id = :id")
-    suspend fun getSentenceById(id: Int): SentenceEntity?
+    suspend fun getSentenceById(id: Int): Sentence?
 
     @Query("SELECT * FROM sentence ORDER BY createdAt DESC")
-    suspend fun getAllSentences(): List<SentenceEntity>
+    suspend fun getAllSentences(): List<Sentence>
 
     // 문단별 조회
     @Query("SELECT * FROM sentence WHERE paragraphId = :paragraphId ORDER BY orderInParagraph")
-    suspend fun getSentencesByParagraph(paragraphId: String): List<SentenceEntity>
+    suspend fun getSentencesByParagraph(paragraphId: String): List<Sentence>
 
     // 개별 문장들만 조회 (문단에 속하지 않은)
     @Query("SELECT * FROM sentence WHERE paragraphId IS NULL ORDER BY createdAt DESC")
-    suspend fun getIndividualSentences(): List<SentenceEntity>
+    suspend fun getIndividualSentences(): List<Sentence>
 
     // 카테고리별 조회
     @Query("SELECT * FROM sentence WHERE category = :category ORDER BY createdAt DESC")
-    suspend fun getSentencesByCategory(category: String): List<SentenceEntity>
+    suspend fun getSentencesByCategory(category: String): List<Sentence>
 
     // 검색
     @Query("""
@@ -49,7 +49,7 @@ interface SentenceDao {
         OR category LIKE '%' || :query || '%'
         ORDER BY createdAt DESC
     """)
-    suspend fun searchSentences(query: String): List<SentenceEntity>
+    suspend fun searchSentences(query: String): List<Sentence>
 
     // 학습 관련
     @Query("UPDATE sentence SET learningProgress = :progress, reviewCount = reviewCount + 1, lastReviewedAt = :timestamp WHERE id = :id")

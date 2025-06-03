@@ -16,9 +16,9 @@ import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.data.dao.MyKanjiDao
 import com.lass.yomiyomi.data.model.MyKanji
 import com.lass.yomiyomi.data.dao.SentenceDao
-import com.lass.yomiyomi.data.model.SentenceEntity
+import com.lass.yomiyomi.data.model.Sentence
 import com.lass.yomiyomi.data.dao.ParagraphDao
-import com.lass.yomiyomi.data.model.ParagraphEntity
+import com.lass.yomiyomi.data.model.Paragraph
 
 @Database(
     entities = [
@@ -27,8 +27,8 @@ import com.lass.yomiyomi.data.model.ParagraphEntity
         Word::class,
         MyWord::class,
         MyKanji::class,
-        ParagraphEntity::class,
-        SentenceEntity::class,
+        Paragraph::class,
+        Sentence::class,
     ],
     version = 6,
     exportSchema = false

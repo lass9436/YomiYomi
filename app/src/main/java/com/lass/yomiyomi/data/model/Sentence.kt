@@ -9,7 +9,7 @@ import androidx.room.Index
     tableName = "sentence",
     foreignKeys = [
         ForeignKey(
-            entity = ParagraphEntity::class,
+            entity = Paragraph::class,
             parentColumns = ["paragraphId"],
             childColumns = ["paragraphId"],
             onDelete = ForeignKey.CASCADE,
@@ -18,7 +18,7 @@ import androidx.room.Index
     ],
     indices = [Index(value = ["paragraphId"])]
 )
-data class SentenceEntity(
+data class Sentence(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val japanese: String,           // "私[わたし]は学生[がくせい]です"

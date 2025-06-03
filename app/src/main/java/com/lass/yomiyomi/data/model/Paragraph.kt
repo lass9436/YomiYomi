@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "paragraph")
-data class ParagraphEntity(
+data class Paragraph(
     @PrimaryKey val paragraphId: String,
     val title: String,
     val description: String,

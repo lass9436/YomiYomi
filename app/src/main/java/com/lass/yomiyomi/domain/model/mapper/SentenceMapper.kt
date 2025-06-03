@@ -1,13 +1,13 @@
 package com.lass.yomiyomi.domain.model.mapper
 
-import com.lass.yomiyomi.data.model.SentenceEntity
-import com.lass.yomiyomi.data.model.ParagraphEntity
+import com.lass.yomiyomi.data.model.Sentence
+import com.lass.yomiyomi.data.model.Paragraph
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 
 // Entity -> Domain Model (조회용)
 // SentenceEntity -> SentenceItem
-fun SentenceEntity.toSentenceItem(): SentenceItem = SentenceItem(
+fun Sentence.toSentenceItem(): SentenceItem = SentenceItem(
     id = id,
     japanese = japanese,
     korean = korean,
@@ -22,7 +22,7 @@ fun SentenceEntity.toSentenceItem(): SentenceItem = SentenceItem(
 )
 
 // ParagraphEntity -> ParagraphItem
-fun ParagraphEntity.toParagraphItem(actualSentenceCount: Int = 0): ParagraphItem = ParagraphItem(
+fun Paragraph.toParagraphItem(actualSentenceCount: Int = 0): ParagraphItem = ParagraphItem(
     paragraphId = paragraphId,
     title = title,
     description = description,
@@ -35,7 +35,7 @@ fun ParagraphEntity.toParagraphItem(actualSentenceCount: Int = 0): ParagraphItem
 
 // Domain Model -> Entity (CRUD용)
 // SentenceItem -> SentenceEntity
-fun SentenceItem.toSentenceEntity(): SentenceEntity = SentenceEntity(
+fun SentenceItem.toSentenceEntity(): Sentence = Sentence(
     id = id,
     japanese = japanese,
     korean = korean,
@@ -50,7 +50,7 @@ fun SentenceItem.toSentenceEntity(): SentenceEntity = SentenceEntity(
 )
 
 // ParagraphItem -> ParagraphEntity
-fun ParagraphItem.toParagraphEntity(): ParagraphEntity = ParagraphEntity(
+fun ParagraphItem.toParagraphEntity(): Paragraph = Paragraph(
     paragraphId = paragraphId,
     title = title,
     description = description,
@@ -61,10 +61,10 @@ fun ParagraphItem.toParagraphEntity(): ParagraphEntity = ParagraphEntity(
 )
 
 // List 변환 함수들 (Entity -> Domain)
-fun List<SentenceEntity>.toSentenceItems(): List<SentenceItem> = map { it.toSentenceItem() }
-fun List<ParagraphEntity>.toParagraphItems(sentenceCounts: Map<String, Int> = emptyMap()): List<ParagraphItem> =
+fun List<Sentence>.toSentenceItems(): List<SentenceItem> = map { it.toSentenceItem() }
+fun List<Paragraph>.toParagraphItems(sentenceCounts: Map<String, Int> = emptyMap()): List<ParagraphItem> =
     map { it.toParagraphItem(sentenceCounts[it.paragraphId] ?: 0) }
 
 // List 변환 함수들 (Domain -> Entity)
-fun List<SentenceItem>.toSentenceEntities(): List<SentenceEntity> = map { it.toSentenceEntity() }
-fun List<ParagraphItem>.toParagraphEntities(): List<ParagraphEntity> = map { it.toParagraphEntity() }
+fun List<SentenceItem>.toSentenceEntities(): List<Sentence> = map { it.toSentenceEntity() }
+fun List<ParagraphItem>.toParagraphEntities(): List<Paragraph> = map { it.toParagraphEntity() }

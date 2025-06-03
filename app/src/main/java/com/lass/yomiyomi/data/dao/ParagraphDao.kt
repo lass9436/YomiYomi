@@ -1,37 +1,37 @@
 package com.lass.yomiyomi.data.dao
 
 import androidx.room.*
-import com.lass.yomiyomi.data.model.ParagraphEntity
+import com.lass.yomiyomi.data.model.Paragraph
 
 @Dao
 interface ParagraphDao {
     
     // 기본 CRUD
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertParagraph(paragraph: ParagraphEntity): Long
+    suspend fun insertParagraph(paragraph: Paragraph): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(paragraphs: List<ParagraphEntity>)
+    suspend fun insertAll(paragraphs: List<Paragraph>)
 
     @Update
-    suspend fun updateParagraph(paragraph: ParagraphEntity)
+    suspend fun updateParagraph(paragraph: Paragraph)
 
     @Delete
-    suspend fun deleteParagraph(paragraph: ParagraphEntity)
+    suspend fun deleteParagraph(paragraph: Paragraph)
 
     @Query("DELETE FROM paragraph WHERE paragraphId = :paragraphId")
     suspend fun deleteParagraphById(paragraphId: String)
 
     // 조회
     @Query("SELECT * FROM paragraph WHERE paragraphId = :paragraphId")
-    suspend fun getParagraphById(paragraphId: String): ParagraphEntity?
+    suspend fun getParagraphById(paragraphId: String): Paragraph?
 
     @Query("SELECT * FROM paragraph ORDER BY createdAt DESC")
-    suspend fun getAllParagraphs(): List<ParagraphEntity>
+    suspend fun getAllParagraphs(): List<Paragraph>
 
     // 카테고리별 조회
     @Query("SELECT * FROM paragraph WHERE category = :category ORDER BY createdAt DESC")
-    suspend fun getParagraphsByCategory(category: String): List<ParagraphEntity>
+    suspend fun getParagraphsByCategory(category: String): List<Paragraph>
 
     // 검색
     @Query("""
@@ -41,7 +41,7 @@ interface ParagraphDao {
         OR category LIKE '%' || :query || '%'
         ORDER BY createdAt DESC
     """)
-    suspend fun searchParagraphs(query: String): List<ParagraphEntity>
+    suspend fun searchParagraphs(query: String): List<Paragraph>
 
     // 문장 개수와 함께 조회 (LEFT JOIN 사용)
     @Query("""
