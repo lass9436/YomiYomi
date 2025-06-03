@@ -16,6 +16,7 @@ import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
 import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,10 +57,20 @@ fun SentenceListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("문장 학습") },
+                title = { 
+                    Text(
+                        "문장 학습",
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "뒤로 가기",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
                 },
                 actions = {
@@ -69,7 +80,7 @@ fun SentenceListScreen(
                         Icon(
                             Icons.Default.Settings, 
                             contentDescription = "필터 토글",
-                            tint = if (isFilterVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            tint = if (isFilterVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
                         )
                     }
                     IconButton(
@@ -78,9 +89,16 @@ fun SentenceListScreen(
                             showInputDialog = true
                         }
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "문장 추가")
+                        Icon(
+                            Icons.Default.Add, 
+                            contentDescription = "문장 추가",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { paddingValues ->

@@ -15,6 +15,7 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.ui.component.dialog.input.ParagraphInputDialog
 import com.lass.yomiyomi.ui.layout.ParagraphListLayout
 import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphViewModel
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,10 +52,20 @@ fun ParagraphListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("문단 학습") },
+                title = { 
+                    Text(
+                        "문단 학습",
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "뒤로 가기",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
                 },
                 actions = {
@@ -64,7 +75,7 @@ fun ParagraphListScreen(
                         Icon(
                             Icons.Default.Settings, 
                             contentDescription = "필터 토글",
-                            tint = if (isFilterVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            tint = if (isFilterVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
                         )
                     }
                     IconButton(
@@ -73,9 +84,16 @@ fun ParagraphListScreen(
                             showInputDialog = true
                         }
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "문단 추가")
+                        Icon(
+                            Icons.Default.Add, 
+                            contentDescription = "문단 추가",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { paddingValues ->

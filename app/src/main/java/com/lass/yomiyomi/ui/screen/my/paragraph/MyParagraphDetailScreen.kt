@@ -60,11 +60,19 @@ fun ParagraphDetailScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    Text(paragraph?.title ?: "문단 상세")
+                    Text(
+                        paragraph?.title ?: "문단 상세",
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "뒤로 가기",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
                 },
                 actions = {
@@ -74,9 +82,16 @@ fun ParagraphDetailScreen(
                             showInputDialog = true
                         }
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "문장 추가")
+                        Icon(
+                            Icons.Default.Add, 
+                            contentDescription = "문장 추가",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { paddingValues ->
