@@ -6,18 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.*
-import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
-import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.ui.component.tts.MainTextWithTTS
+import com.lass.yomiyomi.ui.component.tts.ItemInfoWithTTS
 import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
@@ -26,10 +21,7 @@ fun ItemCard(
     onCardClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    
-    // TTS 기능 - 직접 주입
     val speechManager = rememberSpeechManager()
-    val isSpeaking by speechManager.isSpeaking.collectAsState()
     
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -54,96 +46,23 @@ fun ItemCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // 메인 텍스트와 TTS 버튼
+            // 통일된 메인 텍스트 + TTS 컴포넌트 사용
             MainTextWithTTS(
                 text = item.getMainText(),
                 speechManager = speechManager,
-                isSpeaking = isSpeaking,
-                item = item,
-                context = context
+                onTextClick = {
+                    val searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=${item.getMainText()}"
+                    val intent = Intent(Intent.ACTION_VIEW, searchUrl.toUri())
+                    context.startActivity(intent)
+                }
             )
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // 정보 행들 - 완전히 추상화됨
-            InfoRows(
-                infoRows = item.toInfoRows(),
-                speechManager = speechManager,
-                isSpeaking = isSpeaking
-            )
-        }
-    }
-}
-
-@Composable
-private fun MainTextWithTTS(
-    text: String,
-    speechManager: com.lass.yomiyomi.speech.SpeechManager,
-    isSpeaking: Boolean,
-    item: Item,
-    context: android.content.Context
-) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        // 메인 텍스트 - 정중앙
-        Text(
-            text = text,
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.clickable {
-                // 모든 아이템 타입에 대해 range=word로 통일
-                val searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=${text}"
-                val intent = Intent(Intent.ACTION_VIEW, searchUrl.toUri())
-                context.startActivity(intent)
-            }
-        )
-        
-        // TTS 버튼 - 우측 절대 위치
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 16.dp)
-        ) {
-            TextToSpeechButton(
-                text = text,
-                isSpeaking = isSpeaking,
-                onSpeak = { originalText ->
-                    val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                    if (japaneseText.isNotEmpty()) {
-                        speechManager.speakWithOriginalText(originalText, japaneseText)
-                    }
-                },
-                onStop = { speechManager.stopSpeaking() },
-                size = 32.dp,
+            // 통일된 Item 정보 + TTS 컴포넌트 사용
+            ItemInfoWithTTS(
+                item = item,
                 speechManager = speechManager
-            )
-        }
-    }
-}
-
-@Composable
-private fun InfoRows(
-    infoRows: List<InfoRowData>,
-    speechManager: com.lass.yomiyomi.speech.SpeechManager,
-    isSpeaking: Boolean
-) {
-    infoRows.forEach { infoRow ->
-        if (infoRow.isJapanese) {
-            InfoRowWithTTS(
-                label = infoRow.label,
-                value = infoRow.value,
-                speechManager = speechManager,
-                isSpeaking = isSpeaking,
-                labelWidth = 60
-            )
-        } else {
-            InfoRow(
-                label = infoRow.label,
-                value = infoRow.value,
-                labelWidth = 60
             )
         }
     }

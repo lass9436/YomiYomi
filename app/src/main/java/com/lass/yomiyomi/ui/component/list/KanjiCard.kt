@@ -1,7 +1,6 @@
 package com.lass.yomiyomi.ui.component.list
 
 import android.content.Intent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,55 +11,47 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.lass.yomiyomi.domain.model.MyKanjiItem
-import com.lass.yomiyomi.ui.component.speech.TextToSpeechButton
+import com.lass.yomiyomi.ui.component.tts.KanjiTextWithAdaptiveTTS
+import com.lass.yomiyomi.ui.component.tts.InfoRowWithTTS
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.util.JapaneseTextFilter
 import com.lass.yomiyomi.util.rememberSpeechManager
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.IntSize
 
 @Composable
 fun MyKanjiCard(
     myKanji: MyKanjiItem,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    onDelete: () -> Unit
 ) {
     val context = LocalContext.current
     val speechManager = rememberSpeechManager()
-    val isSpeaking by speechManager.isSpeaking.collectAsState()
     
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
-            // Row 1: [N5] -------- [메인 한자] [TTS] -------- [수정/삭제]
-            // 절대 중앙 정렬을 위해 Box로 전체 감싸기
+            // Row 1: 레벨 배지, 메인 한자 + TTS, 편집/삭제 버튼
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // 왼쪽: 레벨 박스
+                // 왼쪽: 레벨 배지
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary
+                        containerColor = MaterialTheme.colorScheme.primary
                     ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.align(Alignment.CenterStart)
@@ -74,71 +65,19 @@ fun MyKanjiCard(
                     )
                 }
                 
-                // 절대 중앙: 메인 한자는 항상 완전 중앙, TTS는 정확한 위치에
-                var textWidth by remember { mutableStateOf(0.dp) }
-                val density = LocalDensity.current
-                
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    Text(
-                        text = myKanji.kanji,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier
-                            .onSizeChanged { size: IntSize ->
-                                textWidth = with(density) { size.width.toDp() }
-                            }
-                            .clickable {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    "https://ja.dict.naver.com/#/search?range=word&query=${myKanji.kanji}".toUri()
-                                )
-                                context.startActivity(intent)
-                            }
-                    )
-                    
-                    // 텍스트가 길면(3글자 이상) 아래에, 짧으면 옆에 배치
-                    if (myKanji.kanji.length >= 3) {
-                        // 긴 텍스트: TTS를 바로 아래 중앙에
-                        Spacer(modifier = Modifier.height(4.dp))
-                        TextToSpeechButton(
-                            text = myKanji.kanji,
-                            isSpeaking = isSpeaking,
-                            onSpeak = { originalText ->
-                                val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                                if (japaneseText.isNotEmpty()) {
-                                    speechManager.speakWithOriginalText(originalText, japaneseText)
-                                }
-                            },
-                            onStop = { speechManager.stopSpeaking() },
-                            size = 28.dp,
-                            speechManager = speechManager
+                // 중앙: 통일된 한자 + TTS 컴포넌트 사용 (한자는 보통 1-2글자이므로 길이 기준을 2로 변경)
+                KanjiTextWithAdaptiveTTS(
+                    text = myKanji.kanji,
+                    speechManager = speechManager,
+                    onTextClick = {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            "https://ja.dict.naver.com/#/search?range=word&query=${myKanji.kanji}".toUri()
                         )
-                    }
-                }
-                
-                // 짧은 텍스트: TTS를 정확히 텍스트 끝점에서 15dp 떨어뜨림
-                if (myKanji.kanji.length < 3 && textWidth > 0.dp) {
-                    TextToSpeechButton(
-                        text = myKanji.kanji,
-                        isSpeaking = isSpeaking,
-                        onSpeak = { originalText ->
-                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                            if (japaneseText.isNotEmpty()) {
-                                speechManager.speakWithOriginalText(originalText, japaneseText)
-                            }
-                        },
-                        onStop = { speechManager.stopSpeaking() },
-                        size = 32.dp,
-                        speechManager = speechManager,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .offset(x = textWidth / 2 + 15.dp) // 텍스트 끝점에서 정확히 15dp
-                    )
-                }
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.align(Alignment.Center)
+                )
                 
                 // 오른쪽: 편집/삭제 버튼
                 Row(
@@ -171,74 +110,41 @@ fun MyKanjiCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Row 2: 음독 [TTS]
+            // Row 2: 음독 + TTS (음독이 있는 경우에만)
+            if (myKanji.onyomi.isNotBlank()) {
+                InfoRowWithTTS(
+                    label = "음독:",
+                    value = myKanji.onyomi,
+                    speechManager = speechManager
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Row 3: 훈독 + TTS (훈독이 있는 경우에만)
+            if (myKanji.kunyomi.isNotBlank()) {
+                InfoRowWithTTS(
+                    label = "훈독:",
+                    value = myKanji.kunyomi,
+                    speechManager = speechManager
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Row 4: 의미 (TTS 없음)
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "음독: ${myKanji.onyomi}",
+                    text = "의미: ${myKanji.meaning}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    modifier = Modifier.weight(1f)
                 )
-                
-                if (myKanji.onyomi.isNotBlank()) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    
-                    TextToSpeechButton(
-                        text = myKanji.onyomi,
-                        isSpeaking = isSpeaking,
-                        onSpeak = { originalText ->
-                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                            if (japaneseText.isNotEmpty()) {
-                                speechManager.speakWithOriginalText(originalText, japaneseText)
-                            }
-                        },
-                        onStop = { speechManager.stopSpeaking() },
-                        size = 28.dp,
-                        speechManager = speechManager
-                    )
-                }
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Row 3: 훈독 [TTS]
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "훈독: ${myKanji.kunyomi}",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                if (myKanji.kunyomi.isNotBlank()) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    
-                    TextToSpeechButton(
-                        text = myKanji.kunyomi,
-                        isSpeaking = isSpeaking,
-                        onSpeak = { originalText ->
-                            val japaneseText = JapaneseTextFilter.prepareTTSText(originalText)
-                            if (japaneseText.isNotEmpty()) {
-                                speechManager.speakWithOriginalText(originalText, japaneseText)
-                            }
-                        },
-                        onStop = { speechManager.stopSpeaking() },
-                        size = 28.dp,
-                        speechManager = speechManager
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Row 4: 의미
-            Text(
-                text = "의미: ${myKanji.meaning}",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }
