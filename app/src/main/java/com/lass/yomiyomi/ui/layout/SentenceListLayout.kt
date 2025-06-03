@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.card.SentenceCard
+import com.lass.yomiyomi.ui.component.search.SearchTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,22 +42,11 @@ fun SentenceListLayout(
     
     Column(modifier = modifier) {
         // 검색 바
-        OutlinedTextField(
+        SearchTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            label = { Text("문장 검색") },
-            placeholder = { Text("일본어나 한국어로 검색하세요") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { onSearchQueryChange("") }) {
-                        Icon(Icons.Default.Clear, contentDescription = null)
-                    }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+            label = "문장 검색",
+            placeholder = "일본어나 한국어로 검색하세요"
         )
         
         // 필터 및 옵션 컨트롤
