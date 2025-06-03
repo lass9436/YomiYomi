@@ -33,6 +33,7 @@ fun SentenceListLayout(
     onShowKoreanChange: (Boolean) -> Unit = {},
     showProgress: Boolean = true,
     onShowProgressChange: (Boolean) -> Unit = {},
+    isFilterVisible: Boolean = false,
     onSentenceEdit: ((SentenceItem) -> Unit)? = null,
     onSentenceDelete: ((SentenceItem) -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -43,25 +44,27 @@ fun SentenceListLayout(
     
     Column(modifier = modifier) {
         // 검색 바
-        SearchTextField(
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            label = "문장 검색",
-            placeholder = "일본어나 한국어로 검색하세요"
-        )
-        
-        // 필터 및 옵션 컨트롤
-        SentenceFilterPanel(
-            categories = categories,
-            selectedCategory = selectedCategory,
-            onCategoryChange = onCategoryChange,
-            displayMode = displayMode,
-            onDisplayModeChange = onDisplayModeChange,
-            showKorean = showKorean,
-            onShowKoreanChange = onShowKoreanChange,
-            showProgress = showProgress,
-            onShowProgressChange = onShowProgressChange
-        )
+        if (isFilterVisible) {
+            SearchTextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                label = "문장 검색",
+                placeholder = "일본어나 한국어로 검색하세요"
+            )
+            
+            // 필터 및 옵션 컨트롤
+            SentenceFilterPanel(
+                categories = categories,
+                selectedCategory = selectedCategory,
+                onCategoryChange = onCategoryChange,
+                displayMode = displayMode,
+                onDisplayModeChange = onDisplayModeChange,
+                showKorean = showKorean,
+                onShowKoreanChange = onShowKoreanChange,
+                showProgress = showProgress,
+                onShowProgressChange = onShowProgressChange
+            )
+        }
         
         // 결과 개수 표시
         Text(

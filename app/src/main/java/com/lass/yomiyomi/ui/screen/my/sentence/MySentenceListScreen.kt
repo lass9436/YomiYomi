@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -45,6 +46,7 @@ fun SentenceListScreen(
     var showInputDialog by remember { mutableStateOf(false) }
     var editingSentence by remember { mutableStateOf<SentenceItem?>(null) }
     var deletingSentence by remember { mutableStateOf<SentenceItem?>(null) }
+    var isFilterVisible by remember { mutableStateOf(false) } // 필터 표시 상태
     
     // 검색 쿼리 변경 시 ViewModel에 전달
     LaunchedEffect(searchQuery) {
@@ -61,6 +63,15 @@ fun SentenceListScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { isFilterVisible = !isFilterVisible }
+                    ) {
+                        Icon(
+                            Icons.Default.Settings, 
+                            contentDescription = "필터 토글",
+                            tint = if (isFilterVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     IconButton(
                         onClick = {
                             editingSentence = null
@@ -88,6 +99,7 @@ fun SentenceListScreen(
             onShowKoreanChange = { showKorean = it },
             showProgress = showProgress,
             onShowProgressChange = { showProgress = it },
+            isFilterVisible = isFilterVisible,
             onSentenceEdit = { sentence ->
                 editingSentence = sentence
                 showInputDialog = true
