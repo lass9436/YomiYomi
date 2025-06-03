@@ -29,9 +29,11 @@ fun MainMenuScreen(
     onNavigateToMyKanjiRandom: () -> Unit,
     onNavigateToMyKanjiQuiz: () -> Unit,
     onNavigateToMyWordQuiz: () -> Unit,
+    onNavigateToSentenceList: () -> Unit = {},
+    onNavigateToParagraphList: () -> Unit = {},
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
-    val tabs = listOf("학습", "내 학습")
+    val tabs = listOf("기초 학습", "단어 / 한자", "문장 / 문단")
 
     Scaffold(
         topBar = {
@@ -73,7 +75,7 @@ fun MainMenuScreen(
         content = { paddingValues ->
             when (selectedTabIndex) {
                 0 -> {
-                    // 기본 학습 탭
+                    // 기초 학습 탭 (기존 "학습" 탭)
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(16.dp),
@@ -127,7 +129,7 @@ fun MainMenuScreen(
                     }
                 }
                 1 -> {
-                    // 내 학습 탭
+                    // 단어 / 한자 탭 (기존 "내 학습" 탭)
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(16.dp),
@@ -180,6 +182,32 @@ fun MainMenuScreen(
                         }
                     }
                 }
+                2 -> {
+                    // 문장 / 문단 탭 (새로 추가)
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        item {
+                            MenuCard(
+                                title = "문장 학습",
+                                subtitle = "일본어 문장을\n학습해보세요",
+                                onClick = onNavigateToSentenceList
+                            )
+                        }
+                        item {
+                            MenuCard(
+                                title = "문단 학습",
+                                subtitle = "긴 문장과 문단을\n연습해보세요",
+                                onClick = onNavigateToParagraphList
+                            )
+                        }
+                    }
+                }
             }
         }
     )
@@ -187,7 +215,7 @@ fun MainMenuScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun MainMenuScreen() {
+fun MainMenuScreenPreview() {
     MainMenuScreen(
         initialTabIndex = 0,
         onNavigateToKanji = {},
@@ -202,5 +230,7 @@ fun MainMenuScreen() {
         onNavigateToMyKanjiRandom = {},
         onNavigateToMyKanjiQuiz = {},
         onNavigateToMyWordQuiz = {},
+        onNavigateToSentenceList = {},
+        onNavigateToParagraphList = {},
     )
 }

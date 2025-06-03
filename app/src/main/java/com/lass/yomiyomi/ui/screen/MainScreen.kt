@@ -26,6 +26,8 @@ enum class Routes(val route: String) {
     MY_KANJI_RANDOM("myKanjiRandom"),
     MY_KANJI_QUIZ("myKanjiQuiz"),
     MY_WORD_QUIZ("myWordQuiz"),
+    SENTENCE_LIST("sentenceList"),
+    PARAGRAPH_LIST("paragraphList"),
 }
 
 @Composable
@@ -55,6 +57,8 @@ fun MainScreen(
                 onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
                 onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
+                onNavigateToSentenceList = { navController.navigate(Routes.SENTENCE_LIST.route) },
+                onNavigateToParagraphList = { navController.navigate(Routes.PARAGRAPH_LIST.route) },
             )
         }
         composable(
@@ -79,6 +83,8 @@ fun MainScreen(
                 onNavigateToMyKanjiRandom = { navController.navigate(Routes.MY_KANJI_RANDOM.route) },
                 onNavigateToMyKanjiQuiz = { navController.navigate(Routes.MY_KANJI_QUIZ.route) },
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
+                onNavigateToSentenceList = { navController.navigate(Routes.SENTENCE_LIST.route) },
+                onNavigateToParagraphList = { navController.navigate(Routes.PARAGRAPH_LIST.route) },
             )
         }
         composable(Routes.KANJI_LIST.route) {
@@ -163,6 +169,24 @@ fun MainScreen(
                 onBack = { navController.navigate("main/1") {
                     popUpTo(Routes.MAIN.route) { inclusive = true }
                 } }
+            )
+        }
+        composable(Routes.SENTENCE_LIST.route) {
+            SentenceListScreen(
+                onBack = { navController.navigate("main/2") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } }
+            )
+        }
+        composable(Routes.PARAGRAPH_LIST.route) {
+            ParagraphListScreen(
+                onBack = { navController.navigate("main/2") {
+                    popUpTo(Routes.MAIN.route) { inclusive = true }
+                } },
+                onParagraphClick = { paragraph ->
+                    // TODO: 추후 문단 상세 화면으로 이동
+                    // navController.navigate("paragraphDetail/${paragraph.paragraphId}")
+                }
             )
         }
     }
