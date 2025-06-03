@@ -32,7 +32,6 @@ fun SentenceListLayout(
     onShowProgressChange: (Boolean) -> Unit = {},
     onSentenceEdit: ((SentenceItem) -> Unit)? = null,
     onSentenceDelete: ((SentenceItem) -> Unit)? = null,
-    onAddSentence: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val categories = remember(sentences) {
@@ -268,7 +267,7 @@ fun SentenceListLayout(
                     if (searchQuery.isEmpty() && selectedCategory == "전체") {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "첫 번째 문장을 추가해보세요!",
+                            text = "오른쪽 위 + 버튼을 눌러 문장을 추가해보세요!",
                             fontSize = 12.sp,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.outline
@@ -292,21 +291,6 @@ fun SentenceListLayout(
                         onDelete = onSentenceDelete?.let { { it(sentence) } }
                     )
                 }
-            }
-        }
-    }
-    
-    // FAB 추가 버튼
-    onAddSentence?.let { onAdd ->
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = onAdd,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "문장 추가")
             }
         }
     }

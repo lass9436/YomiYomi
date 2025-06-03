@@ -28,7 +28,6 @@ fun ParagraphListLayout(
     onParagraphClick: ((ParagraphItem) -> Unit)? = null,
     onParagraphEdit: ((ParagraphItem) -> Unit)? = null,
     onParagraphDelete: ((ParagraphItem) -> Unit)? = null,
-    onAddParagraph: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val categories = remember(paragraphs) {
@@ -160,7 +159,7 @@ fun ParagraphListLayout(
                     if (searchQuery.isEmpty() && selectedCategory == "전체") {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "첫 번째 문단을 추가해보세요!",
+                            text = "오른쪽 위 + 버튼을 눌러 문단을 추가해보세요!",
                             fontSize = 12.sp,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.outline
@@ -183,21 +182,6 @@ fun ParagraphListLayout(
                         onDelete = onParagraphDelete?.let { { it(paragraph) } }
                     )
                 }
-            }
-        }
-    }
-    
-    // FAB 추가 버튼
-    onAddParagraph?.let { onAdd ->
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = onAdd,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "문단 추가")
             }
         }
     }

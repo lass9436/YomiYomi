@@ -3,7 +3,8 @@ package com.lass.yomiyomi.ui.screen
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -51,7 +52,17 @@ fun ParagraphListScreen(
                 title = { Text("문단 학습") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로 가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            editingParagraph = null
+                            showInputDialog = true
+                        }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "문단 추가")
                     }
                 }
             )
@@ -74,10 +85,6 @@ fun ParagraphListScreen(
             },
             onParagraphDelete = { paragraph ->
                 deletingParagraph = paragraph
-            },
-            onAddParagraph = {
-                editingParagraph = null
-                showInputDialog = true
             },
             modifier = modifier.padding(paddingValues)
         )

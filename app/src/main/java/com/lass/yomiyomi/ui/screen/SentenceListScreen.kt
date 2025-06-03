@@ -3,7 +3,8 @@ package com.lass.yomiyomi.ui.screen
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -53,7 +54,17 @@ fun SentenceListScreen(
                 title = { Text("문장 학습") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로 가기")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            editingSentence = null
+                            showInputDialog = true
+                        }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "문장 추가")
                     }
                 }
             )
@@ -80,10 +91,6 @@ fun SentenceListScreen(
             },
             onSentenceDelete = { sentence ->
                 deletingSentence = sentence
-            },
-            onAddSentence = {
-                editingSentence = null
-                showInputDialog = true
             },
             modifier = modifier.padding(paddingValues)
         )
