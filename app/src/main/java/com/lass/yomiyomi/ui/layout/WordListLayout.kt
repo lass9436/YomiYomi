@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.common.LevelSelector
-import com.lass.yomiyomi.ui.component.list.MyWordCard
+import com.lass.yomiyomi.ui.component.list.WordCard
 import com.lass.yomiyomi.ui.component.list.AddWordDialog
 import com.lass.yomiyomi.ui.component.list.EditWordDialog
 import com.lass.yomiyomi.ui.state.WordState
@@ -24,18 +24,20 @@ import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyWordLayout(
+fun WordListLayout(
     state: WordState,
     callbacks: WordCallbacks,
-    viewModel: MyWordViewModelInterface,
-    modifier: Modifier = Modifier
+    viewModel: MyWordViewModelInterface? = null,
+    modifier: Modifier = Modifier,
+    isReadOnly: Boolean = false,
+    title: String = if (isReadOnly) "단어 학습" else "내 단어"
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "내 단어",
+                        title,
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
@@ -49,8 +51,11 @@ fun MyWordLayout(
                     IconButton(onClick = callbacks.onToggleSearch) {
                         Icon(Icons.Default.Search, contentDescription = "검색")
                     }
-                    IconButton(onClick = callbacks.onShowAddDialog) {
-                        Icon(Icons.Default.Add, contentDescription = "단어 추가")
+                    // 읽기 전용 모드가 아닐 때만 추가 버튼 표시
+                    if (!isReadOnly) {
+                        IconButton(onClick = callbacks.onShowAddDialog) {
+                            Icon(Icons.Default.Add, contentDescription = "단어 추가")
+                        }
                     }
                 }
             )
@@ -63,12 +68,12 @@ fun MyWordLayout(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // 내 단어 검색
+            // 단어 검색
             if (state.showMyWordSearch) {
                 OutlinedTextField(
                     value = state.searchQuery,
                     onValueChange = callbacks.onSearchQueryChanged,
-                    label = { Text("내 단어 검색") },
+                    label = { Text(if (isReadOnly) "단어 검색" else "내 단어 검색") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -84,7 +89,7 @@ fun MyWordLayout(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 내 단어 목록
+            // 단어 목록
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -98,7 +103,11 @@ fun MyWordLayout(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "내 단어가 없습니다.\n+ 버튼을 눌러 단어를 추가해보세요!",
+                        if (isReadOnly) {
+                            "단어가 없습니다."
+                        } else {
+                            "내 단어가 없습니다.\n+ 버튼을 눌러 단어를 추가해보세요!"
+                        },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -108,31 +117,52 @@ fun MyWordLayout(
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(state.myWords) { myWord ->
-                        MyWordCard(
-                            myWord = myWord,
-                            onEdit = { callbacks.onEditWord(myWord) },
-                            onDelete = { callbacks.onDeleteWord(myWord) }
+                        WordCard(
+                            word = myWord,
+                            // 읽기 전용 모드가 아닐 때만 편집/삭제 기능 제공
+                            onEdit = if (!isReadOnly) { { callbacks.onEditWord(myWord) } } else null,
+                            onDelete = if (!isReadOnly) { { callbacks.onDeleteWord(myWord) } } else null
                         )
                     }
                 }
             }
         }
 
-        // 단어 추가 다이얼로그
-        if (state.showAddDialog) {
-            AddWordDialog(
-                viewModel = viewModel,
-                onDismiss = callbacks.onDismissAddDialog
-            )
-        }
+        // 읽기 전용 모드가 아닐 때만 다이얼로그들 표시
+        if (!isReadOnly && viewModel != null) {
+            // 단어 추가 다이얼로그
+            if (state.showAddDialog) {
+                AddWordDialog(
+                    viewModel = viewModel,
+                    onDismiss = callbacks.onDismissAddDialog
+                )
+            }
 
-        // 단어 수정 다이얼로그
-        state.editingWord?.let { myWord ->
-            EditWordDialog(
-                myWord = myWord,
-                viewModel = viewModel,
-                onDismiss = callbacks.onDismissEditDialog
-            )
+            // 단어 수정 다이얼로그
+            state.editingWord?.let { myWord ->
+                EditWordDialog(
+                    myWord = myWord,
+                    viewModel = viewModel,
+                    onDismiss = callbacks.onDismissEditDialog
+                )
+            }
         }
     }
+}
+
+// 호환성을 위한 별칭
+@Composable
+fun MyWordLayout(
+    state: WordState,
+    callbacks: WordCallbacks,
+    viewModel: MyWordViewModelInterface,
+    modifier: Modifier = Modifier
+) {
+    WordListLayout(
+        state = state,
+        callbacks = callbacks,
+        viewModel = viewModel,
+        modifier = modifier,
+        isReadOnly = false
+    )
 } 

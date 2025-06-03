@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.Level
 import com.lass.yomiyomi.ui.component.common.LevelSelector
-import com.lass.yomiyomi.ui.component.list.MyKanjiCard
+import com.lass.yomiyomi.ui.component.list.KanjiCard
 import com.lass.yomiyomi.ui.component.list.AddKanjiDialog
 import com.lass.yomiyomi.ui.component.list.EditKanjiDialog
 import com.lass.yomiyomi.ui.state.KanjiState
@@ -24,18 +24,20 @@ import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyKanjiLayout(
+fun KanjiListLayout(
     state: KanjiState,
     callbacks: KanjiCallbacks,
-    viewModel: MyKanjiViewModelInterface,
-    modifier: Modifier = Modifier
+    viewModel: MyKanjiViewModelInterface? = null,
+    modifier: Modifier = Modifier,
+    isReadOnly: Boolean = false,
+    title: String = if (isReadOnly) "한자 학습" else "내 한자"
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "내 한자",
+                        title,
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
                     )
@@ -49,8 +51,11 @@ fun MyKanjiLayout(
                     IconButton(onClick = callbacks.onToggleSearch) {
                         Icon(Icons.Default.Search, contentDescription = "검색")
                     }
-                    IconButton(onClick = callbacks.onShowAddDialog) {
-                        Icon(Icons.Default.Add, contentDescription = "한자 추가")
+                    // 읽기 전용 모드가 아닐 때만 추가 버튼 표시
+                    if (!isReadOnly) {
+                        IconButton(onClick = callbacks.onShowAddDialog) {
+                            Icon(Icons.Default.Add, contentDescription = "한자 추가")
+                        }
                     }
                 }
             )
@@ -63,12 +68,12 @@ fun MyKanjiLayout(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // 내 한자 검색
+            // 한자 검색
             if (state.showMyKanjiSearch) {
                 OutlinedTextField(
                     value = state.searchQuery,
                     onValueChange = callbacks.onSearchQueryChanged,
-                    label = { Text("내 한자 검색") },
+                    label = { Text(if (isReadOnly) "한자 검색" else "내 한자 검색") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -84,7 +89,7 @@ fun MyKanjiLayout(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 내 한자 목록
+            // 한자 목록
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -98,7 +103,11 @@ fun MyKanjiLayout(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "내 한자가 없습니다.\n+ 버튼을 눌러 한자를 추가해보세요!",
+                        if (isReadOnly) {
+                            "한자가 없습니다."
+                        } else {
+                            "내 한자가 없습니다.\n+ 버튼을 눌러 한자를 추가해보세요!"
+                        },
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -108,31 +117,52 @@ fun MyKanjiLayout(
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(state.myKanji) { myKanji ->
-                        MyKanjiCard(
-                            myKanji = myKanji,
-                            onEdit = { callbacks.onEditKanji(myKanji) },
-                            onDelete = { callbacks.onDeleteKanji(myKanji) }
+                        KanjiCard(
+                            kanji = myKanji,
+                            // 읽기 전용 모드가 아닐 때만 편집/삭제 기능 제공
+                            onEdit = if (!isReadOnly) { { callbacks.onEditKanji(myKanji) } } else null,
+                            onDelete = if (!isReadOnly) { { callbacks.onDeleteKanji(myKanji) } } else null
                         )
                     }
                 }
             }
         }
 
-        // 한자 추가 다이얼로그
-        if (state.showAddDialog) {
-            AddKanjiDialog(
-                viewModel = viewModel,
-                onDismiss = callbacks.onDismissAddDialog
-            )
-        }
+        // 읽기 전용 모드가 아닐 때만 다이얼로그들 표시
+        if (!isReadOnly && viewModel != null) {
+            // 한자 추가 다이얼로그
+            if (state.showAddDialog) {
+                AddKanjiDialog(
+                    viewModel = viewModel,
+                    onDismiss = callbacks.onDismissAddDialog
+                )
+            }
 
-        // 한자 수정 다이얼로그
-        state.editingKanji?.let { myKanji ->
-            EditKanjiDialog(
-                myKanji = myKanji,
-                viewModel = viewModel,
-                onDismiss = callbacks.onDismissEditDialog
-            )
+            // 한자 수정 다이얼로그
+            state.editingKanji?.let { myKanji ->
+                EditKanjiDialog(
+                    myKanji = myKanji,
+                    viewModel = viewModel,
+                    onDismiss = callbacks.onDismissEditDialog
+                )
+            }
         }
     }
+}
+
+// 호환성을 위한 별칭
+@Composable
+fun MyKanjiLayout(
+    state: KanjiState,
+    callbacks: KanjiCallbacks,
+    viewModel: MyKanjiViewModelInterface,
+    modifier: Modifier = Modifier
+) {
+    KanjiListLayout(
+        state = state,
+        callbacks = callbacks,
+        viewModel = viewModel,
+        modifier = modifier,
+        isReadOnly = false
+    )
 } 

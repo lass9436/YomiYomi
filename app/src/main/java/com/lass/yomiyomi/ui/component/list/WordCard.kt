@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.lass.yomiyomi.domain.model.Item
+import com.lass.yomiyomi.domain.model.WordItem
 import com.lass.yomiyomi.domain.model.MyWordItem
 import com.lass.yomiyomi.ui.component.tts.WordTextWithAdaptiveTTS
 import com.lass.yomiyomi.ui.component.tts.InfoRowWithTTS
@@ -22,13 +24,21 @@ import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.util.rememberSpeechManager
 
 @Composable
-fun MyWordCard(
-    myWord: MyWordItem,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+fun WordCard(
+    word: Item,
+    onEdit: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val speechManager = rememberSpeechManager()
+    
+    // Item 인터페이스를 통해 정보 가져오기
+    val infoRows = word.toInfoRows()
+    val mainText = word.getMainText()
+    
+    // 레벨과 품사 정보 찾기
+    val level = infoRows.find { it.label.contains("레벨") }?.value ?: ""
+    val type = infoRows.find { it.label.contains("품사") }?.value ?: ""
     
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -43,117 +53,133 @@ fun MyWordCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Row 1: 레벨 배지, 메인 단어 + TTS, 편집/삭제 버튼
+            // Row 1: 레벨 배지, 메인 단어 + TTS, 편집/삭제 버튼(옵션)
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 // 왼쪽: 레벨 배지
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Text(
-                        text = myWord.level,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                if (level.isNotBlank()) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
+                        Text(
+                            text = level,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
                 
-                // 중앙: 통일된 단어 + TTS 컴포넌트 사용
+                // 중앙: 단어 + TTS
                 WordTextWithAdaptiveTTS(
-                    text = myWord.word,
+                    text = mainText,
                     speechManager = speechManager,
                     onTextClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://ja.dict.naver.com/#/search?range=word&query=${myWord.word}".toUri()
+                            "https://ja.dict.naver.com/#/search?range=word&query=${mainText}".toUri()
                         )
                         context.startActivity(intent)
                     },
                     modifier = Modifier.align(Alignment.Center)
                 )
                 
-                // 오른쪽: 편집/삭제 버튼
-                Row(
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    IconButton(
-                        onClick = onEdit,
-                        modifier = Modifier.size(40.dp)
+                // 오른쪽: 편집/삭제 버튼 (있을 때만)
+                if (onEdit != null || onDelete != null) {
+                    Row(
+                        modifier = Modifier.align(Alignment.CenterEnd)
                     ) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "편집",
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = onDelete,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "삭제",
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        onEdit?.let { editCallback ->
+                            IconButton(
+                                onClick = editCallback,
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = "편집",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                        onDelete?.let { deleteCallback ->
+                            IconButton(
+                                onClick = deleteCallback,
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "삭제",
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // Row 2: 읽기 + TTS (읽기가 단어와 다른 경우에만)
-            if (myWord.reading != myWord.word && myWord.reading.isNotBlank()) {
-                InfoRowWithTTS(
-                    label = "읽기:",
-                    value = myWord.reading,
-                    speechManager = speechManager
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
+            // 나머지 정보들과 품사 표시
+            infoRows.filter { !it.label.contains("레벨") && !it.label.contains("품사") }.forEach { infoRow ->
+                if (infoRow.value.isNotBlank()) {
+                    if (infoRow.isJapanese) {
+                        InfoRowWithTTS(
+                            label = infoRow.label,
+                            value = infoRow.value,
+                            speechManager = speechManager
+                        )
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${infoRow.label} ${infoRow.value}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 14.sp,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
             
-            // Row 3: 의미와 품사
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "의미: ${myWord.meaning}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 14.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                
-                // 품사를 쉼표로 split해서 작은 카드들로 표시
+            // 품사 태그들 (마지막에)
+            if (type.isNotBlank()) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    myWord.type.split(",").forEach { type ->
-                        val trimmedType = type.trim()
-                        if (trimmedType.isNotEmpty()) {
-                            Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                                ),
-                                shape = RoundedCornerShape(6.dp)
-                            ) {
-                                Text(
-                                    text = trimmedType,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        type.split(",").forEach { typeItem ->
+                            val trimmedType = typeItem.trim()
+                            if (trimmedType.isNotEmpty()) {
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                    ),
+                                    shape = RoundedCornerShape(6.dp)
+                                ) {
+                                    Text(
+                                        text = trimmedType,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
                     }
@@ -163,12 +189,26 @@ fun MyWordCard(
     }
 }
 
+// 호환성을 위한 별칭
+@Composable
+fun MyWordCard(
+    myWord: MyWordItem,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    WordCard(
+        word = myWord,
+        onEdit = onEdit,
+        onDelete = onDelete
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
-fun MyWordCardPreview() {
+fun WordCardEditablePreview() {
     YomiYomiTheme {
-        MyWordCard(
-            myWord = MyWordItem(
+        WordCard(
+            word = MyWordItem(
                 id = 1,
                 word = "こんにちは",
                 reading = "こんにちは",
@@ -176,10 +216,29 @@ fun MyWordCardPreview() {
                 level = "N5",
                 learningWeight = 0.9f,
                 timestamp = System.currentTimeMillis(),
-                type = "동사"
+                type = "감탄사"
             ),
             onEdit = {},
             onDelete = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WordCardReadOnlyPreview() {
+    YomiYomiTheme {
+        WordCard(
+            word = WordItem(
+                id = 1,
+                word = "勉強",
+                reading = "べんきょう",
+                meaning = "공부",
+                level = "N4",
+                learningWeight = 0.6f,
+                timestamp = System.currentTimeMillis(),
+                type = "명사"
+            )
         )
     }
 } 
