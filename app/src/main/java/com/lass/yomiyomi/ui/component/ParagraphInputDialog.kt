@@ -174,7 +174,10 @@ fun ParagraphInputDialog(
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     ) {
                         Text("취소")
                     }
@@ -201,7 +204,11 @@ fun ParagraphInputDialog(
                             onSave(newParagraph)
                         },
                         enabled = title.isNotBlank() && totalSentences.isNotBlank(),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary
+                        )
                     ) {
                         Text(if (paragraph == null) "추가" else "저장")
                     }

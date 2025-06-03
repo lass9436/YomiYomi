@@ -17,11 +17,13 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Color(0xFF81C784),       // 강조색은 그대로 유지
     background = Color(0xFF1A1C19),     // 어두운 배경에 약간의 초록빛
     surface = Color(0xFF1A1C19),        // 배경과 동일
+    surfaceVariant = Color(0xFF2A3D2B), // 어두운 라임 그린 계열
     onPrimary = Color.White,            // 주요 색상 위의 텍스트
     onSecondary = Color.White,          // 보조 색상 위의 텍스트
     onTertiary = Color.Black,           // 강조색 위의 텍스트
     onBackground = Color(0xFFE3E3DC),   // 배경 위의 텍스트
-    onSurface = Color(0xFFE3E3DC)       // surface 위의 텍스트
+    onSurface = Color(0xFFE3E3DC),      // surface 위의 텍스트
+    onSurfaceVariant = Color(0xFFE3E3DC) // surfaceVariant 위의 텍스트
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -30,11 +32,13 @@ private val LightColorScheme = lightColorScheme(
     tertiary = LimeAccent,             // 기존 강조색
     background = SoftLimeBackground,    // 기존 배경색
     surface = SoftLimeBackground,       // 배경과 동일
+    surfaceVariant = Color(0xFFE8F5E8), // 연한 라임 그린 계열
     onPrimary = Color.Black,           // 주요 색상 위의 텍스트
     onSecondary = Color.Black,         // 보조 색상 위의 텍스트
     onTertiary = Color.Black,          // 강조색 위의 텍스트
     onBackground = Color(0xFF1A1C19),  // 배경 위의 텍스트
-    onSurface = Color(0xFF1A1C19)      // surface 위의 텍스트
+    onSurface = Color(0xFF1A1C19),     // surface 위의 텍스트
+    onSurfaceVariant = Color(0xFF1A1C19) // surfaceVariant 위의 텍스트
 )
 
 @Composable

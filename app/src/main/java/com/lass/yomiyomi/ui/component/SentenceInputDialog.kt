@@ -20,7 +20,7 @@ import com.lass.yomiyomi.domain.model.SentenceItem
 @Composable
 fun SentenceInputDialog(
     isOpen: Boolean,
-    sentence: SentenceItem? = null, // null이면 새로 생성, 값이 있으면 편집
+    sentence: SentenceItem? = null,
     onDismiss: () -> Unit,
     onSave: (SentenceItem) -> Unit,
     modifier: Modifier = Modifier
@@ -45,14 +45,15 @@ fun SentenceInputDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
+                    .fillMaxSize()
+                    .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                // 제목
                 Text(
-                    text = if (sentence == null) "새 문장 추가" else "문장 편집",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    text = if (sentence == null) "문장 추가" else "문장 편집",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.tertiary
                 )
                 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -75,7 +76,10 @@ fun SentenceInputDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(
-                        onClick = { showPreview = !showPreview }
+                        onClick = { showPreview = !showPreview },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary
+                        )
                     ) {
                         Icon(
                             if (showPreview) Icons.Default.Close else Icons.Default.PlayArrow,
@@ -205,7 +209,10 @@ fun SentenceInputDialog(
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     ) {
                         Text("취소")
                     }
@@ -218,12 +225,12 @@ fun SentenceInputDialog(
                                 category = category,
                                 difficulty = difficulty
                             ) ?: SentenceItem(
-                                id = 0, // 새 문장은 ID 0으로 시작
+                                id = 0, // 새 문장은 ID 0으로 시작 (Repository에서 생성)
                                 japanese = japanese.trim(),
                                 korean = korean.trim(),
                                 category = category,
                                 difficulty = difficulty,
-                                paragraphId = null, // 개별 문장
+                                paragraphId = null,
                                 orderInParagraph = 0,
                                 learningProgress = 0f,
                                 reviewCount = 0,
@@ -233,7 +240,11 @@ fun SentenceInputDialog(
                             onSave(newSentence)
                         },
                         enabled = japanese.isNotBlank() && korean.isNotBlank(),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary
+                        )
                     ) {
                         Text(if (sentence == null) "추가" else "저장")
                     }

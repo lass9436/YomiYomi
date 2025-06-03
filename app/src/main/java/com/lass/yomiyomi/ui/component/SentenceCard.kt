@@ -28,7 +28,10 @@ fun SentenceCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -63,12 +66,20 @@ fun SentenceCard(
                 Row {
                     AssistChip(
                         onClick = { },
-                        label = { Text(sentence.category, fontSize = 12.sp) }
+                        label = { Text(sentence.category, fontSize = 12.sp) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            labelColor = MaterialTheme.colorScheme.tertiary
+                        )
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     AssistChip(
                         onClick = { },
-                        label = { Text(sentence.difficulty, fontSize = 12.sp) }
+                        label = { Text(sentence.difficulty, fontSize = 12.sp) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            labelColor = MaterialTheme.colorScheme.tertiary
+                        )
                     )
                 }
                 
@@ -77,7 +88,7 @@ fun SentenceCard(
                     Text(
                         text = "${(sentence.learningProgress * 100).toInt()}%",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -87,9 +98,9 @@ fun SentenceCard(
             if (showProgress) {
                 Spacer(modifier = Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = sentence.learningProgress,
+                    progress = { sentence.learningProgress },
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.tertiary
                 )
             }
             
@@ -112,7 +123,12 @@ fun SentenceCard(
                                 onClick = { expanded = true },
                                 label = { Text("표시", fontSize = 12.sp) },
                                 leadingIcon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-                                modifier = Modifier.menuAnchor()
+                                modifier = Modifier.menuAnchor(),
+                                colors = AssistChipDefaults.assistChipColors(
+                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    labelColor = MaterialTheme.colorScheme.tertiary,
+                                    leadingIconContentColor = MaterialTheme.colorScheme.tertiary
+                                )
                             )
                             
                             ExposedDropdownMenu(
@@ -158,7 +174,12 @@ fun SentenceCard(
                         AssistChip(
                             onClick = it,
                             label = { Text("편집", fontSize = 12.sp) },
-                            leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) }
+                            leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                            colors = AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                labelColor = MaterialTheme.colorScheme.tertiary,
+                                leadingIconContentColor = MaterialTheme.colorScheme.tertiary
+                            )
                         )
                     }
                     
@@ -169,6 +190,7 @@ fun SentenceCard(
                             label = { Text("삭제", fontSize = 12.sp) },
                             leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
                             colors = AssistChipDefaults.assistChipColors(
+                                containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
                                 labelColor = MaterialTheme.colorScheme.error,
                                 leadingIconContentColor = MaterialTheme.colorScheme.error
                             )
