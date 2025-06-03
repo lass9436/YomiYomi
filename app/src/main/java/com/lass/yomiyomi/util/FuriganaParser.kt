@@ -74,7 +74,8 @@ object FuriganaParser {
     // 한자인지 판별 (간단한 유니코드 범위 체크)
     fun isKanji(char: Char): Boolean {
         return char.code in 0x4E00..0x9FAF || // CJK Unified Ideographs
-               char.code in 0x3400..0x4DBF    // CJK Extension A
+               char.code in 0x3400..0x4DBF || // CJK Extension A
+               char.code == 0x3005             // 々 (반복 기호)
     }
     
     fun hasKanji(text: String): Boolean {

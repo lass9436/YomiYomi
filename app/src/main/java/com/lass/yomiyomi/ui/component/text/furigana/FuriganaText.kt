@@ -58,18 +58,21 @@ fun FuriganaText(
                                             contentAlignment = Alignment.BottomCenter
                                         ) {
                                             Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.spacedBy((-3).dp)
                                             ) {
                                                 Text(
                                                     text = segment.furigana,
                                                     fontSize = furiganaSize,
                                                     color = MaterialTheme.colorScheme.outline,
-                                                    textAlign = TextAlign.Center
+                                                    textAlign = TextAlign.Center,
+                                                    lineHeight = furiganaSize * 0.8f
                                                 )
                                                 Text(
                                                     text = segment.text,
                                                     fontSize = fontSize,
-                                                    textAlign = TextAlign.Center
+                                                    textAlign = TextAlign.Center,
+                                                    lineHeight = fontSize * 0.9f
                                                 )
                                             }
                                         }
