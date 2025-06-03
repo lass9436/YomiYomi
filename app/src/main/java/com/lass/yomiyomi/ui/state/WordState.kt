@@ -1,7 +1,7 @@
 package com.lass.yomiyomi.ui.state
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
 
 data class WordState(
     val myWords: List<MyWordItem>,

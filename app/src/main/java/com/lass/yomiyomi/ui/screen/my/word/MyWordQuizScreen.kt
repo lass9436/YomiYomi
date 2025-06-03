@@ -1,15 +1,20 @@
 package com.lass.yomiyomi.ui.screen.my.word
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.WordQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.constant.WordQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks
 import com.lass.yomiyomi.viewmodel.myWordQuiz.MyWordQuizViewModel
 import com.lass.yomiyomi.viewmodel.myWordQuiz.MyWordQuizViewModelInterface
+import com.lass.yomiyomi.ui.component.button.QuizTypeSelector
+import com.lass.yomiyomi.ui.component.card.QuizContent
 
 @Composable
 fun MyWordQuizScreen(

@@ -1,6 +1,8 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.entity
 
-data class MyKanjiItem(
+import com.lass.yomiyomi.domain.model.data.InfoRowData
+
+data class KanjiItem(
     val id: Int,
     val kanji: String,
     val onyomi: String,
@@ -10,13 +12,13 @@ data class MyKanjiItem(
     val learningWeight: Float,
     val timestamp: Long
 ) : Item {
-    
+
     override fun getMainText(): String = kanji
-    
+
     override fun toInfoRows(): List<InfoRowData> = listOf(
         InfoRowData("음독 :", onyomi, isJapanese = true),
         InfoRowData("훈독 :", kunyomi, isJapanese = true),
         InfoRowData("의미 :", meaning, isJapanese = false),
         InfoRowData("레벨 :", level, isJapanese = false)
     )
-} 
+}

@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.viewmodel.mySentence
 
-import com.lass.yomiyomi.domain.model.SentenceItem
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import kotlinx.coroutines.flow.StateFlow
 
 interface MySentenceViewModelInterface {

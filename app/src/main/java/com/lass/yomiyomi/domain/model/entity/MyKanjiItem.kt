@@ -1,6 +1,8 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.entity
 
-data class KanjiItem(
+import com.lass.yomiyomi.domain.model.data.InfoRowData
+
+data class MyKanjiItem(
     val id: Int,
     val kanji: String,
     val onyomi: String,

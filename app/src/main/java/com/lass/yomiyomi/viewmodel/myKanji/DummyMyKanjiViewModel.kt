@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.viewmodel.myKanji
 
-import com.lass.yomiyomi.domain.model.KanjiItem
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyKanjiItem
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

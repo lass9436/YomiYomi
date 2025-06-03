@@ -8,14 +8,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.lass.yomiyomi.domain.model.SentenceItem
-import com.lass.yomiyomi.domain.model.DisplayMode
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 
 @OptIn(ExperimentalMaterial3Api::class)

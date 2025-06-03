@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.data
 
 // 텍스트 세그먼트 데이터 클래스
 data class TextSegment(

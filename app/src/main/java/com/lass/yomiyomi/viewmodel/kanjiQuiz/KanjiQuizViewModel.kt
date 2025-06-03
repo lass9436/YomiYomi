@@ -2,14 +2,14 @@ package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.data.repository.KanjiRepository
-import com.lass.yomiyomi.domain.model.KanjiQuiz
-import com.lass.yomiyomi.domain.model.KanjiQuizType
+import com.lass.yomiyomi.domain.model.data.KanjiQuiz
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -9,8 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.KanjiQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.state.QuizState
 import com.lass.yomiyomi.ui.state.QuizCallbacks

@@ -3,9 +3,9 @@ package com.lass.yomiyomi.data.repository
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
 import com.lass.yomiyomi.data.database.WordDataImporter
-import com.lass.yomiyomi.domain.model.WordItem
-import com.lass.yomiyomi.domain.model.toWordItem
-import com.lass.yomiyomi.domain.model.toWordItems
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import com.lass.yomiyomi.domain.model.mapper.toWordItem
+import com.lass.yomiyomi.domain.model.mapper.toWordItems
 
 class WordRepository(private val context: Context) {
     private val wordDao = AppDatabase.getInstance(context).wordDao() // WordDao 초기화

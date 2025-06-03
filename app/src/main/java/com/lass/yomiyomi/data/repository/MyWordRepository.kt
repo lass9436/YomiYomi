@@ -3,14 +3,12 @@ package com.lass.yomiyomi.data.repository
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
 import com.lass.yomiyomi.data.model.MyWord
-import com.lass.yomiyomi.data.model.Word
-import com.lass.yomiyomi.domain.model.MyWordItem
-import com.lass.yomiyomi.domain.model.WordItem
-import com.lass.yomiyomi.domain.model.toMyWordItem
-import com.lass.yomiyomi.domain.model.toMyWordItems
-import com.lass.yomiyomi.domain.model.toWordItem
-import com.lass.yomiyomi.domain.model.toWordItems
-import com.lass.yomiyomi.domain.model.toMyWord
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import com.lass.yomiyomi.domain.model.mapper.toMyWordItem
+import com.lass.yomiyomi.domain.model.mapper.toMyWordItems
+import com.lass.yomiyomi.domain.model.mapper.toWordItems
+import com.lass.yomiyomi.domain.model.mapper.toMyWord
 
 class MyWordRepository(private val context: Context) {
     private val myWordDao = AppDatabase.getInstance(context).myWordDao()

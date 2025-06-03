@@ -1,12 +1,12 @@
 package com.lass.yomiyomi.domain.usecase
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyWordItem
-import com.lass.yomiyomi.domain.model.WordItem
+import androidx.lifecycle.map
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.data.repository.WordRepository
-import com.lass.yomiyomi.domain.model.WordQuiz
-import com.lass.yomiyomi.domain.model.WordQuizType
+import com.lass.yomiyomi.domain.model.data.WordQuiz
+import com.lass.yomiyomi.domain.model.constant.WordQuizType
 import javax.inject.Inject
 
 class GenerateMyWordQuizUseCase @Inject constructor(

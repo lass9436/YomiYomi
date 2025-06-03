@@ -1,4 +1,6 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.entity
+
+import com.lass.yomiyomi.domain.model.data.InfoRowData
 
 data class SentenceItem(
     val id: Int,

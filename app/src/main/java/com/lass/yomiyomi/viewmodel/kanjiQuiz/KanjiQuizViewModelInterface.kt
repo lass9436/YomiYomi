@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.KanjiQuiz
-import com.lass.yomiyomi.domain.model.KanjiQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.data.KanjiQuiz
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import kotlinx.coroutines.flow.StateFlow
 
 interface KanjiQuizViewModelInterface {

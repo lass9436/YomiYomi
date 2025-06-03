@@ -2,7 +2,9 @@ package com.lass.yomiyomi.viewmodel.kanjiQuiz
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.KanjiRepository
-import com.lass.yomiyomi.domain.model.*
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

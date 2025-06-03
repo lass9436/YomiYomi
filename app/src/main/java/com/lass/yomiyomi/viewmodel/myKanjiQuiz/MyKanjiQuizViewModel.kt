@@ -2,10 +2,10 @@ package com.lass.yomiyomi.viewmodel.myKanjiQuiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyKanjiItem
-import com.lass.yomiyomi.domain.model.KanjiQuiz
-import com.lass.yomiyomi.domain.model.KanjiQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
+import com.lass.yomiyomi.domain.model.data.KanjiQuiz
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import com.lass.yomiyomi.domain.usecase.GenerateMyKanjiQuizUseCase
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

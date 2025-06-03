@@ -1,7 +1,7 @@
 package com.lass.yomiyomi.ui.state
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyKanjiItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 
 data class KanjiState(
     val myKanji: List<MyKanjiItem>,

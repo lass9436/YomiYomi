@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.viewmodel.wordRandom
 
-import com.lass.yomiyomi.domain.model.WordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

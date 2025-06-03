@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.domain.model.SentenceItem
-import com.lass.yomiyomi.domain.model.DisplayMode
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 
 @OptIn(ExperimentalMaterial3Api::class)

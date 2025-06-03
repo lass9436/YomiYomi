@@ -2,7 +2,7 @@ package com.lass.yomiyomi.viewmodel.kanjiRandom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
 import com.lass.yomiyomi.data.repository.KanjiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

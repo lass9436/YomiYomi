@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.constant
 
 enum class StudyStatus {
     STUDIED,

@@ -3,10 +3,10 @@ package com.lass.yomiyomi.data.repository
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
 import com.lass.yomiyomi.data.dao.ParagraphWithCount
-import com.lass.yomiyomi.domain.model.ParagraphItem
-import com.lass.yomiyomi.domain.model.toParagraphItem
-import com.lass.yomiyomi.domain.model.toParagraphItems
-import com.lass.yomiyomi.domain.model.toParagraphEntity
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.domain.model.mapper.toParagraphItem
+import com.lass.yomiyomi.domain.model.mapper.toParagraphItems
+import com.lass.yomiyomi.domain.model.mapper.toParagraphEntity
 
 class ParagraphRepository(private val context: Context) {
     private val paragraphDao = AppDatabase.getInstance(context).paragraphDao()

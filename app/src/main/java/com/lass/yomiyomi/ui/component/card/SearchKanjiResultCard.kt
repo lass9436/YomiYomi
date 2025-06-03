@@ -10,7 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 
 @Composable

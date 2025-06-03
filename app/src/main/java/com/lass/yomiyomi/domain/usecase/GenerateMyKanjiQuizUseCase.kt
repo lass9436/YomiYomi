@@ -1,12 +1,11 @@
 package com.lass.yomiyomi.domain.usecase
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyKanjiItem
-import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import com.lass.yomiyomi.data.repository.KanjiRepository
-import com.lass.yomiyomi.domain.model.KanjiQuiz
-import com.lass.yomiyomi.domain.model.KanjiQuizType
+import com.lass.yomiyomi.domain.model.data.KanjiQuiz
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import javax.inject.Inject
 
 class GenerateMyKanjiQuizUseCase @Inject constructor(

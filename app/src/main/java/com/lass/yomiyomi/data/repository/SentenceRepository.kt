@@ -2,11 +2,10 @@ package com.lass.yomiyomi.data.repository
 
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
-import com.lass.yomiyomi.data.dao.SentenceCountByParagraph
-import com.lass.yomiyomi.domain.model.SentenceItem
-import com.lass.yomiyomi.domain.model.toSentenceItem
-import com.lass.yomiyomi.domain.model.toSentenceItems
-import com.lass.yomiyomi.domain.model.toSentenceEntity
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.mapper.toSentenceItem
+import com.lass.yomiyomi.domain.model.mapper.toSentenceItems
+import com.lass.yomiyomi.domain.model.mapper.toSentenceEntity
 
 class SentenceRepository(private val context: Context) {
     private val sentenceDao = AppDatabase.getInstance(context).sentenceDao()

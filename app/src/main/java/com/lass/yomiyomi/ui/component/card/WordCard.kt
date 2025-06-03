@@ -15,9 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import com.lass.yomiyomi.domain.model.Item
-import com.lass.yomiyomi.domain.model.WordItem
-import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.entity.Item
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.ui.component.text.tts.WordTextWithAdaptiveTTS
 import com.lass.yomiyomi.ui.component.text.tts.InfoRowWithTTS
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme

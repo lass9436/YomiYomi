@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.viewmodel.myParagraph
 
-import com.lass.yomiyomi.domain.model.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import kotlinx.coroutines.flow.StateFlow
 
 interface MyParagraphViewModelInterface {

@@ -2,9 +2,9 @@ package com.lass.yomiyomi.viewmodel.myKanji
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.KanjiItem
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyKanjiItem
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

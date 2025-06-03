@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.util
 
-import com.lass.yomiyomi.domain.model.TextSegment
+import com.lass.yomiyomi.domain.model.data.TextSegment
 
 object FuriganaParser {
     fun parse(text: String): List<TextSegment> {

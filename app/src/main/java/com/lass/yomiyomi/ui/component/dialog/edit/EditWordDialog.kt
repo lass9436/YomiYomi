@@ -22,8 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 
 @Composable

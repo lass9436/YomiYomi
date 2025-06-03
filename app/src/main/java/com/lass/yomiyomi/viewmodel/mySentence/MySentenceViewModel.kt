@@ -2,7 +2,7 @@ package com.lass.yomiyomi.viewmodel.mySentence
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.SentenceItem
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.data.repository.SentenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

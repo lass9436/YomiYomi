@@ -29,7 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.ui.component.card.SearchResultCard
 import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
 

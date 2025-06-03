@@ -3,6 +3,9 @@ package com.lass.yomiyomi.domain.usecase
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.*
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import com.lass.yomiyomi.domain.model.constant.Level
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest

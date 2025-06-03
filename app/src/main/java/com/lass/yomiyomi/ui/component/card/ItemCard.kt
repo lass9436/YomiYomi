@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.lass.yomiyomi.domain.model.*
+import com.lass.yomiyomi.domain.model.entity.Item
 import com.lass.yomiyomi.ui.component.text.tts.MainTextWithTTS
 import com.lass.yomiyomi.ui.component.text.tts.ItemInfoWithTTS
 import com.lass.yomiyomi.util.rememberSpeechManager

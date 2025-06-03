@@ -2,8 +2,8 @@ package com.lass.yomiyomi.viewmodel.word
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.WordItem
-import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.data.repository.WordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

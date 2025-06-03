@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lass.yomiyomi.domain.model.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

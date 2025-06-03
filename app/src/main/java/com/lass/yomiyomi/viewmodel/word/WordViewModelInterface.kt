@@ -1,7 +1,7 @@
 package com.lass.yomiyomi.viewmodel.word
 
-import com.lass.yomiyomi.domain.model.WordItem
-import com.lass.yomiyomi.domain.model.Level
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import com.lass.yomiyomi.domain.model.constant.Level
 import kotlinx.coroutines.flow.StateFlow
 
 interface WordViewModelInterface {

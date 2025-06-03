@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.domain.model.Item
+import com.lass.yomiyomi.domain.model.entity.Item
 import com.lass.yomiyomi.speech.SpeechManager
 
 /**

@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.domain.model.MyWordItem
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.ui.layout.MyWordLayout
 import com.lass.yomiyomi.ui.state.WordState
 import com.lass.yomiyomi.ui.state.WordCallbacks

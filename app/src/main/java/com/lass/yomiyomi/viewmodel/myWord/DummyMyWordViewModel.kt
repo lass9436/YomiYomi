@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.viewmodel.myWord
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyWordItem
-import com.lass.yomiyomi.domain.model.WordItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

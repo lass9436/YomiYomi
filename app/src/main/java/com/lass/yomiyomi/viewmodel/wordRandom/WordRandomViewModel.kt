@@ -2,7 +2,7 @@ package com.lass.yomiyomi.viewmodel.wordRandom
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.WordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
 import com.lass.yomiyomi.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

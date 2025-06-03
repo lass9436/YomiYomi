@@ -2,7 +2,7 @@ package com.lass.yomiyomi.viewmodel.wordRandom
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.WordRepository
-import com.lass.yomiyomi.domain.model.WordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

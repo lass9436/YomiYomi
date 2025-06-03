@@ -2,9 +2,9 @@ package com.lass.yomiyomi.viewmodel.myWord
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.MyWordItem
-import com.lass.yomiyomi.domain.model.WordItem
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.MyWordItem
+import com.lass.yomiyomi.domain.model.entity.WordItem
 import com.lass.yomiyomi.data.repository.MyWordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

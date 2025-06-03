@@ -1,7 +1,9 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.mapper
 
 import com.lass.yomiyomi.data.model.SentenceEntity
 import com.lass.yomiyomi.data.model.ParagraphEntity
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 
 // Entity -> Domain Model (조회용)
 // SentenceEntity -> SentenceItem
@@ -60,9 +62,9 @@ fun ParagraphItem.toParagraphEntity(): ParagraphEntity = ParagraphEntity(
 
 // List 변환 함수들 (Entity -> Domain)
 fun List<SentenceEntity>.toSentenceItems(): List<SentenceItem> = map { it.toSentenceItem() }
-fun List<ParagraphEntity>.toParagraphItems(sentenceCounts: Map<String, Int> = emptyMap()): List<ParagraphItem> = 
+fun List<ParagraphEntity>.toParagraphItems(sentenceCounts: Map<String, Int> = emptyMap()): List<ParagraphItem> =
     map { it.toParagraphItem(sentenceCounts[it.paragraphId] ?: 0) }
 
 // List 변환 함수들 (Domain -> Entity)
 fun List<SentenceItem>.toSentenceEntities(): List<SentenceEntity> = map { it.toSentenceEntity() }
-fun List<ParagraphItem>.toParagraphEntities(): List<ParagraphEntity> = map { it.toParagraphEntity() } 
+fun List<ParagraphItem>.toParagraphEntities(): List<ParagraphEntity> = map { it.toParagraphEntity() }

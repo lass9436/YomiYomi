@@ -2,7 +2,10 @@ package com.lass.yomiyomi.domain.usecase
 
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import com.lass.yomiyomi.data.repository.KanjiRepository
-import com.lass.yomiyomi.domain.model.*
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest

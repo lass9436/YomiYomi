@@ -2,7 +2,7 @@ package com.lass.yomiyomi.viewmodel.myParagraph
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lass.yomiyomi.domain.model.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.data.repository.ParagraphRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

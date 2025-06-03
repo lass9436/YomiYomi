@@ -1,6 +1,8 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.entity
 
-data class WordItem(
+import com.lass.yomiyomi.domain.model.data.InfoRowData
+
+data class MyWordItem(
     val id: Int,
     val word: String,
     val reading: String,

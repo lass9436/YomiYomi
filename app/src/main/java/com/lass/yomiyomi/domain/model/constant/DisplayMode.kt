@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.constant
 
 // 표시 모드 열거형
 enum class DisplayMode {

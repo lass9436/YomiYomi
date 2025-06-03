@@ -1,8 +1,8 @@
 package com.lass.yomiyomi.viewmodel.wordQuiz
 
-import com.lass.yomiyomi.domain.model.Level
-import com.lass.yomiyomi.domain.model.WordQuiz
-import com.lass.yomiyomi.domain.model.WordQuizType
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.data.WordQuiz
+import com.lass.yomiyomi.domain.model.constant.WordQuizType
 import kotlinx.coroutines.flow.StateFlow
 
 interface WordQuizViewModelInterface {

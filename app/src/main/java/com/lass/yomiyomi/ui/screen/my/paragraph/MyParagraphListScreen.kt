@@ -10,8 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.lass.yomiyomi.domain.model.ParagraphItem
-import com.lass.yomiyomi.ui.component.*
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.ui.component.dialog.input.ParagraphInputDialog
 import com.lass.yomiyomi.ui.layout.ParagraphListLayout
 import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphViewModel

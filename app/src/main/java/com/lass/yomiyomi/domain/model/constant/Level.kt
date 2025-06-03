@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.constant
 
 enum class Level(val value: String?) {
     N5("N5"),

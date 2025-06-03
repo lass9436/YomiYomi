@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.domain.model
+package com.lass.yomiyomi.domain.model.data
 
 data class KanjiQuiz(
     val question: String,

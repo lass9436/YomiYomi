@@ -3,9 +3,9 @@ package com.lass.yomiyomi.data.repository
 import android.content.Context
 import com.lass.yomiyomi.data.database.KanjiDataImporter
 import com.lass.yomiyomi.data.database.AppDatabase
-import com.lass.yomiyomi.domain.model.KanjiItem
-import com.lass.yomiyomi.domain.model.toKanjiItem
-import com.lass.yomiyomi.domain.model.toKanjiItems
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
+import com.lass.yomiyomi.domain.model.mapper.toKanjiItem
+import com.lass.yomiyomi.domain.model.mapper.toKanjiItems
 
 class KanjiRepository(private val context: Context) {
     private val kanjiDao = AppDatabase.getInstance(context).kanjiDao()

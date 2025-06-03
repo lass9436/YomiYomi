@@ -1,6 +1,6 @@
 package com.lass.yomiyomi.viewmodel.kanjiRandom
 
-import com.lass.yomiyomi.domain.model.KanjiItem
+import com.lass.yomiyomi.domain.model.entity.KanjiItem
 import kotlinx.coroutines.flow.StateFlow
 
 interface KanjiRandomViewModelInterface {
