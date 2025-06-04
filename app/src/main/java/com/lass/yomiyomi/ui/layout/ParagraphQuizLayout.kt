@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.ui.component.button.LevelSelector
-import com.lass.yomiyomi.ui.component.button.RefreshButton
 import com.lass.yomiyomi.ui.component.card.ParagraphQuizContent
 import com.lass.yomiyomi.ui.state.ParagraphQuizState
 import com.lass.yomiyomi.ui.state.ParagraphQuizCallbacks
@@ -90,11 +89,20 @@ fun ParagraphQuizLayout(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Refresh Button (새 문단)
-                RefreshButton(
+                Button(
                     onClick = callbacks.onRefresh,
-                    text = "새 문단",
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    ),
                     modifier = Modifier.weight(1f)
-                )
+                ) {
+                    Text(
+                        text = "새 문단",
+                        color = MaterialTheme.colorScheme.onTertiary,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
+                }
                 
                 // Show Answers Button (정답 보기) - 퀴즈가 있고 완료되지 않았을 때만 표시
                 if (state.quiz != null && !state.isQuizCompleted) {
@@ -108,7 +116,8 @@ fun ParagraphQuizLayout(
                         Text(
                             text = "정답 보기",
                             color = MaterialTheme.colorScheme.onTertiary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1
                         )
                     }
                 }
@@ -125,7 +134,8 @@ fun ParagraphQuizLayout(
                         Text(
                             text = "빈칸 리셋",
                             color = MaterialTheme.colorScheme.onSecondary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1
                         )
                     }
                 }
