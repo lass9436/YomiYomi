@@ -24,13 +24,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
-import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
+import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.ui.component.card.ParagraphHeaderCard
+import com.lass.yomiyomi.ui.component.card.ParagraphSentenceCard
 import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
 import com.lass.yomiyomi.ui.component.empty.EmptyView
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.component.text.tts.UnifiedTTSButton
 import com.lass.yomiyomi.viewmodel.myParagraph.detail.MyParagraphDetailViewModel
-import com.lass.yomiyomi.domain.model.constant.Level
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,8 +81,16 @@ fun ParagraphDetailScreen(
                 },
                 actions = {
                     // 전체 문장 읽기 버튼
-                    paragraph?.let {
-                        UnifiedTTSButton(sentences = sentences)
+                    if (sentences.isNotEmpty()) {
+                        val allJapaneseText = sentences
+                            .sortedBy { it.orderInParagraph }
+                            .joinToString("。") { it.japanese.replace(Regex("\\[.*?\\]"), "") }
+                            .plus("。")
+                        
+                        UnifiedTTSButton(
+                            text = allJapaneseText,
+                            size = 24.dp
+                        )
                     }
                     
                     IconButton(
@@ -108,48 +117,14 @@ fun ParagraphDetailScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 문단 정보 (읽기 전용)
+            // 문단 정보 헤더
             paragraph?.let { para ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = para.title,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        if (para.description.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = para.description,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row {
-                            AssistChip(
-                                onClick = { },
-                                label = { Text(para.category, fontSize = 12.sp) }
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            AssistChip(
-                                onClick = { },
-                                label = { Text(para.level.value ?: "ALL", fontSize = 12.sp) }
-                            )
-                        }
-                    }
-                }
+                ParagraphHeaderCard(
+                    paragraph = para,
+                    sentenceCount = sentences.size,
+                    sentences = sentences,
+                    modifier = Modifier.padding(16.dp)
+                )
             }
             
             // 문장 목록
@@ -165,10 +140,10 @@ fun ParagraphDetailScreen(
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(0.dp) // 간격 없애서 자연스럽게
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     items(sentences) { sentence ->
-                        ParagraphSentenceItem(
+                        ParagraphSentenceCard(
                             sentence = sentence,
                             displayMode = displayMode,
                             showKorean = showKorean,
@@ -238,125 +213,5 @@ fun ParagraphDetailScreen(
                 }
             }
         )
-    }
-}
-
-@Composable
-private fun ParagraphSentenceItem(
-    sentence: SentenceItem,
-    displayMode: DisplayMode,
-    showKorean: Boolean,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // 카드 모양이지만 border 없이 자연스럽게
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(0.dp), // border radius 제거
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // 그림자 제거
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            // 일본어
-            if (displayMode != DisplayMode.KOREAN_ONLY) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    FuriganaText(
-                        japaneseText = sentence.japanese,
-                        displayMode = displayMode,
-                        fontSize = 18.sp,
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    UnifiedTTSButton(
-                        text = sentence.japanese,
-                        size = 24.dp
-                    )
-                }
-            }
-            
-            // 한국어 + 인라인 버튼들
-            if ((showKorean && displayMode != DisplayMode.JAPANESE_ONLY && displayMode != DisplayMode.JAPANESE_NO_FURIGANA) || displayMode == DisplayMode.KOREAN_ONLY) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = sentence.korean,
-                        fontSize = if (displayMode == DisplayMode.KOREAN_ONLY) 18.sp else 16.sp,
-                        color = if (displayMode == DisplayMode.KOREAN_ONLY) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    // 편집/삭제 버튼들을 문장 끝에 inline으로
-                    Row {
-                        IconButton(
-                            onClick = onEdit,
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Edit,
-                                contentDescription = "편집",
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.tertiary
-                            )
-                        }
-                        
-                        IconButton(
-                            onClick = onDelete,
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "삭제",
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                }
-            } else {
-                // Korean이 안 보이는 모드일 때는 일본어 아래에 버튼들 배치
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(
-                        onClick = onEdit,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "편집",
-                            modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                    
-                    IconButton(
-                        onClick = onDelete,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "삭제",
-                            modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-            }
-        }
     }
 } 
