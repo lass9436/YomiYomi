@@ -280,14 +280,90 @@ class MyParagraphQuizViewModel @Inject constructor(
         // ParagraphQuizGenerator의 fillBlanks 메서드 사용
         val newlyFilled = ParagraphQuizGenerator.fillBlanks(quiz, recognizedAnswer)
         
+        // 🔥 새로 채워진 빈칸이 있으면 해당 문장들의 학습 진도 업데이트
+        if (newlyFilled.isNotEmpty()) {
+            updateLearningProgressForFilledBlanks(quiz, newlyFilled)
+        }
+        
         // 완료 여부 체크
         val isCompleted = ParagraphQuizGenerator.isQuizCompleted(quiz)
         _isQuizCompleted.value = isCompleted
+        
+        // 🎯 퀴즈가 완료되면 모든 문장의 학습 진도를 100%로 업데이트
+        if (isCompleted) {
+            updateLearningProgressForAllSentences()
+        }
         
         // 상태 업데이트 (새로운 객체로 교체하여 recomposition 트리거)
         _quizState.value = quiz.copy()
         
         return newlyFilled
+    }
+    
+    /**
+     * 새로 채워진 빈칸에 해당하는 문장들의 학습 진도 업데이트
+     */
+    private fun updateLearningProgressForFilledBlanks(quiz: ParagraphQuiz, newlyFilled: List<String>) {
+        viewModelScope.launch {
+            try {
+                val sentences = _sentences.value
+                if (sentences.isEmpty()) return@launch
+                
+                // 각 문장별로 학습 진도 계산 및 업데이트
+                sentences.forEach { sentence ->
+                    updateSentenceLearningProgress(quiz, sentence)
+                }
+            } catch (e: Exception) {
+                // 학습 진도 업데이트 실패는 무시 (로그는 출력)
+                e.printStackTrace()
+            }
+        }
+    }
+    
+    /**
+     * 특정 문장의 학습 진도를 계산하여 업데이트
+     */
+    private suspend fun updateSentenceLearningProgress(quiz: ParagraphQuiz, sentence: SentenceItem) {
+        // 해당 문장에 속한 빈칸들 찾기
+        val sentenceBlanks = quiz.blanks.filter { blank ->
+            // 빈칸의 정답이 해당 문장에 포함되어 있는지 확인
+            sentence.japanese.contains(blank.correctAnswer)
+        }
+        
+        if (sentenceBlanks.isEmpty()) return
+        
+        // 해당 문장에서 맞춘 빈칸 개수 계산
+        val filledBlanksInSentence = sentenceBlanks.count { blank ->
+            quiz.filledBlanks.containsKey(blank.index)
+        }
+        
+        // 학습 진도 계산 (맞춘 빈칸 / 전체 빈칸)
+        val progress = filledBlanksInSentence.toFloat() / sentenceBlanks.size.toFloat()
+        
+        // 학습 진도 업데이트
+        mySentenceRepository.updateLearningProgress(sentence.id, progress)
+        
+        println("Debug - 문장 ${sentence.id}: ${filledBlanksInSentence}/${sentenceBlanks.size} = ${(progress * 100).toInt()}%")
+    }
+    
+    /**
+     * 퀴즈 완료 시 모든 문장의 학습 진도를 100%로 업데이트
+     */
+    private fun updateLearningProgressForAllSentences() {
+        viewModelScope.launch {
+            try {
+                val sentences = _sentences.value
+                sentences.forEach { sentence ->
+                    mySentenceRepository.updateLearningProgress(
+                        sentence.id, 
+                        1.0f // 퀴즈 완료 시 100% 진도
+                    )
+                }
+            } catch (e: Exception) {
+                // 학습 진도 업데이트 실패는 무시 (로그는 출력)
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun resetQuiz() {
