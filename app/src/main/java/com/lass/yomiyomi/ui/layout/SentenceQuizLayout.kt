@@ -60,14 +60,15 @@ fun SentenceQuizLayout(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // Level Selector
-            LevelSelector(
-                selectedLevel = state.selectedLevel,
-                onLevelSelected = callbacks.onLevelSelected,
-                availableLevels = state.availableLevels
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
+            // Level Selector - availableLevels가 비어있지 않을 때만 표시
+            if (state.availableLevels.isNotEmpty()) {
+                LevelSelector(
+                    selectedLevel = state.selectedLevel,
+                    onLevelSelected = callbacks.onLevelSelected,
+                    availableLevels = state.availableLevels
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             // Quiz Type Selector and Learning Mode Toggle in a Row
             Row(

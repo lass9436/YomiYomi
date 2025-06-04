@@ -67,6 +67,30 @@ class MySentenceQuizViewModel @Inject constructor(
         }
     }
 
+    override fun loadQuizBySentenceId(sentenceId: Int, quizType: SentenceQuizType) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _hasInsufficientData.value = false
+            
+            try {
+                val sentence = mySentenceRepository.getSentenceById(sentenceId)
+                if (sentence != null) {
+                    currentSentence = sentence
+                    val quiz = createQuizFromSentence(sentence, quizType)
+                    _quizState.value = quiz
+                } else {
+                    _hasInsufficientData.value = true
+                    _quizState.value = null
+                }
+            } catch (e: Exception) {
+                _hasInsufficientData.value = true
+                _quizState.value = null
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     override fun changeQuizType(quizType: SentenceQuizType) {
         // 현재 문장이 있으면 같은 문장으로 새로운 타입의 퀴즈 생성
         currentSentence?.let { sentence ->

@@ -3,104 +3,114 @@ package com.lass.yomiyomi.ui.screen.my.sentence
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.domain.model.constant.ParagraphQuizType
-import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.ui.layout.SingleSentenceQuizLayout
-import com.lass.yomiyomi.ui.state.SingleSentenceQuizCallbacks
-import com.lass.yomiyomi.ui.state.SingleSentenceQuizState
-import com.lass.yomiyomi.viewmodel.myParagraph.quiz.MyParagraphQuizViewModel
-import com.lass.yomiyomi.viewmodel.myParagraph.quiz.MyParagraphQuizViewModelInterface
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.lass.yomiyomi.domain.model.constant.SentenceQuizType
+import com.lass.yomiyomi.ui.layout.SentenceQuizLayout
+import com.lass.yomiyomi.ui.state.SentenceQuizCallbacks
+import com.lass.yomiyomi.ui.state.SentenceQuizState
+import com.lass.yomiyomi.viewmodel.mySentence.quiz.MySentenceQuizViewModel
+import com.lass.yomiyomi.viewmodel.mySentence.quiz.MySentenceQuizViewModelInterface
+import com.lass.yomiyomi.util.JapaneseTextFilter
 
 @Composable
 fun SingleSentenceQuizScreen(
     sentenceId: Int,
     onBack: () -> Unit,
-    myParagraphQuizViewModel: MyParagraphQuizViewModelInterface = hiltViewModel<MyParagraphQuizViewModel>()
+    mySentenceQuizViewModel: MySentenceQuizViewModelInterface = hiltViewModel<MySentenceQuizViewModel>()
 ) {
     // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
     BackHandler { 
-        myParagraphQuizViewModel.stopListening() // 뒤로가기 시 음성 인식 중지
+        mySentenceQuizViewModel.stopListening() // 뒤로가기 시 음성 인식 중지
         onBack() 
     }
 
     // ViewModel 상태 수집
-    val quizData by myParagraphQuizViewModel.quizState.collectAsState()
-    val isLoading by myParagraphQuizViewModel.isLoading.collectAsState()
-    val hasInsufficientData by myParagraphQuizViewModel.hasInsufficientData.collectAsState()
-    val isListening by myParagraphQuizViewModel.isListening.collectAsState()
-    val recognizedText by myParagraphQuizViewModel.recognizedText.collectAsState()
-    val isQuizCompleted by myParagraphQuizViewModel.isQuizCompleted.collectAsState()
-    val currentSentence by myParagraphQuizViewModel.currentSentence.collectAsState()
+    val quizData by mySentenceQuizViewModel.quizState.collectAsState()
+    val isLoading by mySentenceQuizViewModel.isLoading.collectAsState()
+    val hasInsufficientData by mySentenceQuizViewModel.hasInsufficientData.collectAsState()
+    val isListening by mySentenceQuizViewModel.isListening.collectAsState()
+    val recognizedText by mySentenceQuizViewModel.recognizedText.collectAsState()
 
     // UI 상태 관리
-    var showKoreanTranslation by remember { mutableStateOf(true) }
+    var selectedQuizTypeIndex by remember { mutableStateOf(0) }
+    var isLearningMode by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
+    var answerResult by remember { mutableStateOf<String?>(null) }
+
+    val quizTypes = listOf("한국어", "일본어", "요미가나X")
+    val sentenceQuizTypes = listOf(
+        SentenceQuizType.KOREAN_TO_JAPANESE_SPEECH,
+        SentenceQuizType.JAPANESE_TO_JAPANESE_SPEECH,
+        SentenceQuizType.JAPANESE_NO_FURIGANA_SPEECH
+    )
 
     // 초기 퀴즈 로드 (특정 문장 ID로)
-    LaunchedEffect(sentenceId) {
-        myParagraphQuizViewModel.loadQuizBySentenceId(sentenceId, ParagraphQuizType.FILL_IN_BLANKS_SPEECH)
+    LaunchedEffect(sentenceId, selectedQuizTypeIndex) {
+        mySentenceQuizViewModel.loadQuizBySentenceId(sentenceId, sentenceQuizTypes[selectedQuizTypeIndex])
     }
 
     // Quiz state 생성
-    val state = SingleSentenceQuizState(
-        sentence = currentSentence,
-        quiz = quizData,
+    val state = SentenceQuizState(
+        selectedLevel = com.lass.yomiyomi.domain.model.constant.Level.ALL, // 단일 문장이므로 레벨은 의미 없음
+        quizTypes = quizTypes,
+        selectedQuizTypeIndex = selectedQuizTypeIndex,
+        isLearningMode = isLearningMode,
         isLoading = isLoading,
-        insufficientDataMessage = if (hasInsufficientData) "퀴즈할 문장이 부족합니다." else null,
+        question = quizData?.question,
+        showDialog = showDialog,
+        answerResult = answerResult,
+        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=",
+        insufficientDataMessage = if (hasInsufficientData) "문장을 불러올 수 없습니다." else null,
         isListening = isListening,
         recognizedText = recognizedText,
-        isQuizCompleted = isQuizCompleted,
-        showKoreanTranslation = showKoreanTranslation
+        availableLevels = emptyList() // 단일 문장이므로 레벨 선택 불필요
     )
 
     // Quiz callbacks 생성
-    val callbacks = SingleSentenceQuizCallbacks(
+    val callbacks = SentenceQuizCallbacks(
+        onLevelSelected = { }, // 레벨 선택 불필요
+        onQuizTypeSelected = { index ->
+            selectedQuizTypeIndex = index
+            // 퀴즈 타입만 변경 (새로운 문제 로드)
+            mySentenceQuizViewModel.loadQuizBySentenceId(sentenceId, sentenceQuizTypes[index])
+        },
+        onLearningModeChanged = { learningMode ->
+            isLearningMode = learningMode
+            // 학습 모드는 현재 문장에서는 의미 없지만 UI 일관성을 위해 유지
+        },
         onStartListening = {
-            myParagraphQuizViewModel.startListening()
+            mySentenceQuizViewModel.startListening()
         },
         onStopListening = {
-            myParagraphQuizViewModel.stopListening()
+            mySentenceQuizViewModel.stopListening()
         },
-        onProcessRecognition = { recognizedAnswer ->
-            val newlyFilled = myParagraphQuizViewModel.processRecognizedText(recognizedAnswer)
-            
-            // 새로 채워진 빈칸이 있으면 나중에 인식된 텍스트 초기화 (결과를 보고 난 후)
-            if (newlyFilled.isNotEmpty()) {
-                // 3초 후에 텍스트 초기화 (사용자가 결과를 볼 시간을 줌)
-                MainScope().launch {
-                    delay(3000)
-                    myParagraphQuizViewModel.clearRecognizedText()
-                }
+        onCheckAnswer = { recognizedAnswer ->
+            val isCorrect = mySentenceQuizViewModel.checkAnswer(recognizedAnswer)
+            // 정답에서 후리가나 제거
+            val cleanCorrectAnswer = JapaneseTextFilter.removeFurigana(quizData?.correctAnswer ?: "")
+            answerResult = if (isCorrect) {
+                "정답입니다! 🎉\n정답: $cleanCorrectAnswer"
+            } else {
+                "틀렸습니다. 😅\n정답: $cleanCorrectAnswer\n인식된 답: $recognizedAnswer"
             }
-            
-            // UI에서 사용할 수 있도록 반환
-            newlyFilled
+            showDialog = true
+            mySentenceQuizViewModel.clearRecognizedText() // 정답 확인 후 인식된 텍스트 초기화
         },
-        onResetQuiz = {
-            myParagraphQuizViewModel.resetQuiz()
-            myParagraphQuizViewModel.clearRecognizedText()
+        onRefresh = {
+            // 새로고침은 같은 문장으로 다시 퀴즈 생성
+            mySentenceQuizViewModel.loadQuizBySentenceId(sentenceId, sentenceQuizTypes[selectedQuizTypeIndex])
         },
-        onShowAnswers = {
-            myParagraphQuizViewModel.showAllAnswers()
-            myParagraphQuizViewModel.clearRecognizedText()
-        },
-        onToggleKoreanTranslation = {
-            showKoreanTranslation = !showKoreanTranslation
-        },
-        onBackToSentenceList = {
-            myParagraphQuizViewModel.stopListening() // 뒤로가기 시 음성 인식 중지
-            onBack()
+        onDismissDialog = {
+            showDialog = false
+            answerResult = null
         }
     )
 
-    SingleSentenceQuizLayout(
+    SentenceQuizLayout(
         title = "문장 퀴즈 🧩",
-        state = state,
+        state = state.copy(availableLevels = emptyList()), // 레벨 선택기 숨기기
         callbacks = callbacks,
         onBack = {
-            myParagraphQuizViewModel.stopListening() // 뒤로가기 시 음성 인식 중지
+            mySentenceQuizViewModel.stopListening() // 뒤로가기 시 음성 인식 중지
             onBack()
         }
     )

@@ -2,6 +2,7 @@ package com.lass.yomiyomi.ui.state
 
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.constant.SentenceQuizType
 
 data class SingleSentenceQuizState(
     val sentence: SentenceItem? = null,
@@ -13,7 +14,12 @@ data class SingleSentenceQuizState(
     val recognizedText: String = "",
     val isQuizCompleted: Boolean = false,
     // 한국어 번역 표시 토글
-    val showKoreanTranslation: Boolean = true
+    val showKoreanTranslation: Boolean = true,
+    // 퀴즈 타입 선택
+    val quizTypes: List<String> = listOf("한국어", "일본어", "요미가나X"),
+    val selectedQuizTypeIndex: Int = 0,
+    // 학습 모드
+    val isLearningMode: Boolean = false
 )
 
 data class SingleSentenceQuizCallbacks(
@@ -23,5 +29,8 @@ data class SingleSentenceQuizCallbacks(
     val onResetQuiz: () -> Unit,
     val onShowAnswers: () -> Unit,
     val onToggleKoreanTranslation: () -> Unit,
-    val onBackToSentenceList: () -> Unit
+    val onBackToSentenceList: () -> Unit,
+    val onQuizTypeSelected: (Int) -> Unit,
+    val onLearningModeChanged: (Boolean) -> Unit,
+    val onRefresh: () -> Unit
 ) 

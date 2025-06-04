@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.ui.component.card.SingleSentenceQuizContent
+import com.lass.yomiyomi.ui.component.button.QuizTypeSelector
+import com.lass.yomiyomi.ui.component.button.LearningModeToggle
+import com.lass.yomiyomi.ui.component.button.RefreshButton
 import com.lass.yomiyomi.ui.state.SingleSentenceQuizState
 import com.lass.yomiyomi.ui.state.SingleSentenceQuizCallbacks
 
@@ -55,6 +58,28 @@ fun SingleSentenceQuizLayout(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
+            // Quiz Type Selector and Learning Mode Toggle in a Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                QuizTypeSelector(
+                    quizTypes = state.quizTypes,
+                    selectedQuizTypeIndex = state.selectedQuizTypeIndex,
+                    onQuizTypeSelected = callbacks.onQuizTypeSelected,
+                    modifier = Modifier.weight(0.7f)
+                )
+
+                LearningModeToggle(
+                    isLearningMode = state.isLearningMode,
+                    onLearningModeChanged = callbacks.onLearningModeChanged,
+                    modifier = Modifier.weight(0.3f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Quiz Content (단일 문장 빈칸 채우기)
             SingleSentenceQuizContent(
                 sentence = state.sentence,
@@ -70,6 +95,14 @@ fun SingleSentenceQuizLayout(
                 onToggleKoreanTranslation = callbacks.onToggleKoreanTranslation,
                 insufficientDataMessage = state.insufficientDataMessage,
                 modifier = Modifier.weight(1f)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Refresh Button
+            RefreshButton(
+                onClick = callbacks.onRefresh,
+                text = "새 퀴즈 가져오기"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
