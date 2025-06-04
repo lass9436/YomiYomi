@@ -31,11 +31,7 @@ fun MainMenuScreen(
     onNavigateToMyKanjiQuiz: () -> Unit,
     onNavigateToMyWordQuiz: () -> Unit,
     onNavigateToSentenceList: () -> Unit = {},
-    onNavigateToParagraphList: () -> Unit = {},
-    onNavigateToSentenceRandom: () -> Unit = {},
-    onNavigateToParagraphRandom: () -> Unit = {},
-    onNavigateToSentenceQuiz: () -> Unit = {},
-    onNavigateToParagraphQuiz: () -> Unit = {},
+    onNavigateToParagraphList: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
     val tabs = listOf("기초 학습", "단어 / 한자", "문장 / 문단")
@@ -222,34 +218,6 @@ fun MainMenuScreen(
                                 onClick = onNavigateToParagraphList
                             )
                         }
-                        item {
-                            MenuCard(
-                                title = "내 문장 랜덤",
-                                subtitle = "랜덤으로 내 문장을\n학습해보세요",
-                                onClick = onNavigateToSentenceRandom
-                            )
-                        }
-                        item {
-                            MenuCard(
-                                title = "내 문단 랜덤",
-                                subtitle = "랜덤으로 내 문단을\n학습해보세요",
-                                onClick = onNavigateToParagraphRandom
-                            )
-                        }
-                        item {
-                            MenuCard(
-                                title = "내 문장 퀴즈",
-                                subtitle = "내 문장 실력을\n테스트해보세요",
-                                onClick = onNavigateToSentenceQuiz
-                            )
-                        }
-                        item {
-                            MenuCard(
-                                title = "내 문단 퀴즈",
-                                subtitle = "내 문단 실력을\n테스트해보세요",
-                                onClick = onNavigateToParagraphQuiz
-                            )
-                        }
                     }
                 }
             }
@@ -275,10 +243,6 @@ fun MainMenuScreenPreview() {
         onNavigateToMyKanjiQuiz = {},
         onNavigateToMyWordQuiz = {},
         onNavigateToSentenceList = {},
-        onNavigateToParagraphList = {},
-        onNavigateToSentenceRandom = {},
-        onNavigateToParagraphRandom = {},
-        onNavigateToSentenceQuiz = {},
-        onNavigateToParagraphQuiz = {},
+        onNavigateToParagraphList = {}
     )
 }

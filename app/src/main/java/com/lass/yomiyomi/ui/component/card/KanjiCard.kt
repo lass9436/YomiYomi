@@ -79,7 +79,8 @@ fun KanjiCard(
                     onTextClick = {
                         val searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=${mainText}"
                         context.startActivity(Intent(Intent.ACTION_VIEW, searchUrl.toUri()))
-                    }
+                    },
+                    modifier = Modifier.align(Alignment.Center)
                 )
                 
                 // 오른쪽: 편집/삭제 버튼 (있을 때만)

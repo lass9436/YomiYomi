@@ -19,7 +19,7 @@ class MyKanjiViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _selectedLevel = MutableStateFlow(Level.ALL)
+    private val _selectedLevel = MutableStateFlow(Level.N5)
     override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
     private val _searchResults = MutableStateFlow<List<KanjiItem>>(emptyList())

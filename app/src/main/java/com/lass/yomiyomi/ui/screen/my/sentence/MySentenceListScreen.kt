@@ -1,5 +1,6 @@
 package com.lass.yomiyomi.ui.screen.my.sentence
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,6 +25,9 @@ fun SentenceListScreen(
     modifier: Modifier = Modifier,
     viewModel: MySentenceViewModel = hiltViewModel()
 ) {
+    // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
+    BackHandler { onBack() }
+
     // ViewModel 상태 수집
     val sentences by viewModel.sentences.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
