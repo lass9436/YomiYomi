@@ -66,7 +66,11 @@ fun WordQuizScreen(
         onOptionSelected = { selectedIndex ->
             wordQuizViewModel.checkAnswer(selectedIndex, isLearningMode)
             val isCorrect = selectedIndex == (quizData?.correctIndex ?: -1)
-            answerResult = if (isCorrect) "정답입니다! 🎉" else "틀렸습니다. 정답: ${quizData?.answer ?: ""}"
+            answerResult = if (isCorrect) {
+                "정답입니다! 🎉\n정답: ${quizData?.answer ?: ""}"
+            } else {
+                "틀렸습니다. 😅\n정답: ${quizData?.answer ?: ""}"
+            }
             showDialog = true
         },
         onRefresh = {
