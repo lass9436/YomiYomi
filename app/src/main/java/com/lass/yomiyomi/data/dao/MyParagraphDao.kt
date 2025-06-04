@@ -7,10 +7,10 @@ import com.lass.yomiyomi.data.model.MyParagraph
 interface MyParagraphDao {
     
     // 기본 CRUD
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertParagraph(myParagraph: MyParagraph): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(myParagraphs: List<MyParagraph>)
 
     @Update

@@ -7,10 +7,10 @@ import com.lass.yomiyomi.data.model.MySentence
 interface MySentenceDao {
     
     // 기본 CRUD
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSentence(mySentence: MySentence): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(mySentences: List<MySentence>)
 
     @Update
