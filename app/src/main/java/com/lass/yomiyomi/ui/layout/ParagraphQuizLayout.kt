@@ -92,7 +92,7 @@ fun ParagraphQuizLayout(
                 // Refresh Button
                 RefreshButton(
                     onClick = callbacks.onRefresh,
-                    text = "새 문단 가져오기",
+                    text = "새 문단",
                     modifier = Modifier.weight(1f)
                 )
                 
