@@ -13,6 +13,7 @@ interface MySentenceQuizViewModelInterface {
     val recognizedText: StateFlow<String>
     
     fun loadQuizByLevel(level: Level, quizType: SentenceQuizType, isLearningMode: Boolean = false)
+    fun changeQuizType(quizType: SentenceQuizType)
     fun startListening()
     fun stopListening()
     fun checkAnswer(recognizedAnswer: String): Boolean

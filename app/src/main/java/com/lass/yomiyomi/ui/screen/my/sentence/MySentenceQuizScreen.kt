@@ -68,7 +68,8 @@ fun MySentenceQuizScreen(
         },
         onQuizTypeSelected = { index ->
             selectedQuizTypeIndex = index
-            mySentenceQuizViewModel.loadQuizByLevel(selectedLevel, sentenceQuizTypes[index], isLearningMode)
+            // 퀴즈 타입만 변경 (새로운 문제 로드하지 않음)
+            mySentenceQuizViewModel.changeQuizType(sentenceQuizTypes[index])
         },
         onLearningModeChanged = { learningMode ->
             isLearningMode = learningMode

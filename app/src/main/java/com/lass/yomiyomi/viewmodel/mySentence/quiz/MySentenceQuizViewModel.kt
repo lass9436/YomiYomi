@@ -34,6 +34,9 @@ class MySentenceQuizViewModel @Inject constructor(
     override val isListening: StateFlow<Boolean> = speechManager.isListening
     override val recognizedText: StateFlow<String> = speechManager.recognizedText
 
+    // 현재 문장 데이터를 저장 (퀴즈 타입 변경 시 재사용)
+    private var currentSentence: SentenceItem? = null
+
     override fun loadQuizByLevel(level: Level, quizType: SentenceQuizType, isLearningMode: Boolean) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -50,7 +53,9 @@ class MySentenceQuizViewModel @Inject constructor(
                     _hasInsufficientData.value = true
                     _quizState.value = null
                 } else {
-                    val quiz = createQuizFromSentences(sentences, quizType)
+                    val randomSentence = sentences.random()
+                    currentSentence = randomSentence // 현재 문장 저장
+                    val quiz = createQuizFromSentence(randomSentence, quizType)
                     _quizState.value = quiz
                 }
             } catch (e: Exception) {
@@ -62,33 +67,39 @@ class MySentenceQuizViewModel @Inject constructor(
         }
     }
 
-    private fun createQuizFromSentences(sentences: List<SentenceItem>, quizType: SentenceQuizType): SentenceQuiz {
-        val randomSentence = sentences.random()
-        
+    override fun changeQuizType(quizType: SentenceQuizType) {
+        // 현재 문장이 있으면 같은 문장으로 새로운 타입의 퀴즈 생성
+        currentSentence?.let { sentence ->
+            val quiz = createQuizFromSentence(sentence, quizType)
+            _quizState.value = quiz
+        }
+    }
+
+    private fun createQuizFromSentence(sentence: SentenceItem, quizType: SentenceQuizType): SentenceQuiz {
         return when (quizType) {
             SentenceQuizType.KOREAN_TO_JAPANESE_SPEECH -> {
                 SentenceQuiz(
-                    question = randomSentence.korean,
-                    correctAnswer = randomSentence.japanese,
-                    cleanAnswer = JapaneseTextFilter.prepareTTSText(randomSentence.japanese),
-                    sentenceId = randomSentence.id
+                    question = sentence.korean,
+                    correctAnswer = sentence.japanese,
+                    cleanAnswer = JapaneseTextFilter.prepareTTSText(sentence.japanese),
+                    sentenceId = sentence.id
                 )
             }
             SentenceQuizType.JAPANESE_TO_JAPANESE_SPEECH -> {
                 SentenceQuiz(
-                    question = randomSentence.japanese,
-                    correctAnswer = randomSentence.japanese,
-                    cleanAnswer = JapaneseTextFilter.prepareTTSText(randomSentence.japanese),
-                    sentenceId = randomSentence.id
+                    question = sentence.japanese,
+                    correctAnswer = sentence.japanese,
+                    cleanAnswer = JapaneseTextFilter.prepareTTSText(sentence.japanese),
+                    sentenceId = sentence.id
                 )
             }
             SentenceQuizType.JAPANESE_NO_FURIGANA_SPEECH -> {
-                val questionWithoutFurigana = JapaneseTextFilter.removeFurigana(randomSentence.japanese)
+                val questionWithoutFurigana = JapaneseTextFilter.removeFurigana(sentence.japanese)
                 SentenceQuiz(
                     question = questionWithoutFurigana,
-                    correctAnswer = randomSentence.japanese,
-                    cleanAnswer = JapaneseTextFilter.prepareTTSText(randomSentence.japanese),
-                    sentenceId = randomSentence.id
+                    correctAnswer = sentence.japanese,
+                    cleanAnswer = JapaneseTextFilter.prepareTTSText(sentence.japanese),
+                    sentenceId = sentence.id
                 )
             }
         }
