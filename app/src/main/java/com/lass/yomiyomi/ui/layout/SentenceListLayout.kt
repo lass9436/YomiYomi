@@ -38,6 +38,7 @@ fun SentenceListLayout(
     isFilterVisible: Boolean = false,
     onSentenceEdit: ((SentenceItem) -> Unit)? = null,
     onSentenceDelete: ((SentenceItem) -> Unit)? = null,
+    onSentenceQuiz: ((SentenceItem) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val categories = remember(sentences) {
@@ -104,7 +105,8 @@ fun SentenceListLayout(
                         showKorean = showKorean,
                         showProgress = showProgress,
                         onEdit = onSentenceEdit?.let { { it(sentence) } },
-                        onDelete = onSentenceDelete?.let { { it(sentence) } }
+                        onDelete = onSentenceDelete?.let { { it(sentence) } },
+                        onQuiz = onSentenceQuiz?.let { { it(sentence) } }
                     )
                 }
             }

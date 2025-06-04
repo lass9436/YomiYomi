@@ -1,0 +1,136 @@
+package com.lass.yomiyomi.ui.layout
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.lass.yomiyomi.ui.component.card.SingleSentenceQuizContent
+import com.lass.yomiyomi.ui.state.SingleSentenceQuizState
+import com.lass.yomiyomi.ui.state.SingleSentenceQuizCallbacks
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SingleSentenceQuizLayout(
+    title: String,
+    state: SingleSentenceQuizState,
+    callbacks: SingleSentenceQuizCallbacks,
+    onBack: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        title, 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    ) 
+                },
+                navigationIcon = {
+                    onBack?.let {
+                        IconButton(onClick = it) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack, 
+                                contentDescription = "뒤로 가기",
+                                tint = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            // Quiz Content (단일 문장 빈칸 채우기)
+            SingleSentenceQuizContent(
+                sentence = state.sentence,
+                quiz = state.quiz,
+                isLoading = state.isLoading,
+                isListening = state.isListening,
+                recognizedText = state.recognizedText,
+                isQuizCompleted = state.isQuizCompleted,
+                showKoreanTranslation = state.showKoreanTranslation,
+                onStartListening = callbacks.onStartListening,
+                onStopListening = callbacks.onStopListening,
+                onProcessRecognition = callbacks.onProcessRecognition,
+                onToggleKoreanTranslation = callbacks.onToggleKoreanTranslation,
+                insufficientDataMessage = state.insufficientDataMessage,
+                modifier = Modifier.weight(1f)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Action Buttons Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Back to List Button (문장 목록)
+                Button(
+                    onClick = callbacks.onBackToSentenceList,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "문장 목록",
+                        color = MaterialTheme.colorScheme.onTertiary,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
+                }
+                
+                // Show Answers Button (정답 보기) - 퀴즈가 있고 완료되지 않았을 때만 표시
+                if (state.quiz != null && !state.isQuizCompleted) {
+                    Button(
+                        onClick = callbacks.onShowAnswers,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "정답 보기",
+                            color = MaterialTheme.colorScheme.onTertiary,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1
+                        )
+                    }
+                }
+                
+                // Reset Quiz Button (빈칸 리셋) - 퀴즈가 있고 완료되지 않았을 때만 표시
+                if (state.quiz != null && !state.isQuizCompleted) {
+                    Button(
+                        onClick = callbacks.onResetQuiz,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "빈칸 리셋",
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+        }
+    }
+} 

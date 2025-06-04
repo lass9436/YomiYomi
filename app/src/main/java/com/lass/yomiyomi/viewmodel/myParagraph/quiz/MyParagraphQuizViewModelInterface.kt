@@ -16,6 +16,7 @@ interface MyParagraphQuizViewModelInterface {
     val sentences: StateFlow<List<SentenceItem>>
     
     fun loadQuizByLevel(level: Level, quizType: ParagraphQuizType)
+    fun loadQuizBySentence(sentence: SentenceItem, quizType: ParagraphQuizType) // 단일 문장 퀴즈 로드
     fun startListening()
     fun stopListening()
     /**

@@ -28,6 +28,7 @@ fun SentenceCard(
     onEdit: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
     onDisplayModeChange: ((DisplayMode) -> Unit)? = null,
+    onQuiz: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     // 문단 소속이면 문단의 카테고리/난이도 사용, 아니면 문장 자체 값 사용
@@ -44,12 +45,14 @@ fun SentenceCard(
     }
 
     Card(
+        onClick = onQuiz ?: {}, // Card 클릭 시 퀴즈로 이동
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        enabled = onQuiz != null // 퀴즈 콜백이 있을 때만 클릭 가능
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

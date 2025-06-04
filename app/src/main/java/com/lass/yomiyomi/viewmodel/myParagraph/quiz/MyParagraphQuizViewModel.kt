@@ -147,6 +147,37 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
+    override fun loadQuizBySentence(sentence: SentenceItem, quizType: ParagraphQuizType) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
+            _hasInsufficientData.value = false
+            
+            try {
+                // 단일 문장으로 퀴즈 생성
+                val quiz = ParagraphQuizGenerator.generateParagraphQuiz(
+                    paragraphId = "single_sentence_${sentence.id}",
+                    paragraphTitle = "문장 퀴즈",
+                    japaneseText = sentence.japanese,
+                    koreanText = sentence.korean,
+                    quizType = quizType
+                )
+
+                // 문장을 리스트로 감싸서 저장
+                _sentences.value = listOf(sentence)
+                _quizState.value = quiz
+                _isQuizCompleted.value = false
+                clearRecognizedText()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _hasInsufficientData.value = true
+                _quizState.value = null
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     override fun startListening() {
         if (!_isListening.value) {
             speechManager.startListening()

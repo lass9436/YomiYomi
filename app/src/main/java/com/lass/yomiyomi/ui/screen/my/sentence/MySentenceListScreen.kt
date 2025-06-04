@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 @Composable
 fun SentenceListScreen(
     onBack: () -> Unit,
+    onSentenceQuiz: (SentenceItem) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: MySentenceViewModel = hiltViewModel()
 ) {
@@ -123,6 +124,7 @@ fun SentenceListScreen(
             onSentenceDelete = { sentence ->
                 deletingSentence = sentence
             },
+            onSentenceQuiz = onSentenceQuiz,
             modifier = modifier.padding(paddingValues)
         )
     }
