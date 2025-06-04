@@ -35,6 +35,9 @@ class MyParagraphViewModel @Inject constructor(
     private val _learningProgress = MutableStateFlow<Map<String, Float>>(emptyMap())
     val learningProgress: StateFlow<Map<String, Float>> = _learningProgress.asStateFlow()
 
+    private val _sentenceCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val sentenceCounts: StateFlow<Map<String, Int>> = _sentenceCounts.asStateFlow()
+
     override val paragraphs: StateFlow<List<ParagraphItem>> = combine(
         _allParagraphs,
         _selectedCategory,
@@ -77,6 +80,10 @@ class MyParagraphViewModel @Inject constructor(
                 // 🔥 문단별 학습 진도도 함께 로드
                 val progressMap = mySentenceRepository.getLearningProgressByParagraph()
                 _learningProgress.value = progressMap
+                
+                // 🔥 문단별 문장 개수도 함께 로드
+                val countsMap = mySentenceRepository.getSentenceCountsByParagraph()
+                _sentenceCounts.value = countsMap
             } catch (e: Exception) {
                 // Handle error
             } finally {
@@ -137,6 +144,10 @@ class MyParagraphViewModel @Inject constructor(
             try {
                 val progressMap = mySentenceRepository.getLearningProgressByParagraph()
                 _learningProgress.value = progressMap
+                
+                // 🔥 문장 개수도 함께 새로고침
+                val countsMap = mySentenceRepository.getSentenceCountsByParagraph()
+                _sentenceCounts.value = countsMap
             } catch (e: Exception) {
                 // Handle error
             }
