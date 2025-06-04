@@ -9,10 +9,22 @@ import com.lass.yomiyomi.domain.model.mapper.toMyWordItem
 import com.lass.yomiyomi.domain.model.mapper.toMyWordItems
 import com.lass.yomiyomi.domain.model.mapper.toWordItems
 import com.lass.yomiyomi.domain.model.mapper.toMyWord
+import com.lass.yomiyomi.data.database.MyWordDataImporter
 
 class MyWordRepository(private val context: Context) {
     private val myWordDao = AppDatabase.getInstance(context).myWordDao()
     private val wordDao = AppDatabase.getInstance(context).wordDao()
+
+    // CSV 파일에서 내 단어 데이터 가져와서 데이터베이스에 저장
+    suspend fun importMyWordData(context: Context) {
+        val existingCount = myWordDao.getMyWordCount()
+        if (existingCount > 0) return // 이미 데이터가 있으면 중복 로딩 방지
+
+        val myWordList = MyWordDataImporter.importMyWordFromCsv(context)
+        myWordList.forEach { myWord ->
+            myWordDao.insertMyWord(myWord)
+        }
+    }
 
     // 원본 단어를 내 단어로 복제
     suspend fun addWordToMyWords(originalWord: WordItem): Boolean {

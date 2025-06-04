@@ -66,4 +66,8 @@ interface MyWordDao {
     // 가중치와 학습 시간 업데이트
     @Query("UPDATE my_word SET learningWeight = :weight, timestamp = :timestamp WHERE id = :wordId")
     suspend fun updateMyWordLearningStatus(wordId: Int, weight: Float, timestamp: Long)
+
+    // 전체 내 단어 개수 조회
+    @Query("SELECT COUNT(*) FROM my_word")
+    suspend fun getMyWordCount(): Int
 } 

@@ -11,10 +11,22 @@ import com.lass.yomiyomi.domain.model.mapper.toMyKanjiItem
 import com.lass.yomiyomi.domain.model.mapper.toMyKanjiItems
 import com.lass.yomiyomi.domain.model.mapper.toKanjiItems
 import com.lass.yomiyomi.domain.model.mapper.toMyKanji
+import com.lass.yomiyomi.data.database.MyKanjiDataImporter
 
 class MyKanjiRepository(private val context: Context) {
     private val myKanjiDao = AppDatabase.getInstance(context).myKanjiDao()
     private val kanjiDao = AppDatabase.getInstance(context).kanjiDao()
+
+    // CSV 파일에서 내 한자 데이터 가져와서 데이터베이스에 저장
+    suspend fun importMyKanjiData(context: Context) {
+        val existingCount = myKanjiDao.getMyKanjiCount()
+        if (existingCount > 0) return // 이미 데이터가 있으면 중복 로딩 방지
+
+        val myKanjiList = MyKanjiDataImporter.importMyKanjiFromCsv(context)
+        myKanjiList.forEach { myKanji ->
+            myKanjiDao.insertMyKanji(myKanji)
+        }
+    }
 
     // 원본 한자를 내 한자로 복제
     suspend fun addKanjiToMyKanji(originalKanji: KanjiItem): Boolean {

@@ -59,4 +59,8 @@ interface MyKanjiDao {
     // 가중치와 학습 시간 업데이트
     @Query("UPDATE my_kanji SET learningWeight = :weight, timestamp = :timestamp WHERE id = :kanjiId")
     suspend fun updateMyKanjiLearningStatus(kanjiId: Int, weight: Float, timestamp: Long)
+
+    // 전체 내 한자 개수 조회
+    @Query("SELECT COUNT(*) FROM my_kanji")
+    suspend fun getMyKanjiCount(): Int
 } 
