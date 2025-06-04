@@ -138,12 +138,24 @@ object ParagraphQuizGenerator {
             return true
         }
         
-        // 전략 2: 원문에서 해당 위치의 한자 찾기
+        // 전략 2: 원문에서 해당 위치의 한자 찾기 (숫자 정규화 포함)
         val kanjiAtPosition = extractKanjiAtPosition(originalText, answerPosition)
         if (kanjiAtPosition.isNotEmpty()) {
             println("Debug - Strategy 2: Looking for kanji '$kanjiAtPosition' in '$recognizedText'")
+            
+            // 2-1: 원래 한자 그대로 찾기
             if (recognizedText.contains(kanjiAtPosition)) {
-                println("Debug - Strategy 2: ✅ Kanji match found!")
+                println("Debug - Strategy 2-1: ✅ Exact kanji match found!")
+                return true
+            }
+            
+            // 2-2: 숫자 정규화해서 찾기
+            val normalizedKanji = normalizeNumbers(kanjiAtPosition)
+            val normalizedRecognized = normalizeNumbers(recognizedText)
+            
+            println("Debug - Strategy 2-2: Normalized kanji '$normalizedKanji' in normalized text '$normalizedRecognized'?")
+            if (normalizedRecognized.contains(normalizedKanji)) {
+                println("Debug - Strategy 2-2: ✅ Normalized number match found!")
                 return true
             }
         }
@@ -201,5 +213,62 @@ object ParagraphQuizGenerator {
     private fun isKanji(char: Char): Boolean {
         val code = char.code
         return code in 0x4E00..0x9FAF
+    }
+    
+    /**
+     * 텍스트에서 일본어 숫자 한자를 아라비아 숫자로 변환
+     * 예: "三時" → "3時", "十二月" → "12月"
+     */
+    private fun normalizeNumbers(text: String): String {
+        val numberMap = mapOf(
+            "一" to "1", "二" to "2", "三" to "3", "四" to "4", "五" to "5",
+            "六" to "6", "七" to "7", "八" to "8", "九" to "9", "十" to "10",
+            "零" to "0", "〇" to "0"
+        )
+        
+        var result = text
+        
+        // 단순 1:1 변환 먼저 처리
+        numberMap.forEach { (kanji, arabic) ->
+            result = result.replace(kanji, arabic)
+        }
+        
+        // 복합 숫자 처리 (예: 十一 → 11, 二十 → 20 등)
+        result = processComplexNumbers(result)
+        
+        println("Debug - Number normalization: '$text' → '$result'")
+        return result
+    }
+    
+    /**
+     * 복합 숫자 처리 (일부만 구현)
+     * 예: "10일" → "11", "210" → "20" 등
+     */
+    private fun processComplexNumbers(text: String): String {
+        var result = text
+        
+        // 십의 자리 처리 (예: 210 → 20, 310 → 30)
+        result = result.replace("110", "11")
+        result = result.replace("210", "20") 
+        result = result.replace("310", "30")
+        result = result.replace("410", "40")
+        result = result.replace("510", "50")
+        result = result.replace("610", "60")
+        result = result.replace("710", "70")
+        result = result.replace("810", "80")
+        result = result.replace("910", "90")
+        
+        // 10+a 형태 처리 (예: 101 → 11, 102 → 12)
+        result = result.replace("101", "11")
+        result = result.replace("102", "12")
+        result = result.replace("103", "13")
+        result = result.replace("104", "14")
+        result = result.replace("105", "15")
+        result = result.replace("106", "16")
+        result = result.replace("107", "17")
+        result = result.replace("108", "18")
+        result = result.replace("109", "19")
+        
+        return result
     }
 } 
