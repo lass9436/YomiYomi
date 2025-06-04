@@ -112,7 +112,8 @@ fun ParagraphQuizContent(
                                 japaneseText = displayText,
                                 displayMode = DisplayMode.FULL,
                                 fontSize = 18.sp,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                quiz = quiz
                             )
                         }
                     }

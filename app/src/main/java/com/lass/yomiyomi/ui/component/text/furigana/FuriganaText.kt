@@ -21,7 +21,8 @@ fun FuriganaText(
     displayMode: DisplayMode = DisplayMode.FULL,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 16.sp,
-    furiganaSize: TextUnit = (fontSize.value * 0.6).sp
+    furiganaSize: TextUnit = (fontSize.value * 0.6).sp,
+    quiz: com.lass.yomiyomi.domain.model.data.ParagraphQuiz? = null
 ) {
     val segments = remember(japaneseText) { 
         FuriganaParser.parse(japaneseText) 
@@ -61,10 +62,32 @@ fun FuriganaText(
                                                 horizontalAlignment = Alignment.CenterHorizontally,
                                                 verticalArrangement = Arrangement.spacedBy((-3).dp)
                                             ) {
+                                                // 퀴즈 모드에서 후리가나 표시 결정
+                                                val displayFurigana = if (quiz != null) {
+                                                    // 퀴즈 모드: 빈칸인지 확인
+                                                    val blankForThisFurigana = quiz.blanks.find { it.correctAnswer == segment.furigana }
+                                                    if (blankForThisFurigana != null) {
+                                                        // 빈칸이면 채워진 답 또는 ___
+                                                        quiz.filledBlanks[blankForThisFurigana.index] ?: "___"
+                                                    } else {
+                                                        // 빈칸이 아니면 원래 후리가나
+                                                        segment.furigana
+                                                    }
+                                                } else {
+                                                    // 일반 모드: 원래 후리가나
+                                                    segment.furigana
+                                                }
+                                                
                                                 Text(
-                                                    text = segment.furigana,
+                                                    text = displayFurigana,
                                                     fontSize = furiganaSize,
-                                                    color = MaterialTheme.colorScheme.outline,
+                                                    color = if (quiz != null && displayFurigana == "___") {
+                                                        MaterialTheme.colorScheme.error
+                                                    } else if (quiz != null && displayFurigana != segment.furigana) {
+                                                        MaterialTheme.colorScheme.primary  
+                                                    } else {
+                                                        MaterialTheme.colorScheme.outline
+                                                    },
                                                     textAlign = TextAlign.Center,
                                                     lineHeight = furiganaSize * 0.8f
                                                 )

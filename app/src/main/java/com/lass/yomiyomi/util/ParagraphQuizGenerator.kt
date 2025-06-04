@@ -40,8 +40,8 @@ object ParagraphQuizGenerator {
             )
         }
         
-        // 빈칸이 있는 표시용 텍스트 생성 ([わたし] -> [___])
-        val displayText = japaneseText.replace(furiganaPattern, "[___]")
+        // 원본 텍스트를 그대로 사용 (치환하지 않음)
+        val displayText = japaneseText
         
         return ParagraphQuiz(
             paragraphId = paragraphId,
@@ -56,24 +56,11 @@ object ParagraphQuizGenerator {
     /**
      * 현재 표시할 텍스트 생성 (채워진 빈칸들을 반영)
      * @param quiz 현재 퀴즈 객체
-     * @return 업데이트된 표시용 텍스트
+     * @return 업데이트된 표시용 텍스트 (원본 그대로, UI에서 처리)
      */
     fun getDisplayTextWithFilledBlanks(quiz: ParagraphQuiz): String {
-        var displayText = quiz.displayText
-        val blankPattern = Regex("\\[___\\]")
-        var replacementIndex = 0
-        
-        return blankPattern.replace(displayText) { _ ->
-            val currentBlank = quiz.blanks.getOrNull(replacementIndex)
-            val filledAnswer = currentBlank?.let { quiz.filledBlanks[it.index] }
-            replacementIndex++
-            
-            if (filledAnswer != null) {
-                "[$filledAnswer]"
-            } else {
-                "[___]"
-            }
-        }
+        // 원본 텍스트 그대로 반환, UI에서 빈칸 처리
+        return quiz.originalText
     }
     
     /**
