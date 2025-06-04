@@ -9,12 +9,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.speech.SpeechManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
-import com.lass.yomiyomi.util.rememberSpeechManager
+import com.lass.yomiyomi.di.SpeechManagerEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 
 /**
  * 통일된 TTS 버튼 컴포넌트
@@ -29,8 +31,16 @@ fun UnifiedTTSButton(
     isEnabled: Boolean = true,
     speechManager: SpeechManager? = null
 ) {
-    // 🎯 speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
-    val finalSpeechManager = speechManager ?: rememberSpeechManager()
+    val context = LocalContext.current
+    
+    // 🔥 speechManager 파라미터가 있으면 사용, 없으면 싱글톤에서 직접 가져오기
+    // DisposableEffect 없이 순수하게 싱글톤만 사용하여 LazyColumn dispose 문제 해결
+    val finalSpeechManager = speechManager ?: remember {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            SpeechManagerEntryPoint::class.java
+        ).speechManager()
+    }
     
     // 🎯 입력 데이터 검증 및 텍스트 생성
     val finalText = when {
