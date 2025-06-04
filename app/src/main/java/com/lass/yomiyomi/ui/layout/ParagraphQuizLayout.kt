@@ -78,6 +78,8 @@ fun ParagraphQuizLayout(
                 onProcessRecognition = callbacks.onProcessRecognition,
                 onResetQuiz = callbacks.onResetQuiz,
                 insufficientDataMessage = state.insufficientDataMessage,
+                showKoreanTranslation = state.showKoreanTranslation,
+                onToggleKoreanTranslation = callbacks.onToggleKoreanTranslation,
                 modifier = Modifier.weight(1f)
             )
 

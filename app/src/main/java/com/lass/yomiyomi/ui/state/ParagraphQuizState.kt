@@ -14,7 +14,9 @@ data class ParagraphQuizState(
     val recognizedText: String = "",
     val isQuizCompleted: Boolean = false,
     val sentences: List<SentenceItem> = emptyList(),
-    val availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
+    val availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL),
+    // 한국어 번역 표시 토글
+    val showKoreanTranslation: Boolean = true
 )
 
 data class ParagraphQuizCallbacks(
@@ -24,5 +26,6 @@ data class ParagraphQuizCallbacks(
     val onProcessRecognition: (String) -> List<String>,
     val onRefresh: () -> Unit,
     val onResetQuiz: () -> Unit,
-    val onShowAnswers: () -> Unit
+    val onShowAnswers: () -> Unit,
+    val onToggleKoreanTranslation: () -> Unit
 ) 

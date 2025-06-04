@@ -31,6 +31,8 @@ fun ParagraphQuizContent(
     onProcessRecognition: (String) -> List<String>,
     onResetQuiz: () -> Unit,
     insufficientDataMessage: String? = null,
+    showKoreanTranslation: Boolean = true,
+    onToggleKoreanTranslation: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -89,6 +91,32 @@ fun ParagraphQuizContent(
                         )
                     }
                     
+                    // 한국어 번역 토글 버튼
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = onToggleKoreanTranslation,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (showKoreanTranslation) 
+                                    MaterialTheme.colorScheme.secondary 
+                                else 
+                                    MaterialTheme.colorScheme.outline,
+                                contentColor = if (showKoreanTranslation) 
+                                    MaterialTheme.colorScheme.onSecondary 
+                                else 
+                                    MaterialTheme.colorScheme.onSurface
+                            )
+                        ) {
+                            Text(
+                                text = if (showKoreanTranslation) "한국어 숨기기 🙈" else "한국어 보기 🇰🇷",
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                    
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     // 일본어 텍스트 (문장별로 분리)
@@ -125,33 +153,35 @@ fun ParagraphQuizContent(
                     }
                     
                     // 한국어 번역
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "한국어 번역 🇰🇷",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                fontWeight = FontWeight.Bold
+                    if (showKoreanTranslation) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            
-                            // 각 문장의 한국어 번역을 개별 표시
-                            sentences.forEach { sentence ->
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
                                 Text(
-                                    text = sentence.korean,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = "한국어 번역 🇰🇷",
+                                    style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp)
+                                    fontWeight = FontWeight.Bold
                                 )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                
+                                // 각 문장의 한국어 번역을 개별 표시
+                                sentences.forEach { sentence ->
+                                    Text(
+                                        text = sentence.korean,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                    )
+                                }
                             }
                         }
                     }

@@ -36,6 +36,7 @@ fun MyParagraphQuizScreen(
 
     // UI 상태 관리
     var selectedLevel by remember { mutableStateOf(Level.ALL) }
+    var showKoreanTranslation by remember { mutableStateOf(true) }
 
     // Quiz state 생성
     val state = ParagraphQuizState(
@@ -46,7 +47,8 @@ fun MyParagraphQuizScreen(
         isListening = isListening,
         recognizedText = recognizedText,
         isQuizCompleted = isQuizCompleted,
-        sentences = sentences
+        sentences = sentences,
+        showKoreanTranslation = showKoreanTranslation
     )
 
     // Quiz callbacks 생성
@@ -86,6 +88,9 @@ fun MyParagraphQuizScreen(
         onShowAnswers = {
             myParagraphQuizViewModel.showAllAnswers()
             myParagraphQuizViewModel.clearRecognizedText()
+        },
+        onToggleKoreanTranslation = {
+            showKoreanTranslation = !showKoreanTranslation
         }
     )
 
