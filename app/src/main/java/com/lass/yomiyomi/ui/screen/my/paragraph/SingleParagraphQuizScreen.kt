@@ -89,6 +89,6 @@ fun SingleParagraphQuizScreen(
         state = state,
         callbacks = callbacks,
         onBack = onBack,
-        refreshButtonText = "문단 상세로 돌아가기"
+        refreshButtonText = "문단 목록"
     )
 } 

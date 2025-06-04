@@ -21,7 +21,7 @@ fun ParagraphQuizLayout(
     state: ParagraphQuizState,
     callbacks: ParagraphQuizCallbacks,
     onBack: (() -> Unit)? = null,
-    refreshButtonText: String = "새 퀴즈 가져오기",
+    refreshButtonText: String = "새 퀴즈",
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -93,7 +93,7 @@ fun ParagraphQuizLayout(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Refresh Button (새 문단)
+                // Refresh Button (새 퀴즈)
                 Button(
                     onClick = callbacks.onRefresh,
                     colors = ButtonDefaults.buttonColors(
@@ -104,8 +104,7 @@ fun ParagraphQuizLayout(
                     Text(
                         text = refreshButtonText,
                         color = MaterialTheme.colorScheme.onTertiary,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 
@@ -121,8 +120,7 @@ fun ParagraphQuizLayout(
                         Text(
                             text = "정답 보기",
                             color = MaterialTheme.colorScheme.onTertiary,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -139,8 +137,7 @@ fun ParagraphQuizLayout(
                         Text(
                             text = "빈칸 리셋",
                             color = MaterialTheme.colorScheme.onSecondary,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
