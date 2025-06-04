@@ -90,17 +90,42 @@ YomiYomi는 한자, 단어, 문장, 문단 학습을 위한 종합적인 안드�
 
 ## 📱 스크린샷
 
-### (메인 화면)
+### 메인 화면
 - 탭 기반 네비게이션으로 구성된 직관적인 메인 인터페이스
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/20e8dc14-04cc-427c-91ef-e9610c2d6291" width="30%" />
+  <img src="https://github.com/user-attachments/assets/f209b218-e803-4603-84c1-c136e407ddc4" width="30%" />
+  <img src="https://github.com/user-attachments/assets/7b0ccfbf-b28f-4963-ae2d-b5b3503112b9" width="30%" />
+</p>
 
-### (한자 학습 화면)
-- TTS 버튼이 통합된 한자 카드 뷰와 상세 정보 표시
+### 한자 학습 화면
+- TTS 버튼이 통합된 한자 카드 뷰와 상세 정보 표시 그리고 퀴즈 화면
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/04c4620a-5945-4f36-a066-9be5ff4a43e0" width="30%" />
+  <img src="https://github.com/user-attachments/assets/a82ca113-e6dd-43b4-b34e-b955d190270f" width="30%" />
+  <img src="https://github.com/user-attachments/assets/c315b4f7-09e8-406b-bcec-d0ce2851d8f9" width="30%" />
+</p>
 
-### (단어 퀴즈 화면)
-- 객관식과 주관식을 지원하는 인터랙티브 퀴즈 인터페이스
+### 단어 학습 화면
+- TTS 버튼이 통합된 단어 카드 뷰와 상세 정보 표시 그리고 퀴즈 화면
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fcf91d68-b7c0-4c62-836e-ddd96f73b7fe" width="30%" />
+  <img src="https://github.com/user-attachments/assets/5a79690f-aa07-414e-adfb-625dd32f8eaa" width="30%" />
+  <img src="https://github.com/user-attachments/assets/7933e826-3334-4303-ab2b-d07dee735d4e" width="30%" />
+</p>
 
-### (음성 인식 퀴즈 화면)
-- 실시간 음성 인식과 피드백을 제공하는 말하기 퀴즈
+### 문장 학습 화면
+- 음성 인식을 통한 말하기 퀴즈
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/50a1b5f5-7769-4e60-b580-ccf8e46358cf" width="30%" />
+  <img src="https://github.com/user-attachments/assets/2e09abc6-76e7-4934-b5f9-f0f47340f64b" width="30%" />
+  <img src="https://github.com/user-attachments/assets/d1b40785-890e-4eb3-bcf6-7440c185f3c4" width="30%" />
+</p>
 
-### (개인 학습 관리 화면)
-- 사용자 맞춤형 학습 컬렉션 생성 및 관리 인터페이스
+### 문단 학습 화면
+- 문단 리스트와 상세 화면 그리고 퀴즈 화면
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/83dcc13e-27f3-4fbb-b74a-9baa14f5fa22" width="30%" />
+  <img src="https://github.com/user-attachments/assets/fac5d8d1-68c9-4145-8afb-fa6a53b73631" width="30%" />
+  <img src="https://github.com/user-attachments/assets/8108b6b0-877d-4247-a5d2-d60574dc4fe6" width="30%" />
+</p>
