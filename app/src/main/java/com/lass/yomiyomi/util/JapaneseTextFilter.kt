@@ -118,4 +118,18 @@ object JapaneseTextFilter {
         val japaneseOnly = extractJapaneseOnly(normalizedCommas)
         return japaneseOnly.trim().takeIf { it.isNotEmpty() } ?: ""
     }
+    
+    /**
+     * 음성 인식 텍스트 비교용 정규화
+     * 모든 구두점, 띄어쓰기, 영어 문자, 숫자 등을 제거하고 일본어 문자만 남김
+     * @param text 원본 텍스트
+     * @return 비교용으로 정규화된 텍스트 (히라가나, 카타카나, 한자만)
+     */
+    fun normalizeForComparison(text: String): String {
+        val withoutFurigana = removeFurigana(text)
+        return withoutFurigana.filter { char ->
+            val code = char.code
+            isHiragana(code) || isKatakana(code) || isKanji(code)
+        }.lowercase().trim()
+    }
 } 

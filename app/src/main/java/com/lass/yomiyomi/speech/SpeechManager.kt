@@ -14,6 +14,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,6 +42,10 @@ class SpeechManager @Inject constructor(
     
     private val _recognizedText = MutableStateFlow("")
     val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
+    
+    // 코루틴 스코프 추가
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var stopListeningJob: Job? = null
 
     init {
         initializeTTS()
@@ -212,11 +217,23 @@ class SpeechManager @Inject constructor(
     }
 
     /**
-     * 음성 인식 중지
+     * 음성 인식 중지 (0.5초 딜레이 후 실제 중지)
      */
     fun stopListening() {
-        speechRecognizer?.stopListening()
+        Log.d("SpeechManager", "stopListening() called - will stop after 500ms delay")
+        
+        // UI에서는 즉시 중지된 것처럼 보이게 함
         _isListening.value = false
+        
+        // 기존 중지 작업이 있으면 취소
+        stopListeningJob?.cancel()
+        
+        // 0.5초 후에 실제로 음성 인식 중지
+        stopListeningJob = coroutineScope.launch {
+            delay(500L) // 0.5초 딜레이
+            Log.d("SpeechManager", "Actually stopping speech recognizer after delay")
+            speechRecognizer?.stopListening()
+        }
     }
 
     /**
@@ -295,6 +312,10 @@ class SpeechManager @Inject constructor(
     fun destroy() {
         // 🧹 라이프사이클 관찰자 해제
         ProcessLifecycleOwner.get().lifecycle.removeObserver(this)
+        
+        // 코루틴 스코프 정리
+        stopListeningJob?.cancel()
+        coroutineScope.cancel()
         
         speechRecognizer?.destroy()
         textToSpeech?.shutdown()
