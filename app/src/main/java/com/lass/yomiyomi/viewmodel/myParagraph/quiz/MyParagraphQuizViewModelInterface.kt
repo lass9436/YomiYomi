@@ -18,7 +18,12 @@ interface MyParagraphQuizViewModelInterface {
     fun loadQuizByLevel(level: Level, quizType: ParagraphQuizType)
     fun startListening()
     fun stopListening()
-    fun processRecognizedText(recognizedText: String): List<String> // 새로 채워진 빈칸들 반환
+    /**
+     * 음성 인식된 텍스트를 처리하여 빈칸을 채움
+     * @param recognizedAnswer 음성 인식된 답
+     * @return 새로 채워진 정답들의 리스트
+     */
+    fun processRecognizedText(recognizedAnswer: String): List<String>
     fun clearRecognizedText()
     fun resetQuiz() // 빈칸들을 모두 비우고 다시 시작
 } 

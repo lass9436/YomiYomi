@@ -66,6 +66,9 @@ fun MyParagraphQuizScreen(
                 myParagraphQuizViewModel.clearRecognizedText()
                 // TODO: 새로 채워진 빈칸들을 시각적으로 강조하는 애니메이션 추가 가능
             }
+            
+            // UI에서 사용할 수 있도록 반환
+            newlyFilled
         },
         onRefresh = {
             myParagraphQuizViewModel.loadQuizByLevel(selectedLevel, ParagraphQuizType.FILL_IN_BLANKS_SPEECH)

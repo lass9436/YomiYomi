@@ -21,7 +21,7 @@ data class ParagraphQuizCallbacks(
     val onLevelSelected: (Level) -> Unit,
     val onStartListening: () -> Unit,
     val onStopListening: () -> Unit,
-    val onProcessRecognition: (String) -> Unit,
+    val onProcessRecognition: (String) -> List<String>,
     val onRefresh: () -> Unit,
     val onResetQuiz: () -> Unit
 ) 

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.ui.component.button.SpeechQuizButton
+import com.lass.yomiyomi.ui.component.button.ParagraphSpeechQuizButton
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
 
@@ -28,7 +28,7 @@ fun ParagraphQuizContent(
     isQuizCompleted: Boolean,
     onStartListening: () -> Unit,
     onStopListening: () -> Unit,
-    onProcessRecognition: (String) -> Unit,
+    onProcessRecognition: (String) -> List<String>,
     onResetQuiz: () -> Unit,
     insufficientDataMessage: String? = null,
     modifier: Modifier = Modifier
@@ -188,7 +188,7 @@ fun ParagraphQuizContent(
                         }
                     } else {
                         // 음성 인식 버튼 (퀴즈 미완료 시에만 표시)
-                        SpeechQuizButton(
+                        ParagraphSpeechQuizButton(
                             isListening = isListening,
                             recognizedText = recognizedText,
                             onStartListening = onStartListening,
