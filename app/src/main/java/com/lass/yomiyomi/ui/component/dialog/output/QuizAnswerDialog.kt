@@ -82,15 +82,26 @@ fun QuizAnswerDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // 결과 텍스트
-                Text(
-                    text = answerResult,
-                    color = textColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 22.sp
-                )
+                // answerResult를 줄바꿈으로 분리해서 각각 Text로 표시
+                val lines = answerResult.split("\n")
+                
+                lines.forEachIndexed { index, line ->
+                    if (line.isNotEmpty()) {
+                        Text(
+                            text = line,
+                            color = textColor,
+                            fontSize = if (index == 0) 18.sp else 16.sp,
+                            fontWeight = if (index == 0) FontWeight.Bold else FontWeight.Medium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        
+                        // 마지막 줄이 아닌 경우 간격 추가
+                        if (index < lines.size - 1) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
             }
         },
         modifier = modifier
