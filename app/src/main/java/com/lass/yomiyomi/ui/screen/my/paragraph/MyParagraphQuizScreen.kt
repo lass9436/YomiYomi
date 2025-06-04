@@ -82,6 +82,10 @@ fun MyParagraphQuizScreen(
         onResetQuiz = {
             myParagraphQuizViewModel.resetQuiz()
             myParagraphQuizViewModel.clearRecognizedText()
+        },
+        onShowAnswers = {
+            myParagraphQuizViewModel.showAllAnswers()
+            myParagraphQuizViewModel.clearRecognizedText()
         }
     )
 

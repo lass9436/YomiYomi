@@ -87,18 +87,33 @@ fun ParagraphQuizLayout(
             // Action Buttons Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Refresh Button
+                // Refresh Button (새 문단)
                 RefreshButton(
                     onClick = callbacks.onRefresh,
                     text = "새 문단",
                     modifier = Modifier.weight(1f)
                 )
                 
-                Spacer(modifier = Modifier.width(8.dp))
+                // Show Answers Button (정답 보기) - 퀴즈가 있고 완료되지 않았을 때만 표시
+                if (state.quiz != null && !state.isQuizCompleted) {
+                    Button(
+                        onClick = callbacks.onShowAnswers,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "정답 보기",
+                            color = MaterialTheme.colorScheme.onTertiary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
                 
-                // Reset Quiz Button (퀴즈가 있을 때만 표시)
+                // Reset Quiz Button (빈칸 리셋) - 퀴즈가 있고 완료되지 않았을 때만 표시
                 if (state.quiz != null && !state.isQuizCompleted) {
                     Button(
                         onClick = callbacks.onResetQuiz,

@@ -23,5 +23,6 @@ data class ParagraphQuizCallbacks(
     val onStopListening: () -> Unit,
     val onProcessRecognition: (String) -> List<String>,
     val onRefresh: () -> Unit,
-    val onResetQuiz: () -> Unit
+    val onResetQuiz: () -> Unit,
+    val onShowAnswers: () -> Unit
 ) 

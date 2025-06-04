@@ -26,4 +26,5 @@ interface MyParagraphQuizViewModelInterface {
     fun processRecognizedText(recognizedAnswer: String): List<String>
     fun clearRecognizedText()
     fun resetQuiz() // 빈칸들을 모두 비우고 다시 시작
+    fun showAllAnswers() // 모든 빈칸을 정답으로 채우기
 } 

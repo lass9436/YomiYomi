@@ -184,6 +184,19 @@ class MyParagraphQuizViewModel @Inject constructor(
         _quizState.value = quiz.copy()
     }
 
+    override fun showAllAnswers() {
+        val quiz = _quizState.value ?: return
+        
+        // 모든 빈칸을 정답으로 채우기
+        quiz.blanks.forEach { blank ->
+            quiz.filledBlanks[blank.index] = blank.correctAnswer
+        }
+        
+        // 퀴즈 완료 상태로 설정
+        _isQuizCompleted.value = true
+        _quizState.value = quiz.copy()
+    }
+
     override fun clearRecognizedText() {
         _recognizedText.value = ""
         speechManager.clearRecognizedText()
