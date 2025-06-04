@@ -96,7 +96,8 @@ fun ParagraphRandomLayout(
                             item {
                                 ParagraphHeaderCard(
                                     paragraph = paragraph,
-                                    sentenceCount = sentences.size
+                                    sentenceCount = sentences.size,
+                                    sentences = sentences
                                 )
                             }
                             
