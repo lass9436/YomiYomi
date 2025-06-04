@@ -207,6 +207,61 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
+    override fun loadQuizByParagraphId(paragraphId: String, quizType: ParagraphQuizType) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
+            _hasInsufficientData.value = false
+            
+            try {
+                // 문단 ID로 문단 조회
+                val paragraph = myParagraphRepository.getParagraphById(paragraphId)
+                if (paragraph == null) {
+                    _hasInsufficientData.value = true
+                    _quizState.value = null
+                    return@launch
+                }
+                
+                currentParagraph = paragraph
+
+                // 문단에 속한 문장들 가져오기
+                val sentences = mySentenceRepository.getSentencesByParagraph(paragraphId)
+                
+                if (sentences.isEmpty()) {
+                    _hasInsufficientData.value = true
+                    _quizState.value = null
+                    return@launch
+                }
+
+                // 문장들을 별도로 저장
+                _sentences.value = sentences.sortedBy { it.orderInParagraph }
+
+                // 문장들을 하나의 긴 텍스트로 합치기 (일본어 텍스트 사용)
+                val combinedJapaneseText = sentences.joinToString("\n") { it.japanese }
+                val combinedKoreanText = sentences.joinToString("\n") { it.korean }
+
+                // 퀴즈 생성
+                val quiz = ParagraphQuizGenerator.generateParagraphQuiz(
+                    paragraphId = paragraph.paragraphId,
+                    paragraphTitle = paragraph.title,
+                    japaneseText = combinedJapaneseText,
+                    koreanText = combinedKoreanText,
+                    quizType = quizType
+                )
+
+                _quizState.value = quiz
+                _isQuizCompleted.value = false
+                clearRecognizedText()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _hasInsufficientData.value = true
+                _quizState.value = null
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     override fun startListening() {
         if (!_isListening.value) {
             speechManager.startListening()

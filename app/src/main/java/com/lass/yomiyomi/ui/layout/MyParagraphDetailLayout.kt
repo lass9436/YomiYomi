@@ -32,6 +32,7 @@ fun MyParagraphDetailLayout(
     onBack: () -> Unit,
     onSaveSentence: (SentenceItem, Boolean) -> Unit, // sentence, isEdit
     onDeleteSentence: (Int) -> Unit, // sentenceId
+    onQuiz: (() -> Unit)? = null, // 퀴즈 시작 콜백 추가
     modifier: Modifier = Modifier
 ) {
     // Layout 내부 UI 상태
@@ -136,6 +137,28 @@ fun MyParagraphDetailLayout(
                         )
                     }
                 }
+            }
+            
+            // 문제 풀기 버튼 추가
+            onQuiz?.let { quizCallback ->
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = quizCallback,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "문제 풀기",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

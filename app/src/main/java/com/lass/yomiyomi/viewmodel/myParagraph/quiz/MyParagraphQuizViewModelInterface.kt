@@ -19,6 +19,7 @@ interface MyParagraphQuizViewModelInterface {
     fun loadQuizByLevel(level: Level, quizType: ParagraphQuizType)
     fun loadQuizBySentence(sentence: SentenceItem, quizType: ParagraphQuizType) // 단일 문장 퀴즈 로드
     fun loadQuizBySentenceId(sentenceId: Int, quizType: ParagraphQuizType) // 문장 ID로 단일 문장 퀴즈 로드
+    fun loadQuizByParagraphId(paragraphId: String, quizType: ParagraphQuizType = ParagraphQuizType.FILL_IN_BLANKS_SPEECH) // 문단 ID로 단일 문단 퀴즈 로드
     fun startListening()
     fun stopListening()
     /**

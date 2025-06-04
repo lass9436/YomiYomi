@@ -21,6 +21,7 @@ fun ParagraphQuizLayout(
     state: ParagraphQuizState,
     callbacks: ParagraphQuizCallbacks,
     onBack: (() -> Unit)? = null,
+    refreshButtonText: String = "새 퀴즈 가져오기",
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -56,14 +57,16 @@ fun ParagraphQuizLayout(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // Level Selector
-            LevelSelector(
-                selectedLevel = state.selectedLevel,
-                onLevelSelected = callbacks.onLevelSelected,
-                availableLevels = state.availableLevels
-            )
+            // Level Selector (availableLevels가 있을 때만 표시)
+            if (state.availableLevels.isNotEmpty()) {
+                LevelSelector(
+                    selectedLevel = state.selectedLevel,
+                    onLevelSelected = callbacks.onLevelSelected,
+                    availableLevels = state.availableLevels
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             // Quiz Content (문단 빈칸 채우기)
             ParagraphQuizContent(
@@ -99,7 +102,7 @@ fun ParagraphQuizLayout(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "새 문단",
+                        text = refreshButtonText,
                         color = MaterialTheme.colorScheme.onTertiary,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1

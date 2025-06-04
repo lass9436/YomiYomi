@@ -29,6 +29,7 @@ import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphDetailScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.MyParagraphRandomScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.MyParagraphQuizScreen
+import com.lass.yomiyomi.ui.screen.my.paragraph.SingleParagraphQuizScreen
 import com.lass.yomiyomi.util.NavigationTTSManager
 
 // 네비게이션 경로를 Enum으로 정의
@@ -54,6 +55,7 @@ enum class Routes(val route: String) {
     MY_PARAGRAPH_LIST("myParagraphList"),
     MY_PARAGRAPH_RANDOM("myParagraphRandom"),
     MY_PARAGRAPH_QUIZ("myParagraphQuiz"),
+    SINGLE_PARAGRAPH_QUIZ("singleParagraphQuiz/{paragraphId}"),
     MY_PARAGRAPH_DETAIL("myParagraphDetail/{paragraphId}")
 }
 
@@ -309,6 +311,18 @@ fun MainScreen(
             )
         }
         composable(
+            route = Routes.SINGLE_PARAGRAPH_QUIZ.route,
+            arguments = listOf(navArgument("paragraphId") { 
+                type = NavType.StringType 
+            })
+        ) { backStackEntry ->
+            val paragraphId = backStackEntry.arguments?.getString("paragraphId") ?: ""
+            SingleParagraphQuizScreen(
+                paragraphId = paragraphId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(
             route = Routes.MY_PARAGRAPH_DETAIL.route,
             arguments = listOf(navArgument("paragraphId") { 
                 type = NavType.StringType 
@@ -317,7 +331,8 @@ fun MainScreen(
             val paragraphId = backStackEntry.arguments?.getString("paragraphId") ?: ""
             ParagraphDetailScreen(
                 paragraphId = paragraphId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onQuiz = { navController.navigate("singleParagraphQuiz/${paragraphId}") }
             )
         }
     }

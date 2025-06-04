@@ -12,6 +12,7 @@ import com.lass.yomiyomi.viewmodel.myParagraph.detail.MyParagraphDetailViewModel
 fun ParagraphDetailScreen(
     paragraphId: String,
     onBack: () -> Unit,
+    onQuiz: (() -> Unit)? = null,
     viewModel: MyParagraphDetailViewModel = hiltViewModel()
 ) {
     // ViewModel 상태 수집
@@ -51,6 +52,7 @@ fun ParagraphDetailScreen(
         },
         onDeleteSentence = { sentenceId ->
             viewModel.deleteSentence(sentenceId)
-        }
+        },
+        onQuiz = onQuiz
     )
 } 
