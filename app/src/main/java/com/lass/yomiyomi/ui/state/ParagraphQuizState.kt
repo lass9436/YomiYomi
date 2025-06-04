@@ -2,6 +2,7 @@ package com.lass.yomiyomi.ui.state
 
 import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 
 data class ParagraphQuizState(
     val selectedLevel: Level = Level.ALL,
@@ -12,6 +13,7 @@ data class ParagraphQuizState(
     val isListening: Boolean = false,
     val recognizedText: String = "",
     val isQuizCompleted: Boolean = false,
+    val sentences: List<SentenceItem> = emptyList(),
     val availableLevels: List<Level> = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1, Level.ALL)
 )
 

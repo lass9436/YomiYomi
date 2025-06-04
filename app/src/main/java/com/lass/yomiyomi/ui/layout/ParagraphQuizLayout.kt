@@ -70,6 +70,7 @@ fun ParagraphQuizLayout(
             ParagraphQuizContent(
                 isLoading = state.isLoading,
                 quiz = state.quiz,
+                sentences = state.sentences,
                 isListening = state.isListening,
                 recognizedText = state.recognizedText,
                 isQuizCompleted = state.isQuizCompleted,

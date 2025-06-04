@@ -29,6 +29,7 @@ fun MyParagraphQuizScreen(
     val isListening by myParagraphQuizViewModel.isListening.collectAsState()
     val recognizedText by myParagraphQuizViewModel.recognizedText.collectAsState()
     val isQuizCompleted by myParagraphQuizViewModel.isQuizCompleted.collectAsState()
+    val sentences by myParagraphQuizViewModel.sentences.collectAsState()
 
     // UI 상태 관리
     var selectedLevel by remember { mutableStateOf(Level.ALL) }
@@ -41,7 +42,8 @@ fun MyParagraphQuizScreen(
         insufficientDataMessage = if (hasInsufficientData) "퀴즈할 문단이 부족합니다. 더 많은 문단을 추가해주세요." else null,
         isListening = isListening,
         recognizedText = recognizedText,
-        isQuizCompleted = isQuizCompleted
+        isQuizCompleted = isQuizCompleted,
+        sentences = sentences
     )
 
     // Quiz callbacks 생성

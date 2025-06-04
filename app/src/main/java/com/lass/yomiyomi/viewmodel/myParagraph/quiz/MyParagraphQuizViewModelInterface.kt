@@ -3,6 +3,7 @@ package com.lass.yomiyomi.viewmodel.myParagraph.quiz
 import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.domain.model.constant.ParagraphQuizType
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import kotlinx.coroutines.flow.StateFlow
 
 interface MyParagraphQuizViewModelInterface {
@@ -12,6 +13,7 @@ interface MyParagraphQuizViewModelInterface {
     val isListening: StateFlow<Boolean>
     val recognizedText: StateFlow<String>
     val isQuizCompleted: StateFlow<Boolean>
+    val sentences: StateFlow<List<SentenceItem>>
     
     fun loadQuizByLevel(level: Level, quizType: ParagraphQuizType)
     fun startListening()

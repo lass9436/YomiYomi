@@ -53,6 +53,10 @@ class MyParagraphQuizViewModel @Inject constructor(
     private val _isQuizCompleted = MutableStateFlow(false)
     override val isQuizCompleted: StateFlow<Boolean> = _isQuizCompleted.asStateFlow()
 
+    // 현재 문장들 (문장별 표시용)
+    private val _sentences = MutableStateFlow<List<SentenceItem>>(emptyList())
+    override val sentences: StateFlow<List<SentenceItem>> = _sentences.asStateFlow()
+
     // 현재 문단 (새로고침 시 같은 문단 유지용)
     private var currentParagraph: ParagraphItem? = null
 
@@ -107,6 +111,9 @@ class MyParagraphQuizViewModel @Inject constructor(
                     _quizState.value = null
                     return@launch
                 }
+
+                // 문장들을 별도로 저장
+                _sentences.value = sentences.sortedBy { it.orderInParagraph }
 
                 // 문장들을 하나의 긴 텍스트로 합치기 (일본어 텍스트 사용)
                 val combinedJapaneseText = sentences.joinToString("\n") { it.japanese }

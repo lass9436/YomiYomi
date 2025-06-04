@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.ui.component.button.SpeechQuizButton
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
@@ -21,6 +22,7 @@ import com.lass.yomiyomi.util.ParagraphQuizGenerator
 fun ParagraphQuizContent(
     isLoading: Boolean,
     quiz: ParagraphQuiz?,
+    sentences: List<SentenceItem>,
     isListening: Boolean,
     recognizedText: String,
     isQuizCompleted: Boolean,
@@ -51,11 +53,12 @@ fun ParagraphQuizContent(
                 )
             }
             
-            quiz != null -> {
+            quiz != null && sentences.isNotEmpty() -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // 제목
@@ -88,7 +91,7 @@ fun ParagraphQuizContent(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    // 일본어 텍스트 (빈칸 포함)
+                    // 일본어 텍스트 (문장별로 분리)
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -106,15 +109,18 @@ fun ParagraphQuizContent(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             
-                            // 빈칸이 채워진 텍스트 표시
-                            val displayText = ParagraphQuizGenerator.getDisplayTextWithFilledBlanks(quiz)
-                            FuriganaText(
-                                japaneseText = displayText,
-                                displayMode = DisplayMode.FULL,
-                                fontSize = 18.sp,
-                                modifier = Modifier.fillMaxWidth(),
-                                quiz = quiz
-                            )
+                            // 각 문장을 개별 Row로 표시
+                            sentences.forEach { sentence ->
+                                FuriganaText(
+                                    japaneseText = sentence.japanese,
+                                    displayMode = DisplayMode.FULL,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    quiz = quiz
+                                )
+                            }
                         }
                     }
                     
@@ -135,11 +141,18 @@ fun ParagraphQuizContent(
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = quiz.koreanText,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
+                            
+                            // 각 문장의 한국어 번역을 개별 표시
+                            sentences.forEach { sentence ->
+                                Text(
+                                    text = sentence.korean,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                )
+                            }
                         }
                     }
                     
