@@ -1,18 +1,24 @@
-package com.lass.yomiyomi.viewmodel.wordQuiz
+package com.lass.yomiyomi.viewmodel.word.quiz
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.WordRepository
-import com.lass.yomiyomi.domain.model.entity.WordItem
 import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.constant.WordQuizType
-import com.lass.yomiyomi.viewmodel.word.quiz.WordQuizViewModel
-import io.mockk.*
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -25,9 +31,9 @@ class WordQuizViewModelTest {
 
     @MockK
     private lateinit var repository: WordRepository
-    
+
     private lateinit var viewModel: WordQuizViewModel
-    
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleWords = listOf(
@@ -87,7 +93,7 @@ class WordQuizViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         // 기본 mock 설정
         coEvery { repository.getAllWords() } returns sampleWords
         coEvery { repository.getAllWordsByLevel(any()) } returns emptyList()
@@ -95,7 +101,7 @@ class WordQuizViewModelTest {
         coEvery { repository.getRandomWordByLevel(any()) } returns sampleWords[0]
         coEvery { repository.getWordsForLearningMode(any()) } returns Pair(emptyList(), emptyList())
         coEvery { repository.updateWordLearningStatus(any(), any(), any()) } just runs
-        
+
         viewModel = WordQuizViewModel(repository)
     }
 
@@ -109,8 +115,8 @@ class WordQuizViewModelTest {
         // Given & When - 초기 상태
 
         // Then
-        assertNull(viewModel.quizState.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.quizState.value)
+        Assert.assertFalse(viewModel.isLoading.value)
     }
 
     @Test
@@ -119,7 +125,7 @@ class WordQuizViewModelTest {
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         coEvery { repository.getAllWordsByLevel("N5") } returns n5Words
         coEvery { repository.getRandomWordByLevel("N5") } returns n5Words[0]
         coEvery { repository.getAllWords() } returns sampleWords
@@ -129,14 +135,14 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNotNull(viewModel.quizState.value)
+        Assert.assertNotNull(viewModel.quizState.value)
         val quiz = viewModel.quizState.value!!
-        assertEquals(4, quiz.options.size)
-        assertTrue(quiz.correctIndex in 0..3)
-        assertNotNull(quiz.question)
-        assertNotNull(quiz.answer)
-        assertTrue(quiz.options.contains(quiz.answer))
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(4, quiz.options.size)
+        Assert.assertTrue(quiz.correctIndex in 0..3)
+        Assert.assertNotNull(quiz.question)
+        Assert.assertNotNull(quiz.answer)
+        Assert.assertTrue(quiz.options.contains(quiz.answer))
+        Assert.assertFalse(viewModel.isLoading.value)
     }
 
     @Test
@@ -146,7 +152,7 @@ class WordQuizViewModelTest {
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         val priorityWords = sampleWords.filter { it.learningWeight < 0.6f }
         val distractors = sampleWords.filter { it.learningWeight >= 0.6f }
-        
+
         coEvery { repository.getWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
         // Add fallback mocks in case the learning mode falls back to random mode
         coEvery { repository.getAllWordsByLevel("N5") } returns sampleWords.filter { it.level == "N5" }
@@ -157,12 +163,12 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNotNull(viewModel.quizState.value)
+        Assert.assertNotNull(viewModel.quizState.value)
         val quiz = viewModel.quizState.value!!
-        assertEquals(4, quiz.options.size)
-        assertTrue(quiz.correctIndex in 0..3)
-        assertFalse(viewModel.isLoading.value)
-        
+        Assert.assertEquals(4, quiz.options.size)
+        Assert.assertTrue(quiz.correctIndex in 0..3)
+        Assert.assertFalse(viewModel.isLoading.value)
+
         coVerify { repository.getWordsForLearningMode("N5") }
     }
 
@@ -171,7 +177,7 @@ class WordQuizViewModelTest {
         // Given
         val level = Level.N1
         val quizType = WordQuizType.WORD_TO_MEANING_READING
-        
+
         coEvery { repository.getAllWordsByLevel("N1") } returns emptyList()
         coEvery { repository.getRandomWordByLevel("N1") } returns null
 
@@ -180,8 +186,8 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.quizState.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.quizState.value)
+        Assert.assertFalse(viewModel.isLoading.value)
     }
 
     @Test
@@ -190,7 +196,7 @@ class WordQuizViewModelTest {
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         coEvery { repository.getAllWordsByLevel("N5") } returns n5Words
         coEvery { repository.getRandomWordByLevel("N5") } returns n5Words[0]
         coEvery { repository.getAllWords() } returns sampleWords
@@ -200,12 +206,12 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNotNull(viewModel.quizState.value)
+        Assert.assertNotNull(viewModel.quizState.value)
         val quiz = viewModel.quizState.value!!
         // 질문이 일본어 단어인지 확인
-        assertTrue(n5Words.any { it.word == quiz.question })
+        Assert.assertTrue(n5Words.any { it.word == quiz.question })
         // 답이 "의미 / 읽기" 형식인지 확인
-        assertTrue(quiz.answer.contains(" / "))
+        Assert.assertTrue(quiz.answer.contains(" / "))
     }
 
     @Test
@@ -214,7 +220,7 @@ class WordQuizViewModelTest {
         val level = Level.N5
         val quizType = WordQuizType.MEANING_READING_TO_WORD
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         coEvery { repository.getAllWordsByLevel("N5") } returns n5Words
         coEvery { repository.getRandomWordByLevel("N5") } returns n5Words[0]
         coEvery { repository.getAllWords() } returns sampleWords
@@ -224,12 +230,12 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNotNull(viewModel.quizState.value)
+        Assert.assertNotNull(viewModel.quizState.value)
         val quiz = viewModel.quizState.value!!
         // 질문이 "의미 / 읽기" 형식인지 확인
-        assertTrue(quiz.question.contains(" / "))
+        Assert.assertTrue(quiz.question.contains(" / "))
         // 답이 일본어 단어인지 확인
-        assertTrue(n5Words.any { it.word == quiz.answer })
+        Assert.assertTrue(n5Words.any { it.word == quiz.answer })
     }
 
     @Test
@@ -237,7 +243,7 @@ class WordQuizViewModelTest {
         // Given
         val level = Level.ALL
         val quizType = WordQuizType.WORD_TO_MEANING_READING
-        
+
         coEvery { repository.getAllWords() } returns sampleWords
         coEvery { repository.getRandomWord() } returns sampleWords[0]
 
@@ -246,10 +252,10 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNotNull(viewModel.quizState.value)
+        Assert.assertNotNull(viewModel.quizState.value)
         val quiz = viewModel.quizState.value!!
-        assertTrue(sampleWords.any { it.word == quiz.question })
-        
+        Assert.assertTrue(sampleWords.any { it.word == quiz.question })
+
         coVerify { repository.getRandomWord() }
     }
 
@@ -259,16 +265,16 @@ class WordQuizViewModelTest {
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         coEvery { repository.getAllWordsByLevel("N5") } returns n5Words
         coEvery { repository.getRandomWordByLevel("N5") } returns n5Words[0]
 
         // When
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
-        
+
         // Then - 로딩 완료 후 상태 확인
         testDispatcher.scheduler.advanceUntilIdle()
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertFalse(viewModel.isLoading.value)
     }
 
     @Test
@@ -277,7 +283,7 @@ class WordQuizViewModelTest {
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         coEvery { repository.getAllWordsByLevel("N5") } returns n5Words
         coEvery { repository.getRandomWordByLevel("N5") } returns n5Words[0]
 
@@ -292,7 +298,7 @@ class WordQuizViewModelTest {
         viewModel.checkAnswer(correctIndex, isLearningMode = false)
 
         // Then - 정답을 선택했으므로 별도 상태 변화는 없지만 메서드가 정상 실행되어야 함
-        assertTrue(true) // 정답 체크 로직이 정상 실행됨을 확인
+        Assert.assertTrue(true) // 정답 체크 로직이 정상 실행됨을 확인
     }
 
     @Test
@@ -303,7 +309,7 @@ class WordQuizViewModelTest {
         viewModel.checkAnswer(0, isLearningMode = false)
 
         // Then - 예외가 발생하지 않아야 함
-        assertTrue(true)
+        Assert.assertTrue(true)
     }
 
     @Test
@@ -312,7 +318,7 @@ class WordQuizViewModelTest {
         val level = Level.N5
         val quizType = WordQuizType.WORD_TO_MEANING_READING
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         coEvery { repository.getWordsForLearningMode("N5") } returns Pair(emptyList(), emptyList())
         coEvery { repository.getAllWordsByLevel("N5") } returns n5Words
         coEvery { repository.getRandomWordByLevel("N5") } returns n5Words[0]
@@ -322,8 +328,8 @@ class WordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNotNull(viewModel.quizState.value)
+        Assert.assertNotNull(viewModel.quizState.value)
         coVerify { repository.getWordsForLearningMode("N5") }
         coVerify { repository.getRandomWordByLevel("N5") }
     }
-} 
+}

@@ -1,9 +1,8 @@
-package com.lass.yomiyomi.viewmodel.wordRandom
+package com.lass.yomiyomi.viewmodel.word.random
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.entity.WordItem
-import com.lass.yomiyomi.viewmodel.word.random.WordRandomViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

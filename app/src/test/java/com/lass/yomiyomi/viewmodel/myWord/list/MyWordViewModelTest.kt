@@ -1,21 +1,28 @@
-package com.lass.yomiyomi.viewmodel.myWord
+package com.lass.yomiyomi.viewmodel.myWord.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.MyWordRepository
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.domain.model.entity.WordItem
-import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.viewmodel.myWord.list.MyWordViewModel
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.collections.plus
 
 @ExperimentalCoroutinesApi
 class MyWordViewModelTest {
@@ -25,9 +32,9 @@ class MyWordViewModelTest {
 
     @MockK
     private lateinit var repository: MyWordRepository
-    
+
     private lateinit var viewModel: MyWordViewModel
-    
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleMyWords = listOf(
@@ -90,10 +97,10 @@ class MyWordViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         coEvery { repository.getAllMyWords() } returns sampleMyWords
         coEvery { repository.getAllMyWordsByLevel(any()) } returns emptyList()
-        
+
         viewModel = MyWordViewModel(repository)
         testDispatcher.scheduler.advanceUntilIdle()
     }
@@ -108,9 +115,9 @@ class MyWordViewModelTest {
         // Given & When - setUp에서 이미 실행됨
 
         // Then
-        assertEquals(sampleMyWords, viewModel.myWords.value)
-        assertFalse(viewModel.isLoading.value)
-        
+        Assert.assertEquals(sampleMyWords, viewModel.myWords.value)
+        Assert.assertFalse(viewModel.isLoading.value)
+
         coVerify { repository.getAllMyWords() }
     }
 
@@ -125,7 +132,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleMyWords, viewModel.myWords.value)
+        Assert.assertEquals(sampleMyWords, viewModel.myWords.value)
         coVerify(atLeast = 2) { repository.getAllMyWords() }
     }
 
@@ -134,7 +141,7 @@ class MyWordViewModelTest {
         // Given
         val n5Words = sampleMyWords.filter { it.level == "N5" }
         coEvery { repository.getAllMyWordsByLevel("N5") } returns n5Words
-        
+
         viewModel.setSelectedLevel(Level.N5)
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -143,7 +150,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(n5Words, viewModel.myWords.value)
+        Assert.assertEquals(n5Words, viewModel.myWords.value)
         coVerify { repository.getAllMyWordsByLevel("N5") }
     }
 
@@ -158,7 +165,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleWordItems, viewModel.searchResults.value)
+        Assert.assertEquals(sampleWordItems, viewModel.searchResults.value)
         coVerify { repository.searchOriginalWords(query) }
     }
 
@@ -176,11 +183,11 @@ class MyWordViewModelTest {
             learningWeight = wordToAdd.learningWeight,
             timestamp = wordToAdd.timestamp
         )
-        
+
         coEvery { repository.isWordInMyWords(wordToAdd.id) } returns false
         coEvery { repository.addWordToMyWords(wordToAdd) } returns true
         coEvery { repository.getAllMyWords() } returns updatedList
-        
+
         var callbackResult = false
 
         // When
@@ -190,7 +197,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertTrue(callbackResult)
+        Assert.assertTrue(callbackResult)
         coVerify { repository.isWordInMyWords(wordToAdd.id) }
         coVerify { repository.addWordToMyWords(wordToAdd) }
     }
@@ -201,7 +208,7 @@ class MyWordViewModelTest {
         val wordToAdd = sampleWordItems[0]
         coEvery { repository.isWordInMyWords(wordToAdd.id) } returns false
         coEvery { repository.addWordToMyWords(wordToAdd) } throws Exception("Test exception")
-        
+
         var callbackResult = true
 
         // When
@@ -211,7 +218,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertFalse(callbackResult)
+        Assert.assertFalse(callbackResult)
         coVerify { repository.isWordInMyWords(wordToAdd.id) }
         coVerify { repository.addWordToMyWords(wordToAdd) }
     }
@@ -224,10 +231,10 @@ class MyWordViewModelTest {
         val meaning = "새로운"
         val type = "형용사"
         val level = "N5"
-        
+
         coEvery { repository.insertMyWordDirectly(any()) } returns true
         coEvery { repository.getAllMyWords() } returns sampleMyWords
-        
+
         var callbackResult = false
         var callbackMessage = ""
 
@@ -239,8 +246,8 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertTrue(callbackResult)
-        assertEquals("단어가 추가되었습니다.", callbackMessage)
+        Assert.assertTrue(callbackResult)
+        Assert.assertEquals("단어가 추가되었습니다.", callbackMessage)
         coVerify { repository.insertMyWordDirectly(any()) }
     }
 
@@ -253,10 +260,10 @@ class MyWordViewModelTest {
         val newMeaning = "마시다"
         val newType = "동사"
         val newLevel = "N5"
-        
+
         coEvery { repository.insertMyWordDirectly(any()) } returns true
         coEvery { repository.getAllMyWords() } returns sampleMyWords
-        
+
         var callbackResult = false
         var callbackMessage = ""
 
@@ -268,8 +275,8 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertTrue(callbackResult)
-        assertEquals("단어가 수정되었습니다.", callbackMessage)
+        Assert.assertTrue(callbackResult)
+        Assert.assertEquals("단어가 수정되었습니다.", callbackMessage)
         coVerify { repository.insertMyWordDirectly(any()) }
     }
 
@@ -278,7 +285,7 @@ class MyWordViewModelTest {
         // Given
         val wordToDelete = sampleMyWords[0]
         val remainingWords = sampleMyWords.drop(1)
-        
+
         coEvery { repository.deleteMyWord(wordToDelete) } just runs
         coEvery { repository.getAllMyWords() } returns remainingWords
 
@@ -287,7 +294,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(remainingWords, viewModel.myWords.value)
+        Assert.assertEquals(remainingWords, viewModel.myWords.value)
         coVerify { repository.deleteMyWord(wordToDelete) }
     }
 
@@ -301,7 +308,7 @@ class MyWordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(newLevel, viewModel.selectedLevel.value)
+        Assert.assertEquals(newLevel, viewModel.selectedLevel.value)
     }
 
     @Test
@@ -315,6 +322,6 @@ class MyWordViewModelTest {
         // Then
         // searchMyWords는 내부 검색 쿼리를 업데이트하는 메서드입니다
         // 실제 결과는 ViewModel의 내부 로직에 따라 처리됩니다
-        assertTrue(true) // 메서드가 정상적으로 실행되었음을 확인
+        Assert.assertTrue(true) // 메서드가 정상적으로 실행되었음을 확인
     }
-} 
+}

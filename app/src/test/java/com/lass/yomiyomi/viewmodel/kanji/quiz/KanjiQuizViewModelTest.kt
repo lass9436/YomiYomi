@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel.quiz
+package com.lass.yomiyomi.viewmodel.kanji.quiz
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.KanjiRepository

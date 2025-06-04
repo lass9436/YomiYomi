@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.viewmodel.kanjiRandom
+package com.lass.yomiyomi.viewmodel.kanji.random
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.KanjiRepository

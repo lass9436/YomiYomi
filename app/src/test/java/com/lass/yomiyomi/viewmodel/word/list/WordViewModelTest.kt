@@ -1,17 +1,21 @@
-package com.lass.yomiyomi.viewmodel.word
+package com.lass.yomiyomi.viewmodel.word.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.WordRepository
-import com.lass.yomiyomi.domain.model.entity.WordItem
 import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.viewmodel.word.list.WordViewModel
-import io.mockk.*
+import com.lass.yomiyomi.domain.model.entity.WordItem
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,9 +28,9 @@ class WordViewModelTest {
 
     @MockK
     private lateinit var wordRepository: WordRepository
-    
+
     private lateinit var viewModel: WordViewModel
-    
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleWords = listOf(
@@ -76,9 +80,9 @@ class WordViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         coEvery { wordRepository.getAllWords() } returns sampleWords
-        
+
         viewModel = WordViewModel(wordRepository)
         testDispatcher.scheduler.advanceUntilIdle()
     }
@@ -91,15 +95,15 @@ class WordViewModelTest {
     @Test
     fun `초기 상태 확인`() = runTest {
         // Given & When - setUp에서 이미 실행됨
-        
+
         // Wait for any remaining async operations
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleWords, viewModel.words.value)
-        assertFalse(viewModel.isLoading.value)
-        assertEquals(Level.ALL, viewModel.selectedLevel.value)
-        
+        Assert.assertEquals(sampleWords, viewModel.words.value)
+        Assert.assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(Level.ALL, viewModel.selectedLevel.value)
+
         coVerify { wordRepository.getAllWords() }
     }
 
@@ -113,50 +117,50 @@ class WordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(newLevel, viewModel.selectedLevel.value)
-        assertEquals(sampleWords, viewModel.words.value)
+        Assert.assertEquals(newLevel, viewModel.selectedLevel.value)
+        Assert.assertEquals(sampleWords, viewModel.words.value)
     }
 
     @Test
     fun `setSelectedLevel - N5 레벨 선택시 N5 단어만 표시`() = runTest {
         // Given
         val n5Words = sampleWords.filter { it.level == "N5" }
-        
+
         // When
         viewModel.setSelectedLevel(Level.N5)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(Level.N5, viewModel.selectedLevel.value)
-        assertEquals(n5Words, viewModel.words.value)
+        Assert.assertEquals(Level.N5, viewModel.selectedLevel.value)
+        Assert.assertEquals(n5Words, viewModel.words.value)
     }
 
     @Test
     fun `setSelectedLevel - N4 레벨 선택시 N4 단어만 표시`() = runTest {
         // Given
         val n4Words = sampleWords.filter { it.level == "N4" }
-        
+
         // When
         viewModel.setSelectedLevel(Level.N4)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(Level.N4, viewModel.selectedLevel.value)
-        assertEquals(n4Words, viewModel.words.value)
+        Assert.assertEquals(Level.N4, viewModel.selectedLevel.value)
+        Assert.assertEquals(n4Words, viewModel.words.value)
     }
 
     @Test
     fun `setSelectedLevel - N3 레벨 선택시 N3 단어만 표시`() = runTest {
         // Given
         val n3Words = sampleWords.filter { it.level == "N3" }
-        
+
         // When
         viewModel.setSelectedLevel(Level.N3)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(Level.N3, viewModel.selectedLevel.value)
-        assertEquals(n3Words, viewModel.words.value)
+        Assert.assertEquals(Level.N3, viewModel.selectedLevel.value)
+        Assert.assertEquals(n3Words, viewModel.words.value)
     }
 
     @Test
@@ -170,7 +174,7 @@ class WordViewModelTest {
 
         // Then
         val expectedWords = sampleWords.filter { it.word.contains(query) }
-        assertEquals(expectedWords, viewModel.words.value)
+        Assert.assertEquals(expectedWords, viewModel.words.value)
     }
 
     @Test
@@ -184,7 +188,7 @@ class WordViewModelTest {
 
         // Then
         val expectedWords = sampleWords.filter { it.reading.contains(query, ignoreCase = true) }
-        assertEquals(expectedWords, viewModel.words.value)
+        Assert.assertEquals(expectedWords, viewModel.words.value)
     }
 
     @Test
@@ -198,7 +202,7 @@ class WordViewModelTest {
 
         // Then
         val expectedWords = sampleWords.filter { it.meaning.contains(query, ignoreCase = true) }
-        assertEquals(expectedWords, viewModel.words.value)
+        Assert.assertEquals(expectedWords, viewModel.words.value)
     }
 
     @Test
@@ -211,12 +215,12 @@ class WordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        val expectedWords = sampleWords.filter { 
+        val expectedWords = sampleWords.filter {
             it.word.contains(query, ignoreCase = true) ||
-            it.reading.contains(query, ignoreCase = true) ||
-            it.meaning.contains(query, ignoreCase = true)
+                    it.reading.contains(query, ignoreCase = true) ||
+                    it.meaning.contains(query, ignoreCase = true)
         }
-        assertEquals(expectedWords, viewModel.words.value)
+        Assert.assertEquals(expectedWords, viewModel.words.value)
     }
 
     @Test
@@ -229,7 +233,7 @@ class WordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleWords, viewModel.words.value)
+        Assert.assertEquals(sampleWords, viewModel.words.value)
     }
 
     @Test
@@ -247,7 +251,7 @@ class WordViewModelTest {
         val expectedWords = sampleWords
             .filter { it.level == level.value }
             .filter { it.meaning.contains(query, ignoreCase = true) }
-        assertEquals(expectedWords, viewModel.words.value)
+        Assert.assertEquals(expectedWords, viewModel.words.value)
     }
 
     @Test
@@ -260,21 +264,21 @@ class WordViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertTrue(viewModel.words.value.isEmpty())
+        Assert.assertTrue(viewModel.words.value.isEmpty())
     }
 
     @Test
     fun `Repository에서 에러 발생시 로딩 상태 처리`() = runTest {
         // Given
         coEvery { wordRepository.getAllWords() } throws RuntimeException("Network Error")
-        
+
         // When
         val newViewModel = WordViewModel(wordRepository)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertFalse(newViewModel.isLoading.value)  // 에러 후 로딩 상태가 false로 변경
-        assertTrue(newViewModel.words.value.isEmpty())  // 에러시 빈 리스트
+        Assert.assertFalse(newViewModel.isLoading.value)  // 에러 후 로딩 상태가 false로 변경
+        Assert.assertTrue(newViewModel.words.value.isEmpty())  // 에러시 빈 리스트
     }
 
     @Test
@@ -291,11 +295,11 @@ class WordViewModelTest {
         // Then
         val expectedWords = sampleWords
             .filter { it.level == level.value }
-            .filter { 
+            .filter {
                 it.word.contains(query, ignoreCase = true) ||
-                it.reading.contains(query, ignoreCase = true) ||
-                it.meaning.contains(query, ignoreCase = true)
+                        it.reading.contains(query, ignoreCase = true) ||
+                        it.meaning.contains(query, ignoreCase = true)
             }
-        assertEquals(expectedWords, viewModel.words.value)
+        Assert.assertEquals(expectedWords, viewModel.words.value)
     }
-} 
+}

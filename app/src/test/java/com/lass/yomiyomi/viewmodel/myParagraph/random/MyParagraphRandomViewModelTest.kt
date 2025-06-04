@@ -1,21 +1,25 @@
-package com.lass.yomiyomi.viewmodel.myParagraph
+package com.lass.yomiyomi.viewmodel.myParagraph.random
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.MyParagraphRepository
 import com.lass.yomiyomi.data.repository.MySentenceRepository
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.viewmodel.myParagraph.random.MyParagraphRandomViewModel
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,12 +32,12 @@ class MyParagraphRandomViewModelTest {
 
     @MockK
     private lateinit var myParagraphRepository: MyParagraphRepository
-    
+
     @MockK
     private lateinit var mySentenceRepository: MySentenceRepository
-    
+
     private lateinit var viewModel: MyParagraphRandomViewModel
-    
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleParagraphN5 = ParagraphItem(
@@ -133,11 +137,11 @@ class MyParagraphRandomViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         // 기본적으로 전체 레벨 조회 시 N5 문단과 문장들 반환하도록 설정
         coEvery { myParagraphRepository.getRandomParagraphByLevel(null) } returns sampleParagraphN5
         coEvery { mySentenceRepository.getSentencesByParagraph("1") } returns sampleSentencesN5
-        
+
         viewModel = MyParagraphRandomViewModel(myParagraphRepository, mySentenceRepository)
     }
 
@@ -152,9 +156,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleParagraphN5, viewModel.randomParagraph.value)
-        assertEquals(sampleSentencesN5, viewModel.sentences.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleParagraphN5, viewModel.randomParagraph.value)
+        Assert.assertEquals(sampleSentencesN5, viewModel.sentences.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(null) }
         coVerify { mySentenceRepository.getSentencesByParagraph("1") }
     }
@@ -170,9 +174,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleParagraphN4, viewModel.randomParagraph.value)
-        assertEquals(sampleSentencesN4, viewModel.sentences.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleParagraphN4, viewModel.randomParagraph.value)
+        Assert.assertEquals(sampleSentencesN4, viewModel.sentences.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(null) }
         coVerify { mySentenceRepository.getSentencesByParagraph("2") }
     }
@@ -189,9 +193,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleParagraphN5, viewModel.randomParagraph.value)
-        assertEquals(sampleSentencesN5, viewModel.sentences.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleParagraphN5, viewModel.randomParagraph.value)
+        Assert.assertEquals(sampleSentencesN5, viewModel.sentences.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
         coVerify { mySentenceRepository.getSentencesByParagraph("1") }
     }
@@ -208,9 +212,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleParagraphN4, viewModel.randomParagraph.value)
-        assertEquals(sampleSentencesN4, viewModel.sentences.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleParagraphN4, viewModel.randomParagraph.value)
+        Assert.assertEquals(sampleSentencesN4, viewModel.sentences.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
         coVerify { mySentenceRepository.getSentencesByParagraph("2") }
     }
@@ -226,9 +230,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.randomParagraph.value)
-        assertTrue(viewModel.sentences.value.isEmpty())
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.randomParagraph.value)
+        Assert.assertTrue(viewModel.sentences.value.isEmpty())
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
         coVerify(exactly = 1) { mySentenceRepository.getSentencesByParagraph("1") }
     }
@@ -246,9 +250,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(emptyParagraph, viewModel.randomParagraph.value)
-        assertTrue(viewModel.sentences.value.isEmpty())
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(emptyParagraph, viewModel.randomParagraph.value)
+        Assert.assertTrue(viewModel.sentences.value.isEmpty())
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
         coVerify { mySentenceRepository.getSentencesByParagraph("empty") }
     }
@@ -264,9 +268,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.randomParagraph.value)
-        assertTrue(viewModel.sentences.value.isEmpty())
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.randomParagraph.value)
+        Assert.assertTrue(viewModel.sentences.value.isEmpty())
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
     }
 
@@ -282,9 +286,9 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.randomParagraph.value)
-        assertTrue(viewModel.sentences.value.isEmpty())
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.randomParagraph.value)
+        Assert.assertTrue(viewModel.sentences.value.isEmpty())
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
         coVerify { mySentenceRepository.getSentencesByParagraph("1") }
     }
@@ -293,7 +297,7 @@ class MyParagraphRandomViewModelTest {
     fun `로딩 상태 변화 확인`() = runTest {
         // Given
         val level = "N5"
-        
+
         // Repository 호출이 느리게 되도록 설정
         coEvery { myParagraphRepository.getRandomParagraphByLevel(level) } coAnswers {
             delay(100)
@@ -308,18 +312,18 @@ class MyParagraphRandomViewModelTest {
         val job = launch {
             viewModel.isLoading.collect { }
         }
-        
+
         viewModel.fetchRandomParagraphByLevel(level)
         testDispatcher.scheduler.advanceTimeBy(50) // 중간 시점
-        
-        assertTrue("로딩 중이어야 함", viewModel.isLoading.value)
-        
+
+        Assert.assertTrue("로딩 중이어야 함", viewModel.isLoading.value)
+
         testDispatcher.scheduler.advanceUntilIdle() // 완료 대기
-        
-        assertFalse("로딩 완료되어야 함", viewModel.isLoading.value)
-        assertEquals(sampleParagraphN5, viewModel.randomParagraph.value)
-        assertEquals(sampleSentencesN5, viewModel.sentences.value)
-        
+
+        Assert.assertFalse("로딩 완료되어야 함", viewModel.isLoading.value)
+        Assert.assertEquals(sampleParagraphN5, viewModel.randomParagraph.value)
+        Assert.assertEquals(sampleSentencesN5, viewModel.sentences.value)
+
         job.cancel()
     }
 
@@ -337,8 +341,8 @@ class MyParagraphRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleParagraphN4, viewModel.randomParagraph.value) // 마지막 호출 결과
-        assertEquals(sampleSentencesN4, viewModel.sentences.value) // 마지막 호출 결과
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleParagraphN4, viewModel.randomParagraph.value) // 마지막 호출 결과
+        Assert.assertEquals(sampleSentencesN4, viewModel.sentences.value) // 마지막 호출 결과
+        Assert.assertFalse(viewModel.isLoading.value)
     }
-} 
+}

@@ -1,21 +1,28 @@
-package com.lass.yomiyomi.viewmodel.myKanji
+package com.lass.yomiyomi.viewmodel.myKanji.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.entity.KanjiItem
 import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
-import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.viewmodel.myKanji.list.MyKanjiViewModel
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.collections.plus
 
 @ExperimentalCoroutinesApi
 class MyKanjiViewModelTest {
@@ -25,9 +32,9 @@ class MyKanjiViewModelTest {
 
     @MockK
     private lateinit var myKanjiRepository: MyKanjiRepository
-    
+
     private lateinit var viewModel: MyKanjiViewModel
-    
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleMyKanji = listOf(
@@ -90,10 +97,10 @@ class MyKanjiViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         coEvery { myKanjiRepository.getAllMyKanji() } returns sampleMyKanji
         coEvery { myKanjiRepository.getAllMyKanjiByLevel(any()) } returns emptyList()
-        
+
         viewModel = MyKanjiViewModel(myKanjiRepository)
         testDispatcher.scheduler.advanceUntilIdle()
     }
@@ -106,7 +113,7 @@ class MyKanjiViewModelTest {
     @Test
     fun `초기 상태 확인`() = runTest {
         // Given & When - setUp에서 이미 실행됨
-        
+
         // Wait for any remaining async operations
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -116,12 +123,12 @@ class MyKanjiViewModelTest {
         // Then
         // combine된 myKanji StateFlow는 _allMyKanji 값에 따라 업데이트됨
         val expectedN5Kanji = sampleMyKanji.filter { it.level == "N5" }
-        assertEquals(expectedN5Kanji, myKanjiValue)
-        assertFalse(viewModel.isLoading.value)
-        assertEquals(Level.N5, viewModel.selectedLevel.value)
-        assertTrue(viewModel.searchResults.value.isEmpty())
-        assertFalse(viewModel.isSearching.value)
-        
+        Assert.assertEquals(expectedN5Kanji, myKanjiValue)
+        Assert.assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(Level.N5, viewModel.selectedLevel.value)
+        Assert.assertTrue(viewModel.searchResults.value.isEmpty())
+        Assert.assertFalse(viewModel.isSearching.value)
+
         coVerify { myKanjiRepository.getAllMyKanji() }
     }
 
@@ -135,9 +142,9 @@ class MyKanjiViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(newLevel, viewModel.selectedLevel.value)
+        Assert.assertEquals(newLevel, viewModel.selectedLevel.value)
         // combine 로직에 의해 Level.ALL일 때는 모든 한자가 반환됨
-        assertEquals(sampleMyKanji, viewModel.myKanji.value)
+        Assert.assertEquals(sampleMyKanji, viewModel.myKanji.value)
     }
 
     @Test
@@ -145,15 +152,15 @@ class MyKanjiViewModelTest {
         // Given
         val n5Kanji = sampleMyKanji.filter { it.level == "N5" }
         // Note: coEvery for getAllMyKanjiByLevel은 실제로 사용되지 않음 (combine에서 필터링)
-        
+
         // When
         viewModel.setSelectedLevel(Level.N5)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(Level.N5, viewModel.selectedLevel.value)
+        Assert.assertEquals(Level.N5, viewModel.selectedLevel.value)
         // combine 연산으로 인해 필터링된 결과가 반영됨
-        assertEquals(n5Kanji, viewModel.myKanji.value)
+        Assert.assertEquals(n5Kanji, viewModel.myKanji.value)
     }
 
     @Test
@@ -170,7 +177,7 @@ class MyKanjiViewModelTest {
         // 실제 검색 결과는 combine에 의해 처리됨
         // myKanji StateFlow에서 필터링된 결과를 확인
         val filteredKanji = viewModel.myKanji.value.filter { it.kanji.contains(query) }
-        assertTrue(filteredKanji.isNotEmpty() || viewModel.myKanji.value.isEmpty())
+        Assert.assertTrue(filteredKanji.isNotEmpty() || viewModel.myKanji.value.isEmpty())
     }
 
     @Test
@@ -184,8 +191,8 @@ class MyKanjiViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleKanjiItems, viewModel.searchResults.value)
-        assertFalse(viewModel.isSearching.value)
+        Assert.assertEquals(sampleKanjiItems, viewModel.searchResults.value)
+        Assert.assertFalse(viewModel.isSearching.value)
         coVerify { myKanjiRepository.searchOriginalKanji(query) }
     }
 
@@ -222,7 +229,7 @@ class MyKanjiViewModelTest {
         val kunyomi = "あたら(しい)"
         val meaning = "새로운"
         val level = Level.N4
-        
+
         coEvery { myKanjiRepository.insertMyKanjiDirectly(any()) } returns true
         coEvery { myKanjiRepository.getAllMyKanji() } returns sampleMyKanji
 
@@ -256,7 +263,7 @@ class MyKanjiViewModelTest {
         // Given
         val kanjiToDelete = sampleMyKanji[0]
         val remainingKanji = sampleMyKanji.drop(1)
-        
+
         coEvery { myKanjiRepository.deleteMyKanji(kanjiToDelete) } just runs
         coEvery { myKanjiRepository.getAllMyKanji() } returns remainingKanji
 
@@ -280,12 +287,12 @@ class MyKanjiViewModelTest {
 
         // Then - 검색 시작 후 로딩 상태 확인 (즉시 확인)
         // Note: 테스트에서는 바로 false가 될 수 있으므로 이 부분은 제거하거나 수정 필요
-        
+
         testDispatcher.scheduler.advanceUntilIdle()
-        
+
         // Then - 검색 완료 후 로딩 상태 확인
-        assertFalse(viewModel.isSearching.value)
-        assertEquals(sampleKanjiItems, viewModel.searchResults.value)
+        Assert.assertFalse(viewModel.isSearching.value)
+        Assert.assertEquals(sampleKanjiItems, viewModel.searchResults.value)
     }
 
     @Test
@@ -299,7 +306,7 @@ class MyKanjiViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertFalse(viewModel.isSearching.value)
+        Assert.assertFalse(viewModel.isSearching.value)
         // 예외 발생시에도 안전하게 처리되어야 함
     }
-} 
+}

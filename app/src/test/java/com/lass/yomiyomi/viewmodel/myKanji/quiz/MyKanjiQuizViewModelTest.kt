@@ -1,13 +1,12 @@
-package com.lass.yomiyomi.viewmodel.myWordQuiz
+package com.lass.yomiyomi.viewmodel.myKanji.quiz
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.lass.yomiyomi.data.repository.MyWordRepository
-import com.lass.yomiyomi.domain.model.data.WordQuiz
-import com.lass.yomiyomi.domain.model.entity.MyWordItem
+import com.lass.yomiyomi.data.repository.MyKanjiRepository
+import com.lass.yomiyomi.domain.model.data.KanjiQuiz
+import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
+import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.domain.model.constant.WordQuizType
-import com.lass.yomiyomi.domain.usecase.GenerateMyWordQuizUseCase
-import com.lass.yomiyomi.viewmodel.myWord.quiz.MyWordQuizViewModel
+import com.lass.yomiyomi.domain.usecase.GenerateMyKanjiQuizUseCase
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
@@ -20,36 +19,36 @@ import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class MyWordQuizViewModelTest {
+class MyKanjiQuizViewModelTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @MockK
-    private lateinit var generateMyWordQuizUseCase: GenerateMyWordQuizUseCase
+    private lateinit var generateMyKanjiQuizUseCase: GenerateMyKanjiQuizUseCase
     
     @MockK
-    private lateinit var myWordRepository: MyWordRepository
+    private lateinit var myKanjiRepository: MyKanjiRepository
     
-    private lateinit var viewModel: MyWordQuizViewModel
+    private lateinit var viewModel: MyKanjiQuizViewModel
     
     private val testDispatcher = StandardTestDispatcher()
 
-    private val sampleWordQuiz = WordQuiz(
-        question = "食べる",
-        answer = "먹다 / たべる",
-        options = listOf("먹다 / たべる", "자다 / ねる", "보다 / みる", "듣다 / きく"),
+    private val sampleKanjiQuiz = KanjiQuiz(
+        question = "食",
+        answer = "た(べる) / 음식, 먹다",
+        options = listOf("た(べる) / 음식, 먹다", "の(む) / 마시다", "み(る) / 보다", "き(く) / 듣다"),
         correctIndex = 0
     )
 
-    private val sampleMyWordItem = MyWordItem(
+    private val sampleMyKanjiItem = MyKanjiItem(
         id = 1,
-        word = "食べる",
-        reading = "たべる",
-        type = "동사",
-        meaning = "먹다",
+        kanji = "食",
+        onyomi = "しょく",
+        kunyomi = "た(べる)",
+        meaning = "음식, 먹다",
         level = "N5",
-        learningWeight = 0.5f,
+        learningWeight = 0.8f,
         timestamp = System.currentTimeMillis()
     )
 
@@ -57,7 +56,7 @@ class MyWordQuizViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        viewModel = MyWordQuizViewModel(generateMyWordQuizUseCase, myWordRepository)
+        viewModel = MyKanjiQuizViewModel(generateMyKanjiQuizUseCase, myKanjiRepository)
     }
 
     @After
@@ -69,53 +68,53 @@ class MyWordQuizViewModelTest {
     fun `loadQuizByLevel - 랜덤 모드에서 정상적인 퀴즈 로드`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
         
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) } returns sampleKanjiQuiz
 
         // When
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleWordQuiz, viewModel.quizState.value)
+        assertEquals(sampleKanjiQuiz, viewModel.quizState.value)
         assertFalse(viewModel.isLoading.value)
         assertFalse(viewModel.hasInsufficientData.value)
         
-        coVerify { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) }
+        coVerify { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) }
     }
 
     @Test
     fun `loadQuizByLevel - 학습 모드에서 정상적인 퀴즈 로드`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val priorityWords = listOf(sampleMyWordItem)
-        val distractors = emptyList<MyWordItem>()
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
+        val priorityKanji = listOf(sampleMyKanjiItem)
+        val distractors = emptyList<MyKanjiItem>()
         
-        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) } returns sampleWordQuiz
+        coEvery { myKanjiRepository.getMyKanjiForLearningMode("N5") } returns Pair(priorityKanji, distractors)
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, true) } returns sampleKanjiQuiz
 
         // When
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleWordQuiz, viewModel.quizState.value)
+        assertEquals(sampleKanjiQuiz, viewModel.quizState.value)
         assertFalse(viewModel.isLoading.value)
         assertFalse(viewModel.hasInsufficientData.value)
         
-        coVerify { myWordRepository.getMyWordsForLearningMode("N5") }
-        coVerify { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) }
+        coVerify { myKanjiRepository.getMyKanjiForLearningMode("N5") }
+        coVerify { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, true) }
     }
 
     @Test
     fun `loadQuizByLevel - 데이터 부족시 hasInsufficientData true`() = runTest {
         // Given
         val level = Level.N1
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
         
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns null
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) } returns null
 
         // When
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
@@ -131,30 +130,30 @@ class MyWordQuizViewModelTest {
     fun `loadQuizByLevel - 학습 모드에서 우선순위 데이터 없을 때 랜덤 모드로 폴백`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
         
-        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(emptyList(), emptyList())
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
+        coEvery { myKanjiRepository.getMyKanjiForLearningMode("N5") } returns Pair(emptyList(), emptyList())
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) } returns sampleKanjiQuiz
 
         // When
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleWordQuiz, viewModel.quizState.value)
+        assertEquals(sampleKanjiQuiz, viewModel.quizState.value)
         assertFalse(viewModel.isLoading.value)
         assertFalse(viewModel.hasInsufficientData.value)
         
-        coVerify { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) }
+        coVerify { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) }
     }
 
     @Test
     fun `loadQuizByLevel - 로딩 상태 확인`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
         
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) } returns sampleKanjiQuiz
 
         // When
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
@@ -168,13 +167,13 @@ class MyWordQuizViewModelTest {
     fun `checkAnswer - 학습 모드에서 정답시 가중치 업데이트`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val priorityWords = listOf(sampleMyWordItem)
-        val distractors = emptyList<MyWordItem>()
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
+        val priorityKanji = listOf(sampleMyKanjiItem)
+        val distractors = emptyList<MyKanjiItem>()
         
-        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) } returns sampleWordQuiz
-        coEvery { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) } just runs
+        coEvery { myKanjiRepository.getMyKanjiForLearningMode("N5") } returns Pair(priorityKanji, distractors)
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, true) } returns sampleKanjiQuiz
+        coEvery { myKanjiRepository.updateMyKanjiLearningStatus(any(), any(), any()) } just runs
 
         // 먼저 퀴즈를 로드
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
@@ -185,20 +184,20 @@ class MyWordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        coVerify { myWordRepository.updateMyWordLearningStatus(1, true, 0.5f) }
+        coVerify { myKanjiRepository.updateMyKanjiLearningStatus(1, true, 0.8f) }
     }
 
     @Test
     fun `checkAnswer - 학습 모드에서 오답시 가중치 업데이트`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
-        val priorityWords = listOf(sampleMyWordItem)
-        val distractors = emptyList<MyWordItem>()
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
+        val priorityKanji = listOf(sampleMyKanjiItem)
+        val distractors = emptyList<MyKanjiItem>()
         
-        coEvery { myWordRepository.getMyWordsForLearningMode("N5") } returns Pair(priorityWords, distractors)
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, true) } returns sampleWordQuiz
-        coEvery { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) } just runs
+        coEvery { myKanjiRepository.getMyKanjiForLearningMode("N5") } returns Pair(priorityKanji, distractors)
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, true) } returns sampleKanjiQuiz
+        coEvery { myKanjiRepository.updateMyKanjiLearningStatus(any(), any(), any()) } just runs
 
         // 먼저 퀴즈를 로드
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = true)
@@ -209,16 +208,16 @@ class MyWordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        coVerify { myWordRepository.updateMyWordLearningStatus(1, false, 0.5f) }
+        coVerify { myKanjiRepository.updateMyKanjiLearningStatus(1, false, 0.8f) }
     }
 
     @Test
     fun `checkAnswer - 랜덤 모드에서는 가중치 업데이트 하지 않음`() = runTest {
         // Given
         val level = Level.N5
-        val quizType = WordQuizType.WORD_TO_MEANING_READING
+        val quizType = KanjiQuizType.KANJI_TO_READING_MEANING
         
-        coEvery { generateMyWordQuizUseCase.generateQuiz(level, quizType, false) } returns sampleWordQuiz
+        coEvery { generateMyKanjiQuizUseCase.generateQuiz(level, quizType, false) } returns sampleKanjiQuiz
 
         // 먼저 퀴즈를 로드 (랜덤 모드)
         viewModel.loadQuizByLevel(level, quizType, isLearningMode = false)
@@ -229,7 +228,7 @@ class MyWordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        coVerify(exactly = 0) { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) }
+        coVerify(exactly = 0) { myKanjiRepository.updateMyKanjiLearningStatus(any(), any(), any()) }
     }
 
     @Test
@@ -241,6 +240,6 @@ class MyWordQuizViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        coVerify(exactly = 0) { myWordRepository.updateMyWordLearningStatus(any(), any(), any()) }
+        coVerify(exactly = 0) { myKanjiRepository.updateMyKanjiLearningStatus(any(), any(), any()) }
     }
 } 

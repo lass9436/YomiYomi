@@ -1,19 +1,23 @@
-package com.lass.yomiyomi.viewmodel.mySentence
+package com.lass.yomiyomi.viewmodel.mySentence.random
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.MySentenceRepository
-import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.viewmodel.mySentence.random.MySentenceRandomViewModel
-import io.mockk.*
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,9 +30,9 @@ class MySentenceRandomViewModelTest {
 
     @MockK
     private lateinit var mySentenceRepository: MySentenceRepository
-    
+
     private lateinit var viewModel: MySentenceRandomViewModel
-    
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleSentenceN5 = SentenceItem(
@@ -63,10 +67,10 @@ class MySentenceRandomViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        
+
         // 기본적으로 전체 레벨 조회 시 N5 문장 반환하도록 설정
         coEvery { mySentenceRepository.getRandomSentenceByLevel(null) } returns sampleSentenceN5
-        
+
         viewModel = MySentenceRandomViewModel(mySentenceRepository)
     }
 
@@ -81,8 +85,8 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSentenceN5, viewModel.randomSentence.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleSentenceN5, viewModel.randomSentence.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { mySentenceRepository.getRandomSentenceByLevel(null) }
     }
 
@@ -96,8 +100,8 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSentenceN4, viewModel.randomSentence.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleSentenceN4, viewModel.randomSentence.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { mySentenceRepository.getRandomSentenceByLevel(null) }
     }
 
@@ -112,8 +116,8 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSentenceN5, viewModel.randomSentence.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleSentenceN5, viewModel.randomSentence.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { mySentenceRepository.getRandomSentenceByLevel(level) }
     }
 
@@ -128,8 +132,8 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSentenceN4, viewModel.randomSentence.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleSentenceN4, viewModel.randomSentence.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { mySentenceRepository.getRandomSentenceByLevel(level) }
     }
 
@@ -144,8 +148,8 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.randomSentence.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.randomSentence.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { mySentenceRepository.getRandomSentenceByLevel(level) }
     }
 
@@ -160,8 +164,8 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.randomSentence.value)
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertNull(viewModel.randomSentence.value)
+        Assert.assertFalse(viewModel.isLoading.value)
         coVerify { mySentenceRepository.getRandomSentenceByLevel(level) }
     }
 
@@ -170,7 +174,7 @@ class MySentenceRandomViewModelTest {
         // Given
         val level = "N5"
         val loadingStates = mutableListOf<Boolean>()
-        
+
         // Repository 호출이 느리게 되도록 설정
         coEvery { mySentenceRepository.getRandomSentenceByLevel(level) } coAnswers {
             delay(100)
@@ -181,17 +185,17 @@ class MySentenceRandomViewModelTest {
         val job = launch {
             viewModel.isLoading.collect { loadingStates.add(it) }
         }
-        
+
         viewModel.fetchRandomSentenceByLevel(level)
         testDispatcher.scheduler.advanceTimeBy(50) // 중간 시점
-        
-        assertTrue("로딩 중이어야 함", viewModel.isLoading.value)
-        
+
+        Assert.assertTrue("로딩 중이어야 함", viewModel.isLoading.value)
+
         testDispatcher.scheduler.advanceUntilIdle() // 완료 대기
-        
-        assertFalse("로딩 완료되어야 함", viewModel.isLoading.value)
-        assertEquals(sampleSentenceN5, viewModel.randomSentence.value)
-        
+
+        Assert.assertFalse("로딩 완료되어야 함", viewModel.isLoading.value)
+        Assert.assertEquals(sampleSentenceN5, viewModel.randomSentence.value)
+
         job.cancel()
     }
 
@@ -207,7 +211,7 @@ class MySentenceRandomViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSentenceN4, viewModel.randomSentence.value) // 마지막 호출 결과
-        assertFalse(viewModel.isLoading.value)
+        Assert.assertEquals(sampleSentenceN4, viewModel.randomSentence.value) // 마지막 호출 결과
+        Assert.assertFalse(viewModel.isLoading.value)
     }
-} 
+}
