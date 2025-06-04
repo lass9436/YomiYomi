@@ -124,7 +124,7 @@ fun SpeechQuizButton(
         } else if (!isListening) {
             // 안내 텍스트
             Text(
-                text = "🎙️ 버튼을 눌러 일본어로 답하세요",
+                text = "▶️ 버튼을 눌러 일본어로 답하세요",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
