@@ -115,9 +115,10 @@ class MyKanjiViewModelTest {
 
         // Then
         // combine된 myKanji StateFlow는 _allMyKanji 값에 따라 업데이트됨
-        assertEquals(sampleMyKanji, myKanjiValue)
+        val expectedN5Kanji = sampleMyKanji.filter { it.level == "N5" }
+        assertEquals(expectedN5Kanji, myKanjiValue)
         assertFalse(viewModel.isLoading.value)
-        assertEquals(Level.ALL, viewModel.selectedLevel.value)
+        assertEquals(Level.N5, viewModel.selectedLevel.value)
         assertTrue(viewModel.searchResults.value.isEmpty())
         assertFalse(viewModel.isSearching.value)
         

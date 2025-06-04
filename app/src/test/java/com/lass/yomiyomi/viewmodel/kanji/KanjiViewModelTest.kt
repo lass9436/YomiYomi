@@ -96,9 +96,10 @@ class KanjiViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleKanji, viewModel.kanji.value)
+        val expectedN5Kanji = sampleKanji.filter { it.level == "N5" }
+        assertEquals(expectedN5Kanji, viewModel.kanji.value)
         assertFalse(viewModel.isLoading.value)
-        assertEquals(Level.ALL, viewModel.selectedLevel.value)
+        assertEquals(Level.N5, viewModel.selectedLevel.value)
         
         coVerify { kanjiRepository.getAllKanji() }
     }
@@ -163,6 +164,7 @@ class KanjiViewModelTest {
     fun `searchKanji - 한자로 검색`() = runTest {
         // Given
         val query = "食"
+        viewModel.setSelectedLevel(Level.ALL) // 모든 레벨에서 검색하도록 설정
 
         // When
         viewModel.searchKanji(query)
@@ -177,6 +179,7 @@ class KanjiViewModelTest {
     fun `searchKanji - 음독으로 검색`() = runTest {
         // Given
         val query = "しょく"
+        viewModel.setSelectedLevel(Level.ALL) // 모든 레벨에서 검색하도록 설정
 
         // When
         viewModel.searchKanji(query)
@@ -191,6 +194,7 @@ class KanjiViewModelTest {
     fun `searchKanji - 훈독으로 검색`() = runTest {
         // Given
         val query = "みず"
+        viewModel.setSelectedLevel(Level.ALL) // 모든 레벨에서 검색하도록 설정
 
         // When
         viewModel.searchKanji(query)
@@ -205,6 +209,7 @@ class KanjiViewModelTest {
     fun `searchKanji - 의미로 검색`() = runTest {
         // Given
         val query = "물"
+        viewModel.setSelectedLevel(Level.ALL) // 모든 레벨에서 검색하도록 설정
 
         // When
         viewModel.searchKanji(query)
@@ -219,6 +224,7 @@ class KanjiViewModelTest {
     fun `searchKanji - 빈 검색어로 검색시 모든 한자 표시`() = runTest {
         // Given
         val query = ""
+        viewModel.setSelectedLevel(Level.ALL) // 모든 레벨에서 검색하도록 설정
 
         // When
         viewModel.searchKanji(query)
