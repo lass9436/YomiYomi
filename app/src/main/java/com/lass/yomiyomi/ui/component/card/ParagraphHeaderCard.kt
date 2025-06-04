@@ -26,6 +26,10 @@ fun ParagraphHeaderCard(
         0f
     }
     
+    // 🔥 학습 완료된 문장 수 계산 (learningProgress가 1.0f인 문장들)
+    val completedSentenceCount = sentences.count { it.learningProgress >= 1.0f }
+    val totalSentenceCount = sentences.size
+    
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -86,7 +90,7 @@ fun ParagraphHeaderCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 AssistChip(
                     onClick = { },
-                    label = { Text("${sentenceCount}/${paragraph.totalSentences}문장", fontSize = 12.sp) }
+                    label = { Text("${completedSentenceCount}/${totalSentenceCount}문장", fontSize = 12.sp) }
                 )
             }
             
