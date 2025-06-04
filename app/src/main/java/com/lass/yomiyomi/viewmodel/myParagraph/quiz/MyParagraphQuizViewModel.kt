@@ -57,6 +57,10 @@ class MyParagraphQuizViewModel @Inject constructor(
     private val _sentences = MutableStateFlow<List<SentenceItem>>(emptyList())
     override val sentences: StateFlow<List<SentenceItem>> = _sentences.asStateFlow()
 
+    // 현재 단일 문장 (SingleSentenceQuiz용)
+    private val _currentSentence = MutableStateFlow<SentenceItem?>(null)
+    override val currentSentence: StateFlow<SentenceItem?> = _currentSentence.asStateFlow()
+
     // 현재 문단 (새로고침 시 같은 문단 유지용)
     private var currentParagraph: ParagraphItem? = null
 
@@ -164,10 +168,35 @@ class MyParagraphQuizViewModel @Inject constructor(
 
                 // 문장을 리스트로 감싸서 저장
                 _sentences.value = listOf(sentence)
+                _currentSentence.value = sentence
                 _quizState.value = quiz
                 _isQuizCompleted.value = false
                 clearRecognizedText()
 
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _hasInsufficientData.value = true
+                _quizState.value = null
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    override fun loadQuizBySentenceId(sentenceId: Int, quizType: ParagraphQuizType) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
+            _hasInsufficientData.value = false
+            
+            try {
+                // sentenceId로 문장 조회
+                val sentence = mySentenceRepository.getSentenceById(sentenceId)
+                if (sentence != null) {
+                    loadQuizBySentence(sentence, quizType)
+                } else {
+                    _hasInsufficientData.value = true
+                    _quizState.value = null
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 _hasInsufficientData.value = true

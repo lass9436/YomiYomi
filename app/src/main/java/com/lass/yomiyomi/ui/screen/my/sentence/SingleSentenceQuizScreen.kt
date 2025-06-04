@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SingleSentenceQuizScreen(
-    sentence: SentenceItem,
+    sentenceId: Int,
     onBack: () -> Unit,
     myParagraphQuizViewModel: MyParagraphQuizViewModelInterface = hiltViewModel<MyParagraphQuizViewModel>()
 ) {
@@ -33,13 +33,19 @@ fun SingleSentenceQuizScreen(
     val isListening by myParagraphQuizViewModel.isListening.collectAsState()
     val recognizedText by myParagraphQuizViewModel.recognizedText.collectAsState()
     val isQuizCompleted by myParagraphQuizViewModel.isQuizCompleted.collectAsState()
+    val currentSentence by myParagraphQuizViewModel.currentSentence.collectAsState()
 
     // UI 상태 관리
     var showKoreanTranslation by remember { mutableStateOf(true) }
 
+    // 초기 퀴즈 로드 (특정 문장 ID로)
+    LaunchedEffect(sentenceId) {
+        myParagraphQuizViewModel.loadQuizBySentenceId(sentenceId, ParagraphQuizType.FILL_IN_BLANKS_SPEECH)
+    }
+
     // Quiz state 생성
     val state = SingleSentenceQuizState(
-        sentence = sentence,
+        sentence = currentSentence,
         quiz = quizData,
         isLoading = isLoading,
         insufficientDataMessage = if (hasInsufficientData) "퀴즈할 문장이 부족합니다." else null,
@@ -88,13 +94,6 @@ fun SingleSentenceQuizScreen(
             onBack()
         }
     )
-
-    // 초기 퀴즈 로드 (특정 문장으로)
-    LaunchedEffect(sentence) {
-        // 단일 문장을 이용해 퀴즈 생성
-        // ParagraphQuizGenerator를 사용하여 단일 문장으로 퀴즈 생성
-        myParagraphQuizViewModel.loadQuizBySentence(sentence, ParagraphQuizType.FILL_IN_BLANKS_SPEECH)
-    }
 
     SingleSentenceQuizLayout(
         title = "문장 퀴즈 🧩",

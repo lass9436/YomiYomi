@@ -22,6 +22,7 @@ import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphListScreen
 import com.lass.yomiyomi.ui.screen.my.sentence.SentenceListScreen
 import com.lass.yomiyomi.ui.screen.my.sentence.MySentenceRandomScreen
 import com.lass.yomiyomi.ui.screen.my.sentence.MySentenceQuizScreen
+import com.lass.yomiyomi.ui.screen.my.sentence.SingleSentenceQuizScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordQuizScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordRandomScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
@@ -49,6 +50,7 @@ enum class Routes(val route: String) {
     MY_SENTENCE_LIST("mySentenceList"),
     MY_SENTENCE_RANDOM("mySentenceRandom"),
     MY_SENTENCE_QUIZ("mySentenceQuiz"),
+    SINGLE_SENTENCE_QUIZ("singleSentenceQuiz/{sentenceId}"),
     MY_PARAGRAPH_LIST("myParagraphList"),
     MY_PARAGRAPH_RANDOM("myParagraphRandom"),
     MY_PARAGRAPH_QUIZ("myParagraphQuiz"),
@@ -237,6 +239,9 @@ fun MainScreen(
                     navController.navigate("main/2") {
                         popUpTo(Routes.MAIN.route) { inclusive = true }
                     }
+                },
+                onSentenceQuiz = { sentence ->
+                    navController.navigate("singleSentenceQuiz/${sentence.id}")
                 }
             )
         }
@@ -256,6 +261,18 @@ fun MainScreen(
                         popUpTo(Routes.MAIN.route) { inclusive = true }
                     }
                 }
+            )
+        }
+        composable(
+            route = Routes.SINGLE_SENTENCE_QUIZ.route,
+            arguments = listOf(navArgument("sentenceId") { 
+                type = NavType.IntType 
+            })
+        ) { backStackEntry ->
+            val sentenceId = backStackEntry.arguments?.getInt("sentenceId") ?: 0
+            SingleSentenceQuizScreen(
+                sentenceId = sentenceId,
+                onBack = { navController.popBackStack() }
             )
         }
         composable(Routes.MY_PARAGRAPH_LIST.route) {

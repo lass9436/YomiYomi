@@ -14,9 +14,11 @@ interface MyParagraphQuizViewModelInterface {
     val recognizedText: StateFlow<String>
     val isQuizCompleted: StateFlow<Boolean>
     val sentences: StateFlow<List<SentenceItem>>
+    val currentSentence: StateFlow<SentenceItem?> // 단일 문장 퀴즈용
     
     fun loadQuizByLevel(level: Level, quizType: ParagraphQuizType)
     fun loadQuizBySentence(sentence: SentenceItem, quizType: ParagraphQuizType) // 단일 문장 퀴즈 로드
+    fun loadQuizBySentenceId(sentenceId: Int, quizType: ParagraphQuizType) // 문장 ID로 단일 문장 퀴즈 로드
     fun startListening()
     fun stopListening()
     /**
