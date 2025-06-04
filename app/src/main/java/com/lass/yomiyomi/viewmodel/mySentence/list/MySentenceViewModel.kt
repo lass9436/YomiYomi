@@ -70,8 +70,8 @@ class MySentenceViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // 문단에 속하지 않은 독립 문장들만 가져오기
-                val sentenceList = mySentenceRepository.getIndividualSentences()
+                // 모든 문장들 가져오기 (문단 소속 + 개별 문장)
+                val sentenceList = mySentenceRepository.getAllSentences()
                 _allSentences.value = sentenceList
                 
                 // 카테고리 목록 업데이트
