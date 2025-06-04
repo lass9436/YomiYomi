@@ -25,6 +25,7 @@ fun SentenceQuizLayout(
     state: SentenceQuizState,
     callbacks: SentenceQuizCallbacks,
     onBack: (() -> Unit)? = null,
+    refreshButtonText: String = "새 퀴즈 가져오기",
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -109,7 +110,7 @@ fun SentenceQuizLayout(
             // Refresh Button
             RefreshButton(
                 onClick = callbacks.onRefresh,
-                text = "새 퀴즈 가져오기"
+                text = refreshButtonText
             )
 
             Spacer(modifier = Modifier.height(16.dp))

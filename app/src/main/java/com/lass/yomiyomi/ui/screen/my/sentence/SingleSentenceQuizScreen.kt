@@ -96,8 +96,9 @@ fun SingleSentenceQuizScreen(
             mySentenceQuizViewModel.clearRecognizedText() // 정답 확인 후 인식된 텍스트 초기화
         },
         onRefresh = {
-            // 새로고침은 같은 문장으로 다시 퀴즈 생성
-            mySentenceQuizViewModel.loadQuizBySentenceId(sentenceId, sentenceQuizTypes[selectedQuizTypeIndex])
+            // 문장 목록으로 돌아가기
+            mySentenceQuizViewModel.stopListening()
+            onBack()
         },
         onDismissDialog = {
             showDialog = false
@@ -109,6 +110,7 @@ fun SingleSentenceQuizScreen(
         title = "문장 퀴즈 🧩",
         state = state.copy(availableLevels = emptyList()), // 레벨 선택기 숨기기
         callbacks = callbacks,
+        refreshButtonText = "문장 목록으로 돌아가기",
         onBack = {
             mySentenceQuizViewModel.stopListening() // 뒤로가기 시 음성 인식 중지
             onBack()
