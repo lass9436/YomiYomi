@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.util.FuriganaParser
+import com.lass.yomiyomi.ui.theme.LocalCustomColors
 
 @Composable
 fun FuriganaText(
@@ -30,6 +31,7 @@ fun FuriganaText(
     
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
+    val customColors = LocalCustomColors.current
     
     // 동적 너비 계산 및 줄바꿈
     BoxWithConstraints(modifier = modifier) {
@@ -82,11 +84,14 @@ fun FuriganaText(
                                                     text = displayFurigana,
                                                     fontSize = furiganaSize,
                                                     color = if (quiz != null && displayFurigana == "___") {
-                                                        MaterialTheme.colorScheme.error
+                                                        // 빈칸: 테마의 빈칸 색상
+                                                        customColors.quizBlank
                                                     } else if (quiz != null && displayFurigana != segment.furigana) {
-                                                        MaterialTheme.colorScheme.primary  
+                                                        // 채워진 답: 테마의 채워진 답 색상  
+                                                        customColors.quizFilled
                                                     } else {
-                                                        MaterialTheme.colorScheme.outline
+                                                        // 일반 후리가나: 테마의 후리가나 색상
+                                                        customColors.furigana
                                                     },
                                                     textAlign = TextAlign.Center,
                                                     lineHeight = furiganaSize * 0.8f

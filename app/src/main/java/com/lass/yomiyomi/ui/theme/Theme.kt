@@ -8,6 +8,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
@@ -45,6 +47,30 @@ private val LightColorScheme = lightColorScheme(
     onPrimaryContainer = Color.White // 흰색 텍스트로 대비 강화
 )
 
+// 커스텀 색상 스키마 정의
+data class CustomColorScheme(
+    val quizBlank: Color,
+    val quizFilled: Color,
+    val furigana: Color
+)
+
+// 라이트 모드 커스텀 색상
+private val LightCustomColors = CustomColorScheme(
+    quizBlank = QuizBlankLight,
+    quizFilled = QuizFilledLight,
+    furigana = FuriganaLight
+)
+
+// 다크 모드 커스텀 색상
+private val DarkCustomColors = CustomColorScheme(
+    quizBlank = QuizBlankDark,
+    quizFilled = QuizFilledDark,
+    furigana = FuriganaDark
+)
+
+// CompositionLocal 정의
+val LocalCustomColors = staticCompositionLocalOf { LightCustomColors }
+
 @Composable
 fun YomiYomiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -61,9 +87,15 @@ fun YomiYomiTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val customColors = if (darkTheme) DarkCustomColors else LightCustomColors
+
+    androidx.compose.runtime.CompositionLocalProvider(
+        LocalCustomColors provides customColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

@@ -14,3 +14,16 @@ val LimeGreen = Color(0xFFB9FBC0)
 val LimeGreenLight = Color(0xFFAED581)
 val SoftLimeBackground = Color(0xFFF3FFE3)
 val LimeAccent = Color(0xFF81C784)
+
+// 후리가나 퀴즈 전용 색상들
+// 빈칸 색상 (빨간색 계열)
+val QuizBlankLight = Color(0xFFE53935)    // 밝은 빨간색 (라이트 모드)
+val QuizBlankDark = Color(0xFFFF5252)     // 더 밝은 빨간색 (다크 모드)
+
+// 채워진 답 색상 (초록색 계열) 
+val QuizFilledLight = Color(0xFF43A047)   // 밝은 초록색 (라이트 모드)
+val QuizFilledDark = Color(0xFF66BB6A)    // 더 밝은 초록색 (다크 모드)
+
+// 일반 후리가나 색상 (회색 계열)
+val FuriganaLight = Color(0xFF424242)     // 어두운 회색 (라이트 모드)
+val FuriganaDark = Color(0xFFBDBDBD)      // 밝은 회색 (다크 모드)
