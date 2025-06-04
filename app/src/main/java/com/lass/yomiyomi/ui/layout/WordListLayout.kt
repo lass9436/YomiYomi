@@ -20,7 +20,7 @@ import com.lass.yomiyomi.ui.component.dialog.input.AddWordDialog
 import com.lass.yomiyomi.ui.component.dialog.edit.EditWordDialog
 import com.lass.yomiyomi.ui.state.WordState
 import com.lass.yomiyomi.ui.state.WordCallbacks
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
+import com.lass.yomiyomi.viewmodel.myWord.list.MyWordViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -9,6 +9,7 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphItems
 import com.lass.yomiyomi.domain.model.mapper.toParagraphEntity
+import com.lass.yomiyomi.domain.model.constant.Level
 
 class MyParagraphRepository(private val context: Context) {
     private val database = AppDatabase.getInstance(context)
@@ -64,6 +65,21 @@ class MyParagraphRepository(private val context: Context) {
         return paragraphDao.getParagraphsByCategory(category).toParagraphItems()
     }
 
+    // 🔥 레벨별 조회 추가
+    suspend fun getParagraphsByLevel(level: String): List<ParagraphItem> {
+        return paragraphDao.getParagraphsByLevel(level).toParagraphItems()
+    }
+
+    // 🔥 랜덤 문단 가져오기
+    suspend fun getRandomParagraph(): ParagraphItem? {
+        return paragraphDao.getRandomParagraph()?.toParagraphItem()
+    }
+
+    // 🔥 레벨별 랜덤 문단 가져오기
+    suspend fun getRandomParagraphByLevel(level: String?): ParagraphItem? {
+        return paragraphDao.getRandomParagraphByLevel(level)?.toParagraphItem()
+    }
+
     // 검색
     suspend fun searchParagraphs(query: String): List<ParagraphItem> {
         return paragraphDao.searchParagraphs(query).toParagraphItems()
@@ -86,7 +102,7 @@ private fun MyParagraphWithCount.toParagraphItem(): ParagraphItem = ParagraphIte
     title = title,
     description = description,
     category = category,
-    difficulty = difficulty,
+    level = Level.values().find { it.value == level } ?: Level.N5,
     totalSentences = totalSentences,
     actualSentenceCount = actualSentenceCount,
     createdAt = createdAt

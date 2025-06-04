@@ -2,102 +2,92 @@ package com.lass.yomiyomi.ui.screen.my.word
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lass.yomiyomi.domain.model.constant.Level
-import com.lass.yomiyomi.domain.model.constant.WordQuizType
-import com.lass.yomiyomi.ui.layout.QuizLayout
-import com.lass.yomiyomi.ui.state.QuizState
-import com.lass.yomiyomi.ui.state.QuizCallbacks
-import com.lass.yomiyomi.viewmodel.myWordQuiz.MyWordQuizViewModel
-import com.lass.yomiyomi.viewmodel.myWordQuiz.MyWordQuizViewModelInterface
-import com.lass.yomiyomi.ui.component.button.QuizTypeSelector
-import com.lass.yomiyomi.ui.component.card.QuizContent
+import com.lass.yomiyomi.viewmodel.myWord.quiz.DummyMyWordQuizViewModel
+import com.lass.yomiyomi.viewmodel.myWord.quiz.MyWordQuizViewModel
+import com.lass.yomiyomi.viewmodel.myWord.quiz.MyWordQuizViewModelInterface
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyWordQuizScreen(
     onBack: () -> Unit,
     myWordQuizViewModel: MyWordQuizViewModelInterface = hiltViewModel<MyWordQuizViewModel>()
 ) {
-    val quizState = myWordQuizViewModel.quizState.collectAsState()
-    val isLoading = myWordQuizViewModel.isLoading.collectAsState()
-    val hasInsufficientData = myWordQuizViewModel.hasInsufficientData.collectAsState()
-    
-    var answerResult by remember { mutableStateOf<String?>(null) }
-    var showDialog by remember { mutableStateOf(false) }
-    var levelSelected by remember { mutableStateOf(Level.ALL) }
-    var quizTypeSelected by remember { mutableStateOf(WordQuizType.WORD_TO_MEANING_READING) }
-    var isLearningMode by remember { mutableStateOf(false) }
-
     // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
     BackHandler { onBack() }
 
-    LaunchedEffect(levelSelected, quizTypeSelected, isLearningMode) {
-        myWordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
-    }
-
-    val quizTypes = listOf("단어→의미", "의미→단어")
-    val selectedQuizTypeIndex = if (quizTypeSelected == WordQuizType.WORD_TO_MEANING_READING) 0 else 1
-
-    val state = QuizState(
-        selectedLevel = levelSelected,
-        quizTypes = quizTypes,
-        selectedQuizTypeIndex = selectedQuizTypeIndex,
-        isLearningMode = isLearningMode,
-        isLoading = isLoading.value,
-        question = if (hasInsufficientData.value) null else quizState.value?.question,
-        options = if (hasInsufficientData.value) emptyList() else (quizState.value?.options ?: emptyList()),
-        showDialog = showDialog,
-        answerResult = answerResult,
-        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=",
-        insufficientDataMessage = if (hasInsufficientData.value) {
-            if (levelSelected == Level.ALL) 
-                "내 단어가 없습니다.\n+ 버튼을 눌러 단어를 추가해보세요!"
-            else 
-                "${levelSelected.value} 레벨의 내 단어가 없습니다."
-        } else null
-    )
-
-    val callbacks = QuizCallbacks(
-        onLevelSelected = { levelSelected = it },
-        onQuizTypeSelected = { index ->
-            quizTypeSelected = if (index == 0) {
-                WordQuizType.WORD_TO_MEANING_READING
-            } else {
-                WordQuizType.MEANING_READING_TO_WORD
-            }
-        },
-        onLearningModeChanged = { isLearningMode = it },
-        onOptionSelected = { index ->
-            val isCorrect = index == quizState.value?.correctIndex
-            if (isCorrect) {
-                answerResult = "정답입니다!"
-            } else {
-                val correct = quizState.value!!
-                answerResult = "오답입니다!\n정답: ${correct.answer}"
-            }
-            showDialog = true
-            myWordQuizViewModel.checkAnswer(
-                if (isCorrect) quizState.value!!.correctIndex else -1,
-                isLearningMode
+    // 임시 UI - 추후 새로운 QuizLayout API로 마이그레이션 예정
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "내 단어 퀴즈 📚",
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "뒤로가기",
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
-        },
-        onRefresh = {
-            myWordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
-        },
-        onDismissDialog = {
-            showDialog = false
-            answerResult = null
-            myWordQuizViewModel.loadQuizByLevel(levelSelected, quizTypeSelected, isLearningMode)
         }
-    )
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "내 단어 퀴즈",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "곧 업데이트 예정입니다! 🚧",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+    }
+}
 
-    QuizLayout(
-        title = "내 단어 퀴즈",
-        state = state,
-        callbacks = callbacks,
-        onBack = onBack
+@Composable
+fun MyWordQuizScreenPreview() {
+    MyWordQuizScreen(
+        onBack = {},
+        myWordQuizViewModel = DummyMyWordQuizViewModel()
     )
 } 

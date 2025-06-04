@@ -21,9 +21,9 @@ import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import com.lass.yomiyomi.ui.component.card.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.viewmodel.myKanji.DummyMyKanjiViewModel
-import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModel
-import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
+import com.lass.yomiyomi.viewmodel.myKanji.list.DummyMyKanjiViewModel
+import com.lass.yomiyomi.viewmodel.myKanji.list.MyKanjiViewModel
+import com.lass.yomiyomi.viewmodel.myKanji.list.MyKanjiViewModelInterface
 
 @Composable
 fun MyKanjiRandomScreen(

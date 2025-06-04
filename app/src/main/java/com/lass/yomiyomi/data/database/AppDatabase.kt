@@ -30,7 +30,7 @@ import com.lass.yomiyomi.data.model.MyParagraph
         MyParagraph::class,
         MySentence::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

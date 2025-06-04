@@ -10,9 +10,9 @@ import com.lass.yomiyomi.ui.layout.MyWordLayout
 import com.lass.yomiyomi.ui.state.WordState
 import com.lass.yomiyomi.ui.state.WordCallbacks
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.viewmodel.myWord.DummyMyWordViewModel
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModel
-import com.lass.yomiyomi.viewmodel.myWord.MyWordViewModelInterface
+import com.lass.yomiyomi.viewmodel.myWord.list.DummyMyWordViewModel
+import com.lass.yomiyomi.viewmodel.myWord.list.MyWordViewModel
+import com.lass.yomiyomi.viewmodel.myWord.list.MyWordViewModelInterface
 
 @Composable
 fun MyWordScreen(

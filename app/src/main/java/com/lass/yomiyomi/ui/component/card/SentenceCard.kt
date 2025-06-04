@@ -37,10 +37,10 @@ fun SentenceCard(
         sentence.category
     }
     
-    val effectiveDifficulty = if (sentence.paragraphId != null) {
-        paragraph?.difficulty ?: sentence.difficulty
+    val effectiveLevel = if (sentence.paragraphId != null) {
+        paragraph?.level ?: sentence.level
     } else {
-        sentence.difficulty
+        sentence.level
     }
 
     Card(
@@ -93,7 +93,7 @@ fun SentenceCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 카테고리와 난이도
+                // 카테고리와 레벨
                 Row {
                     AssistChip(
                         onClick = { },
@@ -106,7 +106,7 @@ fun SentenceCard(
                     Spacer(modifier = Modifier.width(4.dp))
                     AssistChip(
                         onClick = { },
-                        label = { Text(effectiveDifficulty, fontSize = 12.sp) },
+                        label = { Text(effectiveLevel.value ?: "ALL", fontSize = 12.sp) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             labelColor = MaterialTheme.colorScheme.tertiary

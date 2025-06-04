@@ -1,6 +1,7 @@
 package com.lass.yomiyomi.domain.model.entity
 
 import com.lass.yomiyomi.domain.model.data.InfoRowData
+import com.lass.yomiyomi.domain.model.constant.Level
 
 data class SentenceItem(
     val id: Int,
@@ -9,7 +10,7 @@ data class SentenceItem(
     val paragraphId: String? = null,
     val orderInParagraph: Int = 0,
     val category: String,
-    val difficulty: String,
+    val level: Level,
     val learningProgress: Float = 0f,
     val reviewCount: Int = 0,
     val lastReviewedAt: Long? = null,
@@ -22,7 +23,7 @@ data class SentenceItem(
         InfoRowData("일본어 :", japanese, isJapanese = true),
         InfoRowData("한국어 :", korean, isJapanese = false),
         InfoRowData("카테고리 :", category, isJapanese = false),
-        InfoRowData("난이도 :", difficulty, isJapanese = false),
+        InfoRowData("레벨 :", level.value ?: "ALL", isJapanese = false),
         InfoRowData("진도 :", "${(learningProgress * 100).toInt()}%", isJapanese = false)
     )
 } 

@@ -14,7 +14,7 @@ import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.layout.SentenceListLayout
-import com.lass.yomiyomi.viewmodel.mySentence.MySentenceViewModel
+import com.lass.yomiyomi.viewmodel.mySentence.list.MySentenceViewModel
 import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +29,7 @@ fun SentenceListScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val availableCategories by viewModel.availableCategories.collectAsStateWithLifecycle()
-    val availableDifficulties by viewModel.availableDifficulties.collectAsStateWithLifecycle()
+    val availableLevels by viewModel.availableLevels.collectAsStateWithLifecycle()
     
     // 검색 쿼리는 로컬 상태로 관리
     var searchQuery by remember { mutableStateOf("") }
@@ -128,7 +128,7 @@ fun SentenceListScreen(
         isOpen = showInputDialog,
         sentence = editingSentence,
         availableCategories = availableCategories,
-        availableDifficulties = availableDifficulties,
+        availableLevels = availableLevels,
         onDismiss = {
             showInputDialog = false
             editingSentence = null

@@ -34,7 +34,7 @@ object MySentenceDataImporter {
                         paragraphId = parts[3].trim().takeIf { it.isNotEmpty() }, // paragraphId
                         orderInParagraph = Integer.parseInt(parts[4].trim()), // 단락 내 순서
                         category = parts[5].trim(), // 카테고리
-                        difficulty = parts[6].trim(), // 난이도
+                        level = parts[6].trim(), // 레벨
                         learningProgress = 0f,
                         reviewCount = 0,
                         lastReviewedAt = null,

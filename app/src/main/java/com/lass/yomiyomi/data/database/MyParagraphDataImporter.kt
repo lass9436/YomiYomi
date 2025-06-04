@@ -32,7 +32,7 @@ object MyParagraphDataImporter {
                         title = parts[2].trim(), // 제목
                         description = parts[3].trim(), // 설명
                         category = parts[4].trim(), // 카테고리
-                        difficulty = parts[5].trim(), // 난이도
+                        level = parts[5].trim(), // 레벨
                         totalSentences = Integer.parseInt(parts[6].trim()), // 총 문장 수
                         createdAt = System.currentTimeMillis()
                     )

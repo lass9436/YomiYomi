@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.domain.model.constant.Level
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,11 +28,11 @@ fun ParagraphInputDialog(
     var title by remember(paragraph) { mutableStateOf(paragraph?.title ?: "") }
     var description by remember(paragraph) { mutableStateOf(paragraph?.description ?: "") }
     var category by remember(paragraph) { mutableStateOf(paragraph?.category ?: "일반") }
-    var difficulty by remember(paragraph) { mutableStateOf(paragraph?.difficulty ?: "N5") }
+    var level by remember(paragraph) { mutableStateOf(paragraph?.level ?: Level.N5) }
     var totalSentences by remember(paragraph) { mutableStateOf(paragraph?.totalSentences?.toString() ?: "5") }
     
     val categories = listOf("일반", "자기소개", "면접", "회화", "비즈니스", "일상", "여행")
-    val difficulties = listOf("N5", "N4", "N3", "N2", "N1")
+    val levels = listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1)
     
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -130,33 +131,33 @@ fun ParagraphInputDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // 난이도 선택
-                var difficultyExpanded by remember { mutableStateOf(false) }
+                // 레벨 선택
+                var levelExpanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
-                    expanded = difficultyExpanded,
-                    onExpandedChange = { difficultyExpanded = !difficultyExpanded }
+                    expanded = levelExpanded,
+                    onExpandedChange = { levelExpanded = !levelExpanded }
                 ) {
                     OutlinedTextField(
-                        value = difficulty,
+                        value = level.value ?: "ALL",
                         onValueChange = { },
                         readOnly = true,
-                        label = { Text("난이도") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = difficultyExpanded) },
+                        label = { Text("레벨") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor()
                     )
                     
                     ExposedDropdownMenu(
-                        expanded = difficultyExpanded,
-                        onDismissRequest = { difficultyExpanded = false }
+                        expanded = levelExpanded,
+                        onDismissRequest = { levelExpanded = false }
                     ) {
-                        difficulties.forEach { diff ->
+                        levels.forEach { lv ->
                             DropdownMenuItem(
-                                text = { Text(diff) },
+                                text = { Text(lv.value ?: "ALL") },
                                 onClick = {
-                                    difficulty = diff
-                                    difficultyExpanded = false
+                                    level = lv
+                                    levelExpanded = false
                                 }
                             )
                         }
@@ -187,14 +188,14 @@ fun ParagraphInputDialog(
                                 title = title.trim(),
                                 description = description.trim(),
                                 category = category,
-                                difficulty = difficulty,
+                                level = level,
                                 totalSentences = sentenceCount
                             ) ?: ParagraphItem(
                                 paragraphId = "", // 새 문단은 빈 ID로 시작 (Repository에서 생성)
                                 title = title.trim(),
                                 description = description.trim(),
                                 category = category,
-                                difficulty = difficulty,
+                                level = level,
                                 totalSentences = sentenceCount,
                                 actualSentenceCount = 0,
                                 createdAt = System.currentTimeMillis()

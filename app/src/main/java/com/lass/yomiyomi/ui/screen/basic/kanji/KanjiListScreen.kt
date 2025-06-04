@@ -10,9 +10,9 @@ import com.lass.yomiyomi.ui.layout.KanjiListLayout
 import com.lass.yomiyomi.ui.state.KanjiState
 import com.lass.yomiyomi.ui.state.KanjiCallbacks
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.viewmodel.kanji.DummyKanjiViewModel
-import com.lass.yomiyomi.viewmodel.kanji.KanjiViewModel
-import com.lass.yomiyomi.viewmodel.kanji.KanjiViewModelInterface
+import com.lass.yomiyomi.viewmodel.kanji.list.DummyKanjiViewModel
+import com.lass.yomiyomi.viewmodel.kanji.list.KanjiViewModel
+import com.lass.yomiyomi.viewmodel.kanji.list.KanjiViewModelInterface
 
 @Composable
 fun KanjiListScreen(

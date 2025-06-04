@@ -64,6 +64,26 @@ class MySentenceRepository(private val context: Context) {
         return mySentenceDao.getSentencesByCategory(category).toSentenceItems()
     }
 
+    // 🔥 레벨별 조회 추가
+    suspend fun getSentencesByLevel(level: String): List<SentenceItem> {
+        return mySentenceDao.getSentencesByLevel(level).toSentenceItems()
+    }
+
+    // 🔥 개별 문장들을 레벨별로 조회 (문단에 속하지 않은)
+    suspend fun getIndividualSentencesByLevel(level: String): List<SentenceItem> {
+        return mySentenceDao.getIndividualSentencesByLevel(level).toSentenceItems()
+    }
+
+    // 🔥 랜덤 문장 가져오기 (개별 문장만)
+    suspend fun getRandomIndividualSentence(): SentenceItem? {
+        return mySentenceDao.getRandomIndividualSentence()?.toSentenceItem()
+    }
+
+    // 🔥 레벨별 랜덤 문장 가져오기 (개별 문장만)
+    suspend fun getRandomIndividualSentenceByLevel(level: String?): SentenceItem? {
+        return mySentenceDao.getRandomIndividualSentenceByLevel(level)?.toSentenceItem()
+    }
+
     // 검색
     suspend fun searchSentences(query: String): List<SentenceItem> {
         return mySentenceDao.searchSentences(query).toSentenceItems()
@@ -85,12 +105,12 @@ class MySentenceRepository(private val context: Context) {
         return mySentenceDao.getTotalSentenceCount()
     }
 
-    // 카테고리와 난이도 목록 가져오기 (동적)
+    // 카테고리와 레벨 목록 가져오기 (동적)
     suspend fun getDistinctCategories(): List<String> {
         return mySentenceDao.getAllSentences().map { it.category }.distinct().sorted()
     }
 
-    suspend fun getDistinctDifficulties(): List<String> {
-        return mySentenceDao.getAllSentences().map { it.difficulty }.distinct().sorted()
+    suspend fun getDistinctLevels(): List<String> {
+        return mySentenceDao.getAllSentences().map { it.level }.distinct().sorted()
     }
 } 

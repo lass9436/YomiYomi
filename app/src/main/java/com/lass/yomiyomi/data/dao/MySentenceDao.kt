@@ -44,6 +44,22 @@ interface MySentenceDao {
     @Query("SELECT * FROM sentence WHERE category = :category ORDER BY createdAt DESC")
     suspend fun getSentencesByCategory(category: String): List<MySentence>
 
+    // 🔥 레벨별 조회 추가
+    @Query("SELECT * FROM sentence WHERE level = :level ORDER BY createdAt DESC")
+    suspend fun getSentencesByLevel(level: String): List<MySentence>
+
+    // 🔥 개별 문장들을 레벨별로 조회 (문단에 속하지 않은)
+    @Query("SELECT * FROM sentence WHERE paragraphId IS NULL AND level = :level ORDER BY createdAt DESC")
+    suspend fun getIndividualSentencesByLevel(level: String): List<MySentence>
+
+    // 🔥 랜덤 문장 가져오기 (개별 문장만)
+    @Query("SELECT * FROM sentence WHERE paragraphId IS NULL ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomIndividualSentence(): MySentence?
+
+    // 🔥 레벨별 랜덤 문장 가져오기 (개별 문장만)
+    @Query("SELECT * FROM sentence WHERE paragraphId IS NULL AND (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomIndividualSentenceByLevel(level: String?): MySentence?
+
     // 검색
     @Query("""
         SELECT * FROM sentence 

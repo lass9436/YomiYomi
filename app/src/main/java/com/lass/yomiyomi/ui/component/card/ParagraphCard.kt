@@ -68,7 +68,7 @@ fun ParagraphCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 카테고리와 난이도
+                // 카테고리와 레벨
                 Row {
                     AssistChip(
                         onClick = { },
@@ -81,7 +81,7 @@ fun ParagraphCard(
                     Spacer(modifier = Modifier.width(4.dp))
                     AssistChip(
                         onClick = { },
-                        label = { Text(paragraph.difficulty, fontSize = 12.sp) },
+                        label = { Text(paragraph.level.value ?: "ALL", fontSize = 12.sp) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             labelColor = MaterialTheme.colorScheme.tertiary

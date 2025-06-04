@@ -16,7 +16,7 @@ data class MySentence(
     val paragraphId: String? = null,
     val orderInParagraph: Int = 0,
     val category: String,
-    val difficulty: String,
+    val level: String,              // 🔥 difficulty -> level로 변경! Level enum의 value 저장 (N5, N4, N3, N2, N1)
     val learningProgress: Float = 0f,
     val reviewCount: Int = 0,
     val lastReviewedAt: Long? = null,

@@ -4,6 +4,7 @@ import com.lass.yomiyomi.data.model.MySentence
 import com.lass.yomiyomi.data.model.MyParagraph
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.constant.Level
 
 // Entity -> Domain Model (조회용)
 // SentenceEntity -> SentenceItem
@@ -14,7 +15,7 @@ fun MySentence.toSentenceItem(): SentenceItem = SentenceItem(
     paragraphId = paragraphId,
     orderInParagraph = orderInParagraph,
     category = category,
-    difficulty = difficulty,
+    level = Level.values().find { it.value == level } ?: Level.N5,
     learningProgress = learningProgress,
     reviewCount = reviewCount,
     lastReviewedAt = lastReviewedAt,
@@ -27,7 +28,7 @@ fun MyParagraph.toParagraphItem(actualSentenceCount: Int = 0): ParagraphItem = P
     title = title,
     description = description,
     category = category,
-    difficulty = difficulty,
+    level = Level.values().find { it.value == level } ?: Level.N5,
     totalSentences = totalSentences,
     actualSentenceCount = actualSentenceCount,
     createdAt = createdAt
@@ -42,7 +43,7 @@ fun SentenceItem.toSentenceEntity(): MySentence = MySentence(
     paragraphId = paragraphId,
     orderInParagraph = orderInParagraph,
     category = category,
-    difficulty = difficulty,
+    level = level.value ?: "N5",
     learningProgress = learningProgress,
     reviewCount = reviewCount,
     lastReviewedAt = lastReviewedAt,
@@ -55,7 +56,7 @@ fun ParagraphItem.toParagraphEntity(): MyParagraph = MyParagraph(
     title = title,
     description = description,
     category = category,
-    difficulty = difficulty,
+    level = level.value ?: "N5",
     totalSentences = totalSentences,
     createdAt = createdAt
 )

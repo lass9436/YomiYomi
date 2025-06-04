@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
+import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.ui.component.text.furigana.FuriganaText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,7 +24,7 @@ fun SentenceInputDialog(
     isOpen: Boolean,
     sentence: SentenceItem? = null,
     availableCategories: List<String> = emptyList(),
-    availableDifficulties: List<String> = emptyList(),
+    availableLevels: List<Level> = emptyList(),
     onDismiss: () -> Unit,
     onSave: (SentenceItem) -> Unit,
     modifier: Modifier = Modifier
@@ -33,20 +34,20 @@ fun SentenceInputDialog(
     var japanese by remember(sentence) { mutableStateOf(sentence?.japanese ?: "") }
     var korean by remember(sentence) { mutableStateOf(sentence?.korean ?: "") }
     var category by remember(sentence) { mutableStateOf(sentence?.category ?: availableCategories.firstOrNull() ?: "일반") }
-    var difficulty by remember(sentence) { mutableStateOf(sentence?.difficulty ?: availableDifficulties.firstOrNull() ?: "N5") }
+    var level by remember(sentence) { mutableStateOf(sentence?.level ?: availableLevels.firstOrNull() ?: Level.N5) }
     var showPreview by remember { mutableStateOf(false) }
     
-    // 기본값을 포함한 카테고리/난이도 목록 (기존 값이 없으면 기본값 추가)
+    // 기본값을 포함한 카테고리/레벨 목록 (기존 값이 없으면 기본값 추가)
     val categories = if (availableCategories.isNotEmpty()) {
         availableCategories
     } else {
         listOf("일반", "자기소개", "면접", "회화", "비즈니스", "일상", "여행") // 폴백 옵션
     }
     
-    val difficulties = if (availableDifficulties.isNotEmpty()) {
-        availableDifficulties 
+    val levels = if (availableLevels.isNotEmpty()) {
+        availableLevels 
     } else {
-        listOf("N5", "N4", "N3", "N2", "N1") // 폴백 옵션
+        listOf(Level.N5, Level.N4, Level.N3, Level.N2, Level.N1) // 폴백 옵션
     }
     
     Dialog(onDismissRequest = onDismiss) {
@@ -182,34 +183,35 @@ fun SentenceInputDialog(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 
-                // 난이도 선택 (독립 문장일 때만 표시)
-                if (availableDifficulties.isNotEmpty()) {
-                    var difficultyExpanded by remember { mutableStateOf(false) }
+                // 레벨 선택 (독립 문장일 때만 표시)
+                if (availableLevels.isNotEmpty()) {
+                    var levelExpanded by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
-                        expanded = difficultyExpanded,
-                        onExpandedChange = { difficultyExpanded = !difficultyExpanded }
+                        expanded = levelExpanded,
+                        onExpandedChange = { levelExpanded = !levelExpanded }
                     ) {
                         OutlinedTextField(
-                            value = difficulty,
-                            onValueChange = { difficulty = it },
-                            label = { Text("난이도") },
-                            placeholder = { Text("난이도를 선택하거나 새로 입력하세요") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = difficultyExpanded) },
+                            value = level.value ?: "ALL",
+                            onValueChange = { },
+                            label = { Text("레벨") },
+                            placeholder = { Text("레벨을 선택하세요") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = levelExpanded) },
+                            readOnly = true,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .menuAnchor()
                         )
                         
                         ExposedDropdownMenu(
-                            expanded = difficultyExpanded,
-                            onDismissRequest = { difficultyExpanded = false }
+                            expanded = levelExpanded,
+                            onDismissRequest = { levelExpanded = false }
                         ) {
-                            difficulties.forEach { diff ->
+                            levels.forEach { lv ->
                                 DropdownMenuItem(
-                                    text = { Text(diff) },
+                                    text = { Text(lv.value ?: "ALL") },
                                     onClick = {
-                                        difficulty = diff
-                                        difficultyExpanded = false
+                                        level = lv
+                                        levelExpanded = false
                                     }
                                 )
                             }
@@ -226,7 +228,7 @@ fun SentenceInputDialog(
                         )
                     ) {
                         Text(
-                            text = "📝 이 문장은 문단에 속하므로 문단의 카테고리와 난이도를 따릅니다.",
+                            text = "📝 이 문장은 문단에 속하므로 문단의 카테고리와 레벨을 따릅니다.",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(12.dp)
@@ -259,13 +261,13 @@ fun SentenceInputDialog(
                                 japanese = japanese.trim(),
                                 korean = korean.trim(),
                                 category = category,
-                                difficulty = difficulty
+                                level = level
                             ) ?: SentenceItem(
                                 id = 0, // 새 문장은 ID 0으로 시작 (Repository에서 생성)
                                 japanese = japanese.trim(),
                                 korean = korean.trim(),
                                 category = category,
-                                difficulty = difficulty,
+                                level = level,
                                 paragraphId = null,
                                 orderInParagraph = 0,
                                 learningProgress = 0f,

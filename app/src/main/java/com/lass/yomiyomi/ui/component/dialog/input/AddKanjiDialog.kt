@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.ui.component.button.LevelSelector
 import com.lass.yomiyomi.ui.component.card.SearchKanjiResultCard
-import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
+import com.lass.yomiyomi.viewmodel.myKanji.list.MyKanjiViewModelInterface
 
 @Composable
 fun AddKanjiDialog(

@@ -9,7 +9,7 @@ data class MyParagraph(
     val title: String,
     val description: String,
     val category: String,
-    val difficulty: String,
+    val level: String,
     val totalSentences: Int,
     val createdAt: Long = System.currentTimeMillis()
 ) 

@@ -5,6 +5,7 @@ import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import com.lass.yomiyomi.domain.model.entity.KanjiItem
 import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.viewmodel.myKanji.list.MyKanjiViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

@@ -20,7 +20,7 @@ import com.lass.yomiyomi.ui.component.dialog.edit.EditKanjiDialog
 import com.lass.yomiyomi.ui.component.dialog.input.AddKanjiDialog
 import com.lass.yomiyomi.ui.state.KanjiState
 import com.lass.yomiyomi.ui.state.KanjiCallbacks
-import com.lass.yomiyomi.viewmodel.myKanji.MyKanjiViewModelInterface
+import com.lass.yomiyomi.viewmodel.myKanji.list.MyKanjiViewModelInterface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

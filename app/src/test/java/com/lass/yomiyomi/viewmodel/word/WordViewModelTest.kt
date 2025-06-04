@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.lass.yomiyomi.data.repository.WordRepository
 import com.lass.yomiyomi.domain.model.entity.WordItem
 import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.viewmodel.word.list.WordViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

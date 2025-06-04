@@ -16,9 +16,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.ui.component.card.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
-import com.lass.yomiyomi.viewmodel.kanjiRandom.DummyKanjiRandomViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModel
-import com.lass.yomiyomi.viewmodel.kanjiRandom.KanjiRandomViewModelInterface
+import com.lass.yomiyomi.viewmodel.kanji.Random.DummyKanjiRandomViewModel
+import com.lass.yomiyomi.viewmodel.kanji.Random.KanjiRandomViewModel
+import com.lass.yomiyomi.viewmodel.kanji.Random.KanjiRandomViewModelInterface
 
 @Composable
 fun KanjiRandomScreen(

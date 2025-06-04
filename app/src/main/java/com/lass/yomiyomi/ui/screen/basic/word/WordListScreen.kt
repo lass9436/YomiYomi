@@ -10,9 +10,9 @@ import com.lass.yomiyomi.ui.layout.WordListLayout
 import com.lass.yomiyomi.ui.state.WordState
 import com.lass.yomiyomi.ui.state.WordCallbacks
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
-import com.lass.yomiyomi.viewmodel.word.DummyWordViewModel
-import com.lass.yomiyomi.viewmodel.word.WordViewModel
-import com.lass.yomiyomi.viewmodel.word.WordViewModelInterface
+import com.lass.yomiyomi.viewmodel.word.list.DummyWordViewModel
+import com.lass.yomiyomi.viewmodel.word.list.WordViewModel
+import com.lass.yomiyomi.viewmodel.word.list.WordViewModelInterface
 
 @Composable
 fun WordListScreen(

@@ -13,7 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.ui.component.dialog.input.ParagraphInputDialog
 import com.lass.yomiyomi.ui.layout.ParagraphListLayout
-import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphViewModel
+import com.lass.yomiyomi.viewmodel.myParagraph.list.MyParagraphViewModel
 import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)

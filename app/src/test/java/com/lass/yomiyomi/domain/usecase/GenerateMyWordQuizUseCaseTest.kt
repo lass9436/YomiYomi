@@ -6,6 +6,7 @@ import com.lass.yomiyomi.domain.model.*
 import com.lass.yomiyomi.domain.model.entity.MyWordItem
 import com.lass.yomiyomi.domain.model.entity.WordItem
 import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.constant.WordQuizType
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest

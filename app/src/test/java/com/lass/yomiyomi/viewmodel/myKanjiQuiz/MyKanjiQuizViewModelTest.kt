@@ -7,6 +7,7 @@ import com.lass.yomiyomi.domain.model.entity.MyKanjiItem
 import com.lass.yomiyomi.domain.model.constant.KanjiQuizType
 import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.usecase.GenerateMyKanjiQuizUseCase
+import com.lass.yomiyomi.viewmodel.myKanji.quiz.MyKanjiQuizViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers

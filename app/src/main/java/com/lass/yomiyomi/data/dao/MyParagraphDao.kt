@@ -33,6 +33,18 @@ interface MyParagraphDao {
     @Query("SELECT * FROM paragraph WHERE category = :category ORDER BY createdAt DESC")
     suspend fun getParagraphsByCategory(category: String): List<MyParagraph>
 
+    // 🔥 레벨별 조회 추가
+    @Query("SELECT * FROM paragraph WHERE level = :level ORDER BY createdAt DESC")
+    suspend fun getParagraphsByLevel(level: String): List<MyParagraph>
+
+    // 🔥 랜덤 문단 가져오기
+    @Query("SELECT * FROM paragraph ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomParagraph(): MyParagraph?
+
+    // 🔥 레벨별 랜덤 문단 가져오기
+    @Query("SELECT * FROM paragraph WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomParagraphByLevel(level: String?): MyParagraph?
+
     // 검색
     @Query("""
         SELECT * FROM paragraph 
@@ -64,7 +76,7 @@ data class MyParagraphWithCount(
     val title: String,
     val description: String,
     val category: String,
-    val difficulty: String,
+    val level: String,
     val totalSentences: Int,
     val createdAt: Long,
     val actualSentenceCount: Int

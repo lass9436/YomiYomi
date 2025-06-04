@@ -29,7 +29,8 @@ import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
 import com.lass.yomiyomi.ui.component.empty.EmptyView
 import com.lass.yomiyomi.ui.component.dialog.input.SentenceInputDialog
 import com.lass.yomiyomi.ui.component.text.tts.UnifiedTTSButton
-import com.lass.yomiyomi.viewmodel.myParagraph.MyParagraphDetailViewModel
+import com.lass.yomiyomi.viewmodel.myParagraph.detail.MyParagraphDetailViewModel
+import com.lass.yomiyomi.domain.model.constant.Level
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +45,7 @@ fun ParagraphDetailScreen(
     val sentences by viewModel.sentences.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val availableCategories by viewModel.availableCategories.collectAsStateWithLifecycle()
-    val availableDifficulties by viewModel.availableDifficulties.collectAsStateWithLifecycle()
+    val availableLevels by viewModel.availableLevels.collectAsStateWithLifecycle()
     
     // UI 상태
     var showInputDialog by remember { mutableStateOf(false) }
@@ -144,7 +145,7 @@ fun ParagraphDetailScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             AssistChip(
                                 onClick = { },
-                                label = { Text(para.difficulty, fontSize = 12.sp) }
+                                label = { Text(para.level.value ?: "ALL", fontSize = 12.sp) }
                             )
                         }
                     }
@@ -190,17 +191,17 @@ fun ParagraphDetailScreen(
         isOpen = showInputDialog,
         sentence = editingSentence,
         availableCategories = emptyList(), // 문단 소속 문장은 카테고리 선택 불가
-        availableDifficulties = emptyList(), // 문단 소속 문장은 난이도 선택 불가
+        availableLevels = emptyList(), // 문단 소속 문장은 레벨 선택 불가
         onDismiss = {
             showInputDialog = false
             editingSentence = null
         },
         onSave = { sentence ->
-            // 문단 ID와 문단의 카테고리/난이도 설정
+            // 문단 ID와 문단의 카테고리/레벨 설정
             val sentenceWithParagraph = sentence.copy(
                 paragraphId = paragraphId,
                 category = paragraph?.category ?: "",
-                difficulty = paragraph?.difficulty ?: ""
+                level = paragraph?.level ?: Level.N5
             )
             
             if (editingSentence != null) {
