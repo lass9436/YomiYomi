@@ -15,11 +15,13 @@ import com.lass.yomiyomi.ui.component.card.ItemCard
 import com.lass.yomiyomi.ui.layout.QuizLayout
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.mySentence.quiz.MySentenceQuizViewModel
+import com.lass.yomiyomi.viewmodel.mySentence.quiz.MySentenceQuizViewModelInterface
+import com.lass.yomiyomi.viewmodel.mySentence.quiz.DummyMySentenceQuizViewModel
 
 @Composable
 fun MySentenceQuizScreen(
     onBack: () -> Unit,
-    mySentenceQuizViewModel: MySentenceQuizViewModel = hiltViewModel()
+    mySentenceQuizViewModel: MySentenceQuizViewModelInterface = hiltViewModel<MySentenceQuizViewModel>()
 ) {
     val isLoading by mySentenceQuizViewModel.isLoading.collectAsState()
     val selectedLevel by mySentenceQuizViewModel.selectedLevel.collectAsState()
@@ -234,6 +236,9 @@ fun MySentenceQuizScreen(
 @Composable
 fun MySentenceQuizScreenPreview() {
     YomiYomiTheme {
-        MySentenceQuizScreen(onBack = {})
+        MySentenceQuizScreen(
+            onBack = {},
+            mySentenceQuizViewModel = DummyMySentenceQuizViewModel()
+        )
     }
 } 

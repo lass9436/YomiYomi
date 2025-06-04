@@ -15,25 +15,25 @@ import javax.inject.Inject
 @HiltViewModel
 class MySentenceRandomViewModel @Inject constructor(
     private val mySentenceRepository: MySentenceRepository
-) : ViewModel() {
+) : ViewModel(), MySentenceRandomViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _selectedLevel = MutableStateFlow<Level>(Level.ALL)
-    val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
+    override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
     private val _currentSentence = MutableStateFlow<SentenceItem?>(null)
-    val currentSentence: StateFlow<SentenceItem?> = _currentSentence.asStateFlow()
+    override val currentSentence: StateFlow<SentenceItem?> = _currentSentence.asStateFlow()
 
     private val _availableLevels = MutableStateFlow<List<Level>>(Level.values().toList())
-    val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
+    override val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
 
-    fun setSelectedLevel(level: Level) {
+    override fun setSelectedLevel(level: Level) {
         _selectedLevel.value = level
     }
 
-    fun loadRandomSentence() {
+    override fun loadRandomSentence() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -51,7 +51,7 @@ class MySentenceRandomViewModel @Inject constructor(
         }
     }
 
-    fun updateLearningProgress(id: Int, progress: Float) {
+    override fun updateLearningProgress(id: Int, progress: Float) {
         viewModelScope.launch {
             try {
                 mySentenceRepository.updateLearningProgress(id, progress)

@@ -18,11 +18,13 @@ import com.lass.yomiyomi.ui.component.card.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.mySentence.random.MySentenceRandomViewModel
+import com.lass.yomiyomi.viewmodel.mySentence.random.MySentenceRandomViewModelInterface
+import com.lass.yomiyomi.viewmodel.mySentence.random.DummyMySentenceRandomViewModel
 
 @Composable
 fun MySentenceRandomScreen(
     onBack: () -> Unit,
-    mySentenceRandomViewModel: MySentenceRandomViewModel = hiltViewModel()
+    mySentenceRandomViewModel: MySentenceRandomViewModelInterface = hiltViewModel<MySentenceRandomViewModel>()
 ) {
     val isLoading by mySentenceRandomViewModel.isLoading.collectAsState()
     val selectedLevel by mySentenceRandomViewModel.selectedLevel.collectAsState()
@@ -74,6 +76,9 @@ fun MySentenceRandomScreen(
 @Composable
 fun MySentenceRandomScreenPreview() {
     YomiYomiTheme {
-        MySentenceRandomScreen(onBack = {})
+        MySentenceRandomScreen(
+            onBack = {},
+            mySentenceRandomViewModel = DummyMySentenceRandomViewModel()
+        )
     }
 } 

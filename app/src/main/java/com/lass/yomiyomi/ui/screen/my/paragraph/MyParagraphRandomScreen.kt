@@ -17,11 +17,13 @@ import com.lass.yomiyomi.ui.component.card.ItemCard
 import com.lass.yomiyomi.ui.layout.RandomLayout
 import com.lass.yomiyomi.ui.theme.YomiYomiTheme
 import com.lass.yomiyomi.viewmodel.myParagraph.random.MyParagraphRandomViewModel
+import com.lass.yomiyomi.viewmodel.myParagraph.random.MyParagraphRandomViewModelInterface
+import com.lass.yomiyomi.viewmodel.myParagraph.random.DummyMyParagraphRandomViewModel
 
 @Composable
 fun MyParagraphRandomScreen(
     onBack: () -> Unit,
-    myParagraphRandomViewModel: MyParagraphRandomViewModel = hiltViewModel()
+    myParagraphRandomViewModel: MyParagraphRandomViewModelInterface = hiltViewModel<MyParagraphRandomViewModel>()
 ) {
     val isLoading by myParagraphRandomViewModel.isLoading.collectAsState()
     val selectedLevel by myParagraphRandomViewModel.selectedLevel.collectAsState()
@@ -109,6 +111,9 @@ fun MyParagraphRandomScreen(
 @Composable
 fun MyParagraphRandomScreenPreview() {
     YomiYomiTheme {
-        MyParagraphRandomScreen(onBack = {})
+        MyParagraphRandomScreen(
+            onBack = {},
+            myParagraphRandomViewModel = DummyMyParagraphRandomViewModel()
+        )
     }
 } 

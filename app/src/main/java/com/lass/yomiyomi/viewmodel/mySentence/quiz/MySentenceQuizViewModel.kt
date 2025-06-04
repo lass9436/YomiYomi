@@ -4,47 +4,38 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.data.SentenceQuizState
 import com.lass.yomiyomi.data.repository.MySentenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class QuizState(
-    val currentQuestion: SentenceItem? = null,
-    val currentQuestionIndex: Int = 0,
-    val totalQuestions: Int = 0,
-    val score: Int = 0,
-    val isAnswered: Boolean = false,
-    val isQuizFinished: Boolean = false,
-    val showAnswer: Boolean = false
-)
-
 @HiltViewModel
 class MySentenceQuizViewModel @Inject constructor(
     private val mySentenceRepository: MySentenceRepository
-) : ViewModel() {
+) : ViewModel(), MySentenceQuizViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _selectedLevel = MutableStateFlow<Level>(Level.ALL)
-    val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
+    override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
-    private val _quizState = MutableStateFlow(QuizState())
-    val quizState: StateFlow<QuizState> = _quizState.asStateFlow()
+    private val _quizState = MutableStateFlow(SentenceQuizState())
+    override val quizState: StateFlow<SentenceQuizState> = _quizState.asStateFlow()
 
     private val _availableLevels = MutableStateFlow<List<Level>>(Level.values().toList())
-    val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
+    override val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
 
     private var quizSentences: List<SentenceItem> = emptyList()
     private val questionCount = 10 // 퀴즈 문제 수
 
-    fun setSelectedLevel(level: Level) {
+    override fun setSelectedLevel(level: Level) {
         _selectedLevel.value = level
     }
 
-    fun startQuiz() {
+    override fun startQuiz() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -56,7 +47,7 @@ class MySentenceQuizViewModel @Inject constructor(
                 
                 if (sentences.isNotEmpty()) {
                     quizSentences = sentences.shuffled().take(questionCount)
-                    _quizState.value = QuizState(
+                    _quizState.value = SentenceQuizState(
                         currentQuestion = quizSentences.first(),
                         currentQuestionIndex = 0,
                         totalQuestions = quizSentences.size,
@@ -67,22 +58,22 @@ class MySentenceQuizViewModel @Inject constructor(
                     )
                 } else {
                     // 문장이 없는 경우
-                    _quizState.value = QuizState(isQuizFinished = true)
+                    _quizState.value = SentenceQuizState(isQuizFinished = true)
                 }
             } catch (e: Exception) {
-                _quizState.value = QuizState(isQuizFinished = true)
+                _quizState.value = SentenceQuizState(isQuizFinished = true)
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun showAnswer() {
+    override fun showAnswer() {
         val currentState = _quizState.value
         _quizState.value = currentState.copy(showAnswer = true)
     }
 
-    fun answerCorrect() {
+    override fun answerCorrect() {
         val currentState = _quizState.value
         if (!currentState.isAnswered) {
             _quizState.value = currentState.copy(
@@ -97,7 +88,7 @@ class MySentenceQuizViewModel @Inject constructor(
         }
     }
 
-    fun answerIncorrect() {
+    override fun answerIncorrect() {
         val currentState = _quizState.value
         if (!currentState.isAnswered) {
             _quizState.value = currentState.copy(isAnswered = true)
@@ -110,7 +101,7 @@ class MySentenceQuizViewModel @Inject constructor(
         }
     }
 
-    fun nextQuestion() {
+    override fun nextQuestion() {
         val currentState = _quizState.value
         val nextIndex = currentState.currentQuestionIndex + 1
         
@@ -126,8 +117,8 @@ class MySentenceQuizViewModel @Inject constructor(
         }
     }
 
-    fun resetQuiz() {
-        _quizState.value = QuizState()
+    override fun resetQuiz() {
+        _quizState.value = SentenceQuizState()
         quizSentences = emptyList()
     }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.data.ParagraphQuizState
 import com.lass.yomiyomi.data.repository.MyParagraphRepository
 import com.lass.yomiyomi.data.repository.MySentenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,44 +13,32 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class ParagraphQuizState(
-    val currentParagraph: ParagraphItem? = null,
-    val currentSentences: List<SentenceItem> = emptyList(),
-    val currentSentenceIndex: Int = 0,
-    val currentParagraphIndex: Int = 0,
-    val totalParagraphs: Int = 0,
-    val score: Int = 0,
-    val isAnswered: Boolean = false,
-    val isQuizFinished: Boolean = false,
-    val showAnswer: Boolean = false
-)
-
 @HiltViewModel
 class MyParagraphQuizViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
     private val mySentenceRepository: MySentenceRepository
-) : ViewModel() {
+) : ViewModel(), MyParagraphQuizViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _selectedLevel = MutableStateFlow<Level>(Level.ALL)
-    val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
+    override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
     private val _quizState = MutableStateFlow(ParagraphQuizState())
-    val quizState: StateFlow<ParagraphQuizState> = _quizState.asStateFlow()
+    override val quizState: StateFlow<ParagraphQuizState> = _quizState.asStateFlow()
 
     private val _availableLevels = MutableStateFlow<List<Level>>(Level.values().toList())
-    val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
+    override val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
 
     private var quizParagraphs: List<ParagraphItem> = emptyList()
     private val paragraphCount = 5 // 퀴즈 문단 수
 
-    fun setSelectedLevel(level: Level) {
+    override fun setSelectedLevel(level: Level) {
         _selectedLevel.value = level
     }
 
-    fun startQuiz() {
+    override fun startQuiz() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -93,12 +82,12 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
-    fun showAnswer() {
+    override fun showAnswer() {
         val currentState = _quizState.value
         _quizState.value = currentState.copy(showAnswer = true)
     }
 
-    fun answerCorrect() {
+    override fun answerCorrect() {
         val currentState = _quizState.value
         if (!currentState.isAnswered) {
             _quizState.value = currentState.copy(
@@ -114,7 +103,7 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
-    fun answerIncorrect() {
+    override fun answerIncorrect() {
         val currentState = _quizState.value
         if (!currentState.isAnswered) {
             _quizState.value = currentState.copy(isAnswered = true)
@@ -128,7 +117,7 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
-    fun nextQuestion() {
+    override fun nextQuestion() {
         viewModelScope.launch {
             val currentState = _quizState.value
             val nextSentenceIndex = currentState.currentSentenceIndex + 1
@@ -163,12 +152,12 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
-    fun resetQuiz() {
+    override fun resetQuiz() {
         _quizState.value = ParagraphQuizState()
         quizParagraphs = emptyList()
     }
 
-    fun getCurrentSentence(): SentenceItem? {
+    override fun getCurrentSentence(): SentenceItem? {
         val currentState = _quizState.value
         return if (currentState.currentSentenceIndex < currentState.currentSentences.size) {
             currentState.currentSentences[currentState.currentSentenceIndex]

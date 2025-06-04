@@ -18,28 +18,28 @@ import javax.inject.Inject
 class MyParagraphRandomViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
     private val mySentenceRepository: MySentenceRepository
-) : ViewModel() {
+) : ViewModel(), MyParagraphRandomViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _selectedLevel = MutableStateFlow<Level>(Level.ALL)
-    val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
+    override val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
     private val _currentParagraph = MutableStateFlow<ParagraphItem?>(null)
-    val currentParagraph: StateFlow<ParagraphItem?> = _currentParagraph.asStateFlow()
+    override val currentParagraph: StateFlow<ParagraphItem?> = _currentParagraph.asStateFlow()
 
     private val _currentSentences = MutableStateFlow<List<SentenceItem>>(emptyList())
-    val currentSentences: StateFlow<List<SentenceItem>> = _currentSentences.asStateFlow()
+    override val currentSentences: StateFlow<List<SentenceItem>> = _currentSentences.asStateFlow()
 
     private val _availableLevels = MutableStateFlow<List<Level>>(Level.values().toList())
-    val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
+    override val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
 
-    fun setSelectedLevel(level: Level) {
+    override fun setSelectedLevel(level: Level) {
         _selectedLevel.value = level
     }
 
-    fun loadRandomParagraph() {
+    override fun loadRandomParagraph() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -67,7 +67,7 @@ class MyParagraphRandomViewModel @Inject constructor(
         }
     }
 
-    fun updateSentenceLearningProgress(id: Int, progress: Float) {
+    override fun updateSentenceLearningProgress(id: Int, progress: Float) {
         viewModelScope.launch {
             try {
                 mySentenceRepository.updateLearningProgress(id, progress)
