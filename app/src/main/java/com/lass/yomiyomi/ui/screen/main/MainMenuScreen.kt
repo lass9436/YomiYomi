@@ -31,6 +31,7 @@ fun MainMenuScreen(
     onNavigateToMyKanjiQuiz: () -> Unit,
     onNavigateToMyWordQuiz: () -> Unit,
     onNavigateToSentenceList: () -> Unit = {},
+    onNavigateToSentenceRandom: () -> Unit = {},
     onNavigateToParagraphList: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
@@ -213,6 +214,13 @@ fun MainMenuScreen(
                         }
                         item {
                             MenuCard(
+                                title = "내 문장 랜덤",
+                                subtitle = "랜덤으로 문장을\n학습해보세요",
+                                onClick = onNavigateToSentenceRandom
+                            )
+                        }
+                        item {
+                            MenuCard(
                                 title = "내 문단",
                                 subtitle = "나만의 문단을\n연습해보세요",
                                 onClick = onNavigateToParagraphList
@@ -243,6 +251,7 @@ fun MainMenuScreenPreview() {
         onNavigateToMyKanjiQuiz = {},
         onNavigateToMyWordQuiz = {},
         onNavigateToSentenceList = {},
+        onNavigateToSentenceRandom = {},
         onNavigateToParagraphList = {}
     )
 }

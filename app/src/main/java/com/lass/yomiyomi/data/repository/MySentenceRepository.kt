@@ -84,6 +84,11 @@ class MySentenceRepository(private val context: Context) {
         return mySentenceDao.getRandomIndividualSentenceByLevel(level)?.toSentenceItem()
     }
 
+    // ViewModel 호환성을 위한 메소드
+    suspend fun getRandomSentenceByLevel(level: String?): SentenceItem? {
+        return getRandomIndividualSentenceByLevel(level)
+    }
+
     // 검색
     suspend fun searchSentences(query: String): List<SentenceItem> {
         return mySentenceDao.searchSentences(query).toSentenceItems()
