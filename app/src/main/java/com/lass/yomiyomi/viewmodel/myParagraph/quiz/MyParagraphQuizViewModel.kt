@@ -69,6 +69,11 @@ class MyParagraphQuizViewModel @Inject constructor(
             speechManager.recognizedText.collect { result ->
                 _recognizedText.value = result
                 _isListening.value = false
+                
+                // 음성 인식이 완료되고 텍스트가 있으면 자동으로 정답 확인
+                if (result.isNotEmpty()) {
+                    processRecognizedText(result)
+                }
             }
         }
         

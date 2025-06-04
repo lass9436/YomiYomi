@@ -66,7 +66,7 @@ fun ParagraphSpeechQuizButton(
         Button(
             onClick = {
                 if (isListening) {
-                    onStopListening()
+                    onStopListening() // 정지만 하고, 정답 확인은 ViewModel에서 자동 처리
                 } else {
                     onStartListening()
                 }
@@ -81,7 +81,7 @@ fun ParagraphSpeechQuizButton(
         ) {
             Icon(
                 imageVector = if (isListening) Icons.Default.Close else Icons.Default.PlayArrow,
-                contentDescription = if (isListening) "음성 인식 중지" else "음성 인식 시작",
+                contentDescription = if (isListening) "녹음 정지 (자동 정답 확인)" else "음성 인식 시작",
                 modifier = Modifier.size(32.dp),
                 tint = MaterialTheme.colorScheme.onPrimary
             )
@@ -138,7 +138,7 @@ fun ParagraphSpeechQuizButton(
             }
         }
         // 인식된 텍스트 표시
-        else if (recognizedText.isNotEmpty()) {
+        else if (recognizedText.isNotEmpty() && !isListening) {
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -162,25 +162,14 @@ fun ParagraphSpeechQuizButton(
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                     
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     
-                    // 정답 확인 버튼
-                    Button(
-                        onClick = { 
-                            val result = onCheckAnswer(recognizedText)
-                            lastCheckResult = result
-                            showResult = true
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary
-                        )
-                    ) {
-                        Text(
-                            text = "정답 확인",
-                            color = MaterialTheme.colorScheme.onTertiary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = "정답 확인 완료!",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
                 }
             }
         } else if (!isListening) {
@@ -195,7 +184,7 @@ fun ParagraphSpeechQuizButton(
         } else {
             // 듣는 중 안내
             Text(
-                text = "🔊 듣고 있습니다...",
+                text = "🔊 듣고 있습니다... (다시 클릭하면 자동 정답 확인)",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,

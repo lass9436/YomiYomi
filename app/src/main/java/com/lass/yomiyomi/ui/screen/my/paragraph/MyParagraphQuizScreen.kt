@@ -10,6 +10,9 @@ import com.lass.yomiyomi.ui.state.ParagraphQuizCallbacks
 import com.lass.yomiyomi.ui.state.ParagraphQuizState
 import com.lass.yomiyomi.viewmodel.myParagraph.quiz.MyParagraphQuizViewModel
 import com.lass.yomiyomi.viewmodel.myParagraph.quiz.MyParagraphQuizViewModelInterface
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun MyParagraphQuizScreen(
@@ -61,10 +64,13 @@ fun MyParagraphQuizScreen(
         onProcessRecognition = { recognizedAnswer ->
             val newlyFilled = myParagraphQuizViewModel.processRecognizedText(recognizedAnswer)
             
-            // 새로 채워진 빈칸이 있으면 인식된 텍스트 초기화
+            // 새로 채워진 빈칸이 있으면 나중에 인식된 텍스트 초기화 (결과를 보고 난 후)
             if (newlyFilled.isNotEmpty()) {
-                myParagraphQuizViewModel.clearRecognizedText()
-                // TODO: 새로 채워진 빈칸들을 시각적으로 강조하는 애니메이션 추가 가능
+                // 3초 후에 텍스트 초기화 (사용자가 결과를 볼 시간을 줌)
+                MainScope().launch {
+                    delay(3000)
+                    myParagraphQuizViewModel.clearRecognizedText()
+                }
             }
             
             // UI에서 사용할 수 있도록 반환
