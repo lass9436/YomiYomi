@@ -90,52 +90,26 @@ object ParagraphQuizGenerator {
      */
     fun fillBlanks(quiz: ParagraphQuiz, recognizedText: String): List<String> {
         val newlyFilled = mutableListOf<String>()
-        val normalizedRecognized = JapaneseTextFilter.normalizeForComparison(recognizedText)
         
-        // 디버그 로그 (개발 중에만 사용)
-        println("Debug - Recognized text: '$recognizedText' -> normalized: '$normalizedRecognized'")
+        // 디버그 로그
+        println("Debug - Recognized text: '$recognizedText'")
+        println("Debug - Original text: '${quiz.originalText}'")
         
         quiz.blanks.forEach { blank ->
             // 이미 채워진 빈칸은 건너뛰기
             if (!quiz.filledBlanks.containsKey(blank.index)) {
-                val normalizedAnswer = JapaneseTextFilter.normalizeForComparison(blank.correctAnswer)
+                val answer = blank.correctAnswer
+                println("Debug - Checking answer: '$answer'")
                 
-                // 디버그 로그
-                println("Debug - Checking answer: '${blank.correctAnswer}' -> normalized: '$normalizedAnswer'")
-                
-                // 매칭 방식 개선
-                val isMatched = when {
-                    // 1. 정확히 일치하는 경우 (최우선)
-                    normalizedRecognized == normalizedAnswer -> {
-                        println("Debug - Exact match found!")
-                        true
-                    }
-                    
-                    // 2. 정답이 인식된 텍스트에 단어 경계로 포함된 경우
-                    normalizedAnswer.length >= 2 && isWordMatch(normalizedRecognized, normalizedAnswer) -> {
-                        println("Debug - Word boundary match found!")
-                        true
-                    }
-                    
-                    // 3. 짧은 단어(1글자)는 정확한 매칭만 허용
-                    normalizedAnswer.length == 1 && normalizedRecognized.contains(normalizedAnswer) -> {
-                        println("Debug - Single character match found!")
-                        true
-                    }
-                    
-                    // 4. 기존 contains 방식 (긴 단어만, 더 엄격한 조건)
-                    normalizedAnswer.length >= 3 && normalizedRecognized.contains(normalizedAnswer) -> {
-                        println("Debug - Contains match found!")
-                        true
-                    }
-                    
-                    else -> false
-                }
+                // 여러 매칭 전략 시도
+                val isMatched = tryAllMatchingStrategies(recognizedText, answer, quiz.originalText, blank.position)
                 
                 if (isMatched) {
-                    quiz.filledBlanks[blank.index] = blank.correctAnswer
-                    newlyFilled.add(blank.correctAnswer)
-                    println("Debug - Filled blank: '${blank.correctAnswer}'")
+                    quiz.filledBlanks[blank.index] = answer
+                    newlyFilled.add(answer)
+                    println("Debug - ✅ Filled blank: '$answer'")
+                } else {
+                    println("Debug - ❌ No match for: '$answer'")
                 }
             }
         }
@@ -144,35 +118,88 @@ object ParagraphQuizGenerator {
     }
     
     /**
-     * 단어 경계를 고려한 매칭 (간단한 구현)
-     * @param text 전체 텍스트
-     * @param word 찾을 단어
-     * @return 단어 경계로 매칭되는지 여부
+     * 다양한 매칭 전략으로 음성 인식과 정답을 비교
      */
-    private fun isWordMatch(text: String, word: String): Boolean {
-        if (!text.contains(word)) return false
+    private fun tryAllMatchingStrategies(
+        recognizedText: String, 
+        answer: String, 
+        originalText: String,
+        answerPosition: IntRange
+    ): Boolean {
+        println("Debug - Trying strategies for answer: '$answer'")
         
-        val index = text.indexOf(word)
-        val wordEnd = index + word.length
+        // 전략 1: 단순 히라가나 포함 확인
+        val recognizedHiragana = convertToHiraganaOnly(recognizedText)
+        val answerHiragana = convertToHiraganaOnly(answer)
         
-        // 단어 앞뒤가 다른 일본어 문자로 둘러싸여 있지 않은지 확인
-        val beforeChar = if (index > 0) text[index - 1] else null
-        val afterChar = if (wordEnd < text.length) text[wordEnd] else null
+        println("Debug - Strategy 1: '$recognizedHiragana' contains '$answerHiragana'?")
+        if (recognizedHiragana.contains(answerHiragana)) {
+            println("Debug - Strategy 1: ✅ Match found!")
+            return true
+        }
         
-        // 앞뒤 문자가 일본어가 아니거나 문장의 시작/끝이면 단어 경계로 인정
-        val isWordBoundary = (beforeChar == null || !isJapaneseChar(beforeChar)) &&
-                            (afterChar == null || !isJapaneseChar(afterChar))
+        // 전략 2: 원문에서 해당 위치의 한자 찾기
+        val kanjiAtPosition = extractKanjiAtPosition(originalText, answerPosition)
+        if (kanjiAtPosition.isNotEmpty()) {
+            println("Debug - Strategy 2: Looking for kanji '$kanjiAtPosition' in '$recognizedText'")
+            if (recognizedText.contains(kanjiAtPosition)) {
+                println("Debug - Strategy 2: ✅ Kanji match found!")
+                return true
+            }
+        }
         
-        return isWordBoundary
+        // 전략 3: 정규화된 텍스트로 부분 매칭 (기존 방식)
+        val normalizedRecognized = JapaneseTextFilter.normalizeForComparison(recognizedText)
+        val normalizedAnswer = JapaneseTextFilter.normalizeForComparison(answer)
+        
+        println("Debug - Strategy 3: '$normalizedRecognized' contains '$normalizedAnswer'?")
+        if (normalizedRecognized.contains(normalizedAnswer)) {
+            println("Debug - Strategy 3: ✅ Normalized match found!")
+            return true
+        }
+        
+        println("Debug - All strategies failed for: '$answer'")
+        return false
     }
     
     /**
-     * 일본어 문자인지 확인 (히라가나, 카타카나, 한자)
+     * 텍스트에서 히라가나만 추출
      */
-    private fun isJapaneseChar(char: Char): Boolean {
+    private fun convertToHiraganaOnly(text: String): String {
+        return text.filter { char ->
+            val code = char.code
+            code in 0x3040..0x309F // 히라가나만
+        }
+    }
+    
+    /**
+     * 원문에서 특정 위치 앞의 한자를 추출
+     * 예: "私[わたし]は" -> position이 [わたし] 위치면 "私" 반환
+     */
+    private fun extractKanjiAtPosition(originalText: String, bracketPosition: IntRange): String {
+        // 대괄호 앞의 한자를 찾기
+        var kanjiStart = bracketPosition.first - 1
+        
+        // 한자 시작점 찾기 (연속된 한자들)
+        while (kanjiStart >= 0 && isKanji(originalText[kanjiStart])) {
+            kanjiStart--
+        }
+        kanjiStart++ // 실제 한자 시작점
+        
+        if (kanjiStart < bracketPosition.first) {
+            val kanji = originalText.substring(kanjiStart, bracketPosition.first)
+            println("Debug - Found kanji before bracket: '$kanji'")
+            return kanji
+        }
+        
+        return ""
+    }
+    
+    /**
+     * 한자인지 확인
+     */
+    private fun isKanji(char: Char): Boolean {
         val code = char.code
-        return (code in 0x3040..0x309F) || // 히라가나
-               (code in 0x30A0..0x30FF) || // 카타카나  
-               (code in 0x4E00..0x9FAF)    // 한자
+        return code in 0x4E00..0x9FAF
     }
 } 
