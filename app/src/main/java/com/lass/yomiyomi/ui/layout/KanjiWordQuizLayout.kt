@@ -8,9 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.ui.component.button.LevelSelector
 import com.lass.yomiyomi.ui.component.button.LearningModeToggle
 import com.lass.yomiyomi.ui.component.button.RefreshButton
