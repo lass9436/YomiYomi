@@ -44,7 +44,7 @@ fun QuizAnswerDialog(
     }
 
     AlertDialog(
-        onDismissRequest = { },
+        onDismissRequest = onDismiss,
         confirmButton = {
             Button(
                 onClick = onDismiss,
