@@ -21,6 +21,7 @@ import com.lass.yomiyomi.ui.screen.my.kanji.MyKanjiScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphListScreen
 import com.lass.yomiyomi.ui.screen.my.sentence.SentenceListScreen
 import com.lass.yomiyomi.ui.screen.my.sentence.MySentenceRandomScreen
+import com.lass.yomiyomi.ui.screen.my.sentence.MySentenceQuizScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordQuizScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordRandomScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
@@ -46,6 +47,7 @@ enum class Routes(val route: String) {
     MY_WORD_QUIZ("myWordQuiz"),
     MY_SENTENCE_LIST("mySentenceList"),
     MY_SENTENCE_RANDOM("mySentenceRandom"),
+    MY_SENTENCE_QUIZ("mySentenceQuiz"),
     MY_PARAGRAPH_LIST("myParagraphList"),
     MY_PARAGRAPH_RANDOM("myParagraphRandom"),
     MY_PARAGRAPH_DETAIL("myParagraphDetail/{paragraphId}")
@@ -83,6 +85,7 @@ fun MainScreen(
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
                 onNavigateToSentenceList = { navController.navigate(Routes.MY_SENTENCE_LIST.route) },
                 onNavigateToSentenceRandom = { navController.navigate(Routes.MY_SENTENCE_RANDOM.route) },
+                onNavigateToSentenceQuiz = { navController.navigate(Routes.MY_SENTENCE_QUIZ.route) },
                 onNavigateToParagraphList = { navController.navigate(Routes.MY_PARAGRAPH_LIST.route) },
                 onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) }
             )
@@ -111,6 +114,7 @@ fun MainScreen(
                 onNavigateToMyWordQuiz = { navController.navigate(Routes.MY_WORD_QUIZ.route) },
                 onNavigateToSentenceList = { navController.navigate(Routes.MY_SENTENCE_LIST.route) },
                 onNavigateToSentenceRandom = { navController.navigate(Routes.MY_SENTENCE_RANDOM.route) },
+                onNavigateToSentenceQuiz = { navController.navigate(Routes.MY_SENTENCE_QUIZ.route) },
                 onNavigateToParagraphList = { navController.navigate(Routes.MY_PARAGRAPH_LIST.route) },
                 onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) }
             )
@@ -234,6 +238,15 @@ fun MainScreen(
         }
         composable(Routes.MY_SENTENCE_RANDOM.route) {
             MySentenceRandomScreen(
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Routes.MY_SENTENCE_QUIZ.route) {
+            MySentenceQuizScreen(
                 onBack = {
                     navController.navigate("main/2") {
                         popUpTo(Routes.MAIN.route) { inclusive = true }

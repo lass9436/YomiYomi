@@ -32,6 +32,7 @@ fun MainMenuScreen(
     onNavigateToMyWordQuiz: () -> Unit,
     onNavigateToSentenceList: () -> Unit = {},
     onNavigateToSentenceRandom: () -> Unit = {},
+    onNavigateToSentenceQuiz: () -> Unit = {},
     onNavigateToParagraphList: () -> Unit = {},
     onNavigateToParagraphRandom: () -> Unit = {}
 ) {
@@ -234,6 +235,13 @@ fun MainMenuScreen(
                                 onClick = onNavigateToParagraphRandom
                             )
                         }
+                        item {
+                            MenuCard(
+                                title = "내 문장 퀴즈",
+                                subtitle = "내 문장 실력을\n테스트해보세요",
+                                onClick = onNavigateToSentenceQuiz
+                            )
+                        }
                     }
                 }
             }
@@ -260,6 +268,7 @@ fun MainMenuScreenPreview() {
         onNavigateToMyWordQuiz = {},
         onNavigateToSentenceList = {},
         onNavigateToSentenceRandom = {},
+        onNavigateToSentenceQuiz = {},
         onNavigateToParagraphList = {},
         onNavigateToParagraphRandom = {}
     )
