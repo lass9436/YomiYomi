@@ -24,6 +24,7 @@ import com.lass.yomiyomi.ui.component.empty.EmptyView
 fun ParagraphListLayout(
     paragraphs: List<ParagraphItem>,
     sentenceCounts: Map<String, Int> = emptyMap(),
+    learningProgress: Map<String, Float> = emptyMap(),
     isLoading: Boolean = false,
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
@@ -92,6 +93,7 @@ fun ParagraphListLayout(
                     ParagraphCard(
                         paragraph = paragraph,
                         sentenceCount = sentenceCounts[paragraph.paragraphId] ?: 0,
+                        learningProgress = learningProgress[paragraph.paragraphId] ?: 0f,
                         onClick = onParagraphClick?.let { { it(paragraph) } },
                         onEdit = onParagraphEdit?.let { { it(paragraph) } },
                         onDelete = onParagraphDelete?.let { { it(paragraph) } }

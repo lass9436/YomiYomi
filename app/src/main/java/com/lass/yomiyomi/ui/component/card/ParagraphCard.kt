@@ -20,6 +20,7 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 fun ParagraphCard(
     paragraph: ParagraphItem,
     sentenceCount: Int = 0,
+    learningProgress: Float = 0f,
     onClick: (() -> Unit)? = null,
     onEdit: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
@@ -153,13 +154,13 @@ fun ParagraphCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 LinearProgressIndicator(
-                    progress = { if (paragraph.totalSentences > 0) sentenceCount.toFloat() / paragraph.totalSentences else 0f },
+                    progress = { learningProgress },
                     modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.tertiary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${sentenceCount}/${paragraph.totalSentences}",
+                    text = "${(learningProgress * 100).toInt()}%",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = FontWeight.Medium

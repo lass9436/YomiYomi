@@ -32,6 +32,7 @@ fun ParagraphListScreen(
     val paragraphs by viewModel.paragraphs.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val learningProgress by viewModel.learningProgress.collectAsStateWithLifecycle()
     
     // 검색 쿼리는 로컬 상태로 관리
     var searchQuery by remember { mutableStateOf("") }
@@ -98,6 +99,7 @@ fun ParagraphListScreen(
         ParagraphListLayout(
             paragraphs = paragraphs,
             sentenceCounts = emptyMap(), // 임시로 빈 맵 사용
+            learningProgress = learningProgress,
             isLoading = isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },

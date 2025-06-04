@@ -106,6 +106,12 @@ class MySentenceRepository(private val context: Context) {
             .associate { it.paragraphId to it.count }
     }
 
+    // 🔥 문단별 학습 진도 평균 계산 추가
+    suspend fun getLearningProgressByParagraph(): Map<String, Float> {
+        return mySentenceDao.getLearningProgressByParagraph()
+            .associate { it.paragraphId to it.averageProgress }
+    }
+
     suspend fun getTotalSentenceCount(): Int {
         return mySentenceDao.getTotalSentenceCount()
     }

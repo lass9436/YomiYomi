@@ -78,6 +78,10 @@ interface MySentenceDao {
     @Query("SELECT paragraphId, COUNT(*) as count FROM sentence WHERE paragraphId IS NOT NULL GROUP BY paragraphId")
     suspend fun getSentenceCountsByParagraph(): List<MySentenceCountByParagraph>
 
+    // 🔥 통계용 - 문단별 학습 진도 평균
+    @Query("SELECT paragraphId, AVG(learningProgress) as averageProgress FROM sentence WHERE paragraphId IS NOT NULL GROUP BY paragraphId")
+    suspend fun getLearningProgressByParagraph(): List<MySentenceLearningProgressByParagraph>
+
     @Query("SELECT COUNT(*) FROM sentence")
     suspend fun getTotalSentenceCount(): Int
 }
@@ -86,4 +90,10 @@ interface MySentenceDao {
 data class MySentenceCountByParagraph(
     val paragraphId: String,
     val count: Int
+)
+
+// 🔥 문단별 학습 진도 평균용 데이터 클래스 추가
+data class MySentenceLearningProgressByParagraph(
+    val paragraphId: String,
+    val averageProgress: Float
 ) 

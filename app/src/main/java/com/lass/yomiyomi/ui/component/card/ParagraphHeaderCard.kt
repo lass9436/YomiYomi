@@ -19,6 +19,13 @@ fun ParagraphHeaderCard(
     sentences: List<SentenceItem> = emptyList(),
     modifier: Modifier = Modifier
 ) {
+    // 🔥 문장들의 평균 학습 진도 계산
+    val averageLearningProgress = if (sentences.isNotEmpty()) {
+        sentences.map { it.learningProgress }.average().toFloat()
+    } else {
+        0f
+    }
+    
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -80,6 +87,24 @@ fun ParagraphHeaderCard(
                 AssistChip(
                     onClick = { },
                     label = { Text("${sentenceCount}/${paragraph.totalSentences}문장", fontSize = 12.sp) }
+                )
+            }
+            
+            // 🔥 학습 진도 표시 추가
+            Spacer(modifier = Modifier.height(12.dp))
+            Column {
+                Text(
+                    text = "학습 진도: ${(averageLearningProgress * 100).toInt()}%",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                LinearProgressIndicator(
+                    progress = { averageLearningProgress },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
         }

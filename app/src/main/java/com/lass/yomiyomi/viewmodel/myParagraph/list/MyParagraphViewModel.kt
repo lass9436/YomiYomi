@@ -3,6 +3,7 @@ package com.lass.yomiyomi.viewmodel.myParagraph.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.data.repository.MyParagraphRepository
+import com.lass.yomiyomi.data.repository.MySentenceRepository
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.constant.Level
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyParagraphViewModel @Inject constructor(
-    private val myParagraphRepository: MyParagraphRepository
+    private val myParagraphRepository: MyParagraphRepository,
+    private val mySentenceRepository: MySentenceRepository
 ) : ViewModel(), MyParagraphViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
@@ -29,6 +31,9 @@ class MyParagraphViewModel @Inject constructor(
 
     private val _allParagraphs = MutableStateFlow<List<ParagraphItem>>(emptyList())
     private val _searchQuery = MutableStateFlow("")
+
+    private val _learningProgress = MutableStateFlow<Map<String, Float>>(emptyMap())
+    val learningProgress: StateFlow<Map<String, Float>> = _learningProgress.asStateFlow()
 
     override val paragraphs: StateFlow<List<ParagraphItem>> = combine(
         _allParagraphs,
@@ -68,6 +73,10 @@ class MyParagraphViewModel @Inject constructor(
                 // 문장 개수와 함께 조회
                 val paragraphList = myParagraphRepository.getParagraphsWithSentenceCounts()
                 _allParagraphs.value = paragraphList
+                
+                // 🔥 문단별 학습 진도도 함께 로드
+                val progressMap = mySentenceRepository.getLearningProgressByParagraph()
+                _learningProgress.value = progressMap
             } catch (e: Exception) {
                 // Handle error
             } finally {
@@ -116,6 +125,18 @@ class MyParagraphViewModel @Inject constructor(
             try {
                 myParagraphRepository.deleteParagraphById(paragraphId)
                 loadParagraphs()
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    // 🔥 학습 진도 새로고침 메서드 추가
+    fun refreshLearningProgress() {
+        viewModelScope.launch {
+            try {
+                val progressMap = mySentenceRepository.getLearningProgressByParagraph()
+                _learningProgress.value = progressMap
             } catch (e: Exception) {
                 // Handle error
             }
