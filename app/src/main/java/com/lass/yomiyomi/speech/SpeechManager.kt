@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import android.util.Log
 
 @Singleton
 class SpeechManager @Inject constructor(
@@ -189,7 +190,13 @@ class SpeechManager @Inject constructor(
      * 음성 인식 시작
      */
     fun startListening() {
-        if (!_speechState.value.isSpeechRecognitionAvailable) return
+        Log.d("SpeechManager", "startListening() called")
+        Log.d("SpeechManager", "isSpeechRecognitionAvailable: ${_speechState.value.isSpeechRecognitionAvailable}")
+        
+        if (!_speechState.value.isSpeechRecognitionAvailable) {
+            Log.w("SpeechManager", "Speech recognition not available")
+            return
+        }
         
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -200,6 +207,7 @@ class SpeechManager @Inject constructor(
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
         }
         
+        Log.d("SpeechManager", "Starting speech recognizer...")
         speechRecognizer?.startListening(intent)
     }
 
