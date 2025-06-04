@@ -220,6 +220,17 @@ class SpeechManager @Inject constructor(
     }
 
     /**
+     * 인식된 텍스트 초기화
+     */
+    fun clearRecognizedText() {
+        _recognizedText.value = ""
+        _speechState.value = _speechState.value.copy(
+            lastRecognizedText = "",
+            partialText = ""
+        )
+    }
+
+    /**
      * 텍스트를 일본어로 읽기 (원본 텍스트 추적 지원)
      */
     fun speakWithOriginalText(originalText: String, processedText: String, utteranceId: String = "yomiyomi_speech") {

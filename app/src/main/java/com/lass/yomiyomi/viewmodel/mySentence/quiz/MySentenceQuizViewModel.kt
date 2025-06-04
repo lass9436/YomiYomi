@@ -105,13 +105,14 @@ class MySentenceQuizViewModel @Inject constructor(
     override fun checkAnswer(recognizedAnswer: String): Boolean {
         val currentQuiz = _quizState.value ?: return false
         
+        // 정답에서도 후리가나 제거하여 비교
+        val cleanCorrectAnswer = JapaneseTextFilter.prepareTTSText(currentQuiz.correctAnswer)
         // 인식된 텍스트를 정답 형식으로 변환
         val cleanRecognized = JapaneseTextFilter.prepareTTSText(recognizedAnswer)
-        val cleanCorrect = currentQuiz.cleanAnswer
         
         // 정답 비교 (대소문자 무시, 공백 정규화)
         val isCorrect = cleanRecognized.lowercase().replace("\\s+".toRegex(), "") == 
-                       cleanCorrect.lowercase().replace("\\s+".toRegex(), "")
+                       cleanCorrectAnswer.lowercase().replace("\\s+".toRegex(), "")
         
         // 학습 진도 업데이트 (정답인 경우)
         if (isCorrect) {
@@ -131,7 +132,6 @@ class MySentenceQuizViewModel @Inject constructor(
     }
 
     override fun clearRecognizedText() {
-        // SpeechManager에서 제공하지 않으면 여기서 관리
-        // 현재는 SpeechManager가 자동으로 관리하므로 빈 구현
+        speechManager.clearRecognizedText()
     }
 } 

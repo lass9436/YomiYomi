@@ -10,6 +10,7 @@ import com.lass.yomiyomi.ui.state.SentenceQuizCallbacks
 import com.lass.yomiyomi.ui.state.SentenceQuizState
 import com.lass.yomiyomi.viewmodel.mySentence.quiz.MySentenceQuizViewModel
 import com.lass.yomiyomi.viewmodel.mySentence.quiz.MySentenceQuizViewModelInterface
+import com.lass.yomiyomi.util.JapaneseTextFilter
 
 @Composable
 fun MySentenceQuizScreen(
@@ -36,7 +37,7 @@ fun MySentenceQuizScreen(
     var showDialog by remember { mutableStateOf(false) }
     var answerResult by remember { mutableStateOf<String?>(null) }
 
-    val quizTypes = listOf("한국어 → 일어 음성", "일어 전체 → 일어 음성", "일어(후리가나X) → 일어 음성")
+    val quizTypes = listOf("한국어", "일본어", "요미가나X")
     val sentenceQuizTypes = listOf(
         SentenceQuizType.KOREAN_TO_JAPANESE_SPEECH,
         SentenceQuizType.JAPANESE_TO_JAPANESE_SPEECH,
@@ -81,12 +82,15 @@ fun MySentenceQuizScreen(
         },
         onCheckAnswer = { recognizedAnswer ->
             val isCorrect = mySentenceQuizViewModel.checkAnswer(recognizedAnswer)
+            // 정답에서 후리가나 제거
+            val cleanCorrectAnswer = JapaneseTextFilter.removeFurigana(quizData?.correctAnswer ?: "")
             answerResult = if (isCorrect) {
-                "정답입니다! 🎉\n정답: ${quizData?.correctAnswer ?: ""}"
+                "정답입니다! 🎉\n정답: $cleanCorrectAnswer"
             } else {
-                "틀렸습니다. 😅\n정답: ${quizData?.correctAnswer ?: ""}\n인식된 답: $recognizedAnswer"
+                "틀렸습니다. 😅\n정답: $cleanCorrectAnswer\n인식된 답: $recognizedAnswer"
             }
             showDialog = true
+            mySentenceQuizViewModel.clearRecognizedText() // 정답 확인 후 인식된 텍스트 초기화
         },
         onRefresh = {
             mySentenceQuizViewModel.loadQuizByLevel(selectedLevel, sentenceQuizTypes[selectedQuizTypeIndex], isLearningMode)
@@ -95,6 +99,7 @@ fun MySentenceQuizScreen(
             showDialog = false
             answerResult = null
             mySentenceQuizViewModel.stopListening() // 다이얼로그 닫을 때 음성 인식 중지
+            mySentenceQuizViewModel.clearRecognizedText() // 인식된 텍스트 초기화
             mySentenceQuizViewModel.loadQuizByLevel(selectedLevel, sentenceQuizTypes[selectedQuizTypeIndex], isLearningMode)
         }
     )
