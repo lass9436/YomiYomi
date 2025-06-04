@@ -34,7 +34,8 @@ fun MainMenuScreen(
     onNavigateToSentenceRandom: () -> Unit = {},
     onNavigateToSentenceQuiz: () -> Unit = {},
     onNavigateToParagraphList: () -> Unit = {},
-    onNavigateToParagraphRandom: () -> Unit = {}
+    onNavigateToParagraphRandom: () -> Unit = {},
+    onNavigateToParagraphQuiz: () -> Unit = {}
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(initialTabIndex) }
     val tabs = listOf("기초 학습", "단어 / 한자", "문장 / 문단")
@@ -242,6 +243,13 @@ fun MainMenuScreen(
                                 onClick = onNavigateToSentenceQuiz
                             )
                         }
+                        item {
+                            MenuCard(
+                                title = "내 문단 퀴즈",
+                                subtitle = "내 문단 실력을\n테스트해보세요",
+                                onClick = onNavigateToParagraphQuiz
+                            )
+                        }
                     }
                 }
             }
@@ -270,6 +278,7 @@ fun MainMenuScreenPreview() {
         onNavigateToSentenceRandom = {},
         onNavigateToSentenceQuiz = {},
         onNavigateToParagraphList = {},
-        onNavigateToParagraphRandom = {}
+        onNavigateToParagraphRandom = {},
+        onNavigateToParagraphQuiz = {}
     )
 }

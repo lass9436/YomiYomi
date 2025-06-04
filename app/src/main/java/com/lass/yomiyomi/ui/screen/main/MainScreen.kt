@@ -27,6 +27,7 @@ import com.lass.yomiyomi.ui.screen.my.word.MyWordRandomScreen
 import com.lass.yomiyomi.ui.screen.my.word.MyWordScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.ParagraphDetailScreen
 import com.lass.yomiyomi.ui.screen.my.paragraph.MyParagraphRandomScreen
+import com.lass.yomiyomi.ui.screen.my.paragraph.MyParagraphQuizScreen
 import com.lass.yomiyomi.util.NavigationTTSManager
 
 // 네비게이션 경로를 Enum으로 정의
@@ -50,6 +51,7 @@ enum class Routes(val route: String) {
     MY_SENTENCE_QUIZ("mySentenceQuiz"),
     MY_PARAGRAPH_LIST("myParagraphList"),
     MY_PARAGRAPH_RANDOM("myParagraphRandom"),
+    MY_PARAGRAPH_QUIZ("myParagraphQuiz"),
     MY_PARAGRAPH_DETAIL("myParagraphDetail/{paragraphId}")
 }
 
@@ -87,7 +89,8 @@ fun MainScreen(
                 onNavigateToSentenceRandom = { navController.navigate(Routes.MY_SENTENCE_RANDOM.route) },
                 onNavigateToSentenceQuiz = { navController.navigate(Routes.MY_SENTENCE_QUIZ.route) },
                 onNavigateToParagraphList = { navController.navigate(Routes.MY_PARAGRAPH_LIST.route) },
-                onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) }
+                onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) },
+                onNavigateToParagraphQuiz = { navController.navigate(Routes.MY_PARAGRAPH_QUIZ.route) }
             )
         }
         composable(
@@ -116,7 +119,8 @@ fun MainScreen(
                 onNavigateToSentenceRandom = { navController.navigate(Routes.MY_SENTENCE_RANDOM.route) },
                 onNavigateToSentenceQuiz = { navController.navigate(Routes.MY_SENTENCE_QUIZ.route) },
                 onNavigateToParagraphList = { navController.navigate(Routes.MY_PARAGRAPH_LIST.route) },
-                onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) }
+                onNavigateToParagraphRandom = { navController.navigate(Routes.MY_PARAGRAPH_RANDOM.route) },
+                onNavigateToParagraphQuiz = { navController.navigate(Routes.MY_PARAGRAPH_QUIZ.route) }
             )
         }
         composable(Routes.KANJI_LIST.route) {
@@ -275,6 +279,15 @@ fun MainScreen(
                 },
                 onParagraphClick = { paragraphId ->
                     navController.navigate("myParagraphDetail/${paragraphId}")
+                }
+            )
+        }
+        composable(Routes.MY_PARAGRAPH_QUIZ.route) {
+            MyParagraphQuizScreen(
+                onBack = {
+                    navController.navigate("main/2") {
+                        popUpTo(Routes.MAIN.route) { inclusive = true }
+                    }
                 }
             )
         }
