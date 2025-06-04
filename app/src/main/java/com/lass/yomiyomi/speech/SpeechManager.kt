@@ -59,6 +59,13 @@ class SpeechManager @Inject constructor(
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         stopSpeaking() // 홈 버튼, 최근 앱 버튼 등으로 백그라운드 갈 때 즉시 정지
+        stopListening() // 🔥 음성 인식도 중지
+    }
+
+    // 🔥 앱이 다시 foreground로 돌아올 때 SpeechRecognizer 재초기화
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        reinitializeSpeechRecognizer() // 음성 인식기 재초기화
     }
 
     private fun initializeTTS() {
@@ -195,11 +202,12 @@ class SpeechManager @Inject constructor(
      * 음성 인식 시작
      */
     fun startListening() {
-        Log.d("SpeechManager", "startListening() called")
-        Log.d("SpeechManager", "isSpeechRecognitionAvailable: ${_speechState.value.isSpeechRecognitionAvailable}")
+        // 🔥 SpeechRecognizer가 null이면 재초기화
+        if (speechRecognizer == null) {
+            reinitializeSpeechRecognizer()
+        }
         
         if (!_speechState.value.isSpeechRecognitionAvailable) {
-            Log.w("SpeechManager", "Speech recognition not available")
             return
         }
         
@@ -212,7 +220,6 @@ class SpeechManager @Inject constructor(
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
         }
         
-        Log.d("SpeechManager", "Starting speech recognizer...")
         speechRecognizer?.startListening(intent)
     }
 
@@ -220,8 +227,6 @@ class SpeechManager @Inject constructor(
      * 음성 인식 중지 (0.5초 딜레이 후 실제 중지)
      */
     fun stopListening() {
-        Log.d("SpeechManager", "stopListening() called - will stop after 500ms delay")
-        
         // UI에서는 즉시 중지된 것처럼 보이게 함
         _isListening.value = false
         
@@ -231,7 +236,6 @@ class SpeechManager @Inject constructor(
         // 0.5초 후에 실제로 음성 인식 중지
         stopListeningJob = coroutineScope.launch {
             delay(500L) // 0.5초 딜레이
-            Log.d("SpeechManager", "Actually stopping speech recognizer after delay")
             speechRecognizer?.stopListening()
         }
     }
@@ -321,6 +325,24 @@ class SpeechManager @Inject constructor(
         textToSpeech?.shutdown()
         speechRecognizer = null
         textToSpeech = null
+    }
+
+    /**
+     * SpeechRecognizer 재초기화 (백그라운드에서 돌아왔을 때)
+     */
+    private fun reinitializeSpeechRecognizer() {
+        // 기존 SpeechRecognizer 정리
+        speechRecognizer?.destroy()
+        speechRecognizer = null
+        
+        // 에러 상태 초기화
+        _speechState.value = _speechState.value.copy(
+            error = null,
+            isSpeechRecognitionAvailable = false
+        )
+        
+        // 새로 초기화
+        initializeSpeechRecognizer()
     }
 }
 
