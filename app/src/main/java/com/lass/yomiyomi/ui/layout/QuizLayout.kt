@@ -76,7 +76,8 @@ fun QuizLayout(
             // Quiz Type Selector and Learning Mode Toggle in a Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 QuizTypeSelector(
                     quizTypes = state.quizTypes,
