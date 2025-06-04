@@ -123,7 +123,7 @@ fun ParagraphQuizContent(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     ) {
                         Column(
@@ -132,7 +132,7 @@ fun ParagraphQuizContent(
                             Text(
                                 text = "일본어 📝",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))

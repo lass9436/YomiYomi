@@ -27,7 +27,9 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = Color(0xFFE3E3DC),      // surface 위의 텍스트
     onSurfaceVariant = Color(0xFFE3E3DC), // surfaceVariant 위의 텍스트
     primaryContainer = Color(0xFF1E3A22), // 어두운 테마용 탭 배경 (더 진하게)
-    onPrimaryContainer = Color.White // 흰색 텍스트로 대비 강화
+    onPrimaryContainer = Color.White, // 흰색 텍스트로 대비 강화
+    secondaryContainer = Color(0xFF2A4D2E), // 어두운 라임 그린 계열
+    onSecondaryContainer = Color(0xFFE3E3DC) // 밝은 텍스트
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -44,7 +46,9 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1A1C19),     // surface 위의 텍스트
     onSurfaceVariant = Color(0xFF1A1C19), // surfaceVariant 위의 텍스트
     primaryContainer = Color(0xFF4A7B4E), // 밝은 테마용 탭 배경 (더 진한 녹색)
-    onPrimaryContainer = Color.White // 흰색 텍스트로 대비 강화
+    onPrimaryContainer = Color.White, // 흰색 텍스트로 대비 강화
+    secondaryContainer = Color(0xFFE8F5E8), // 연한 라임 그린 계열
+    onSecondaryContainer = Color(0xFF1A1C19) // 어두운 텍스트
 )
 
 // 커스텀 색상 스키마 정의
