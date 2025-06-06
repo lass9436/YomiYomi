@@ -18,14 +18,15 @@ object JapaneseTextFilter {
     }
     
     /**
-     * 문자가 일본어 문자인지 확인 (TTS용 공백, 쉼표 포함)
+     * 문자가 일본어 문자인지 확인 (TTS용 공백, 쉼표, 영문자, 숫자 포함)
      * @param char 확인할 문자
      * @return 일본어 문자 여부
      */
     private fun isJapaneseCharacter(char: Char): Boolean {
         val code = char.code
         return isHiragana(code) || isKatakana(code) || isKanji(code) || isJapanesePunctuation(code) || 
-               char == ' ' || char == ','  // TTS pause를 위한 공백과 영어 쉼표 허용
+               char == ' ' || char == ',' ||  // TTS pause를 위한 공백과 영어 쉼표 허용
+               char.isLetterOrDigit()  // 영문자와 숫자 허용 (TTS가 자동으로 읽어줌)
     }
     
     /**
@@ -108,15 +109,15 @@ object JapaneseTextFilter {
      * TTS용 텍스트 정리
      * 1. 후리가나 대괄호 제거
      * 2. 쉼표 정규화 (pause 인식을 위해)
-     * 3. 일본어만 추출
+     * 3. 일본어와 영문자 추출
      * @param text 원본 텍스트
-     * @return TTS에 적합한 정리된 일본어 텍스트
+     * @return TTS에 적합한 정리된 텍스트
      */
     fun prepareTTSText(text: String): String {
         val withoutFurigana = removeFurigana(text)
         val normalizedCommas = normalizeCommasForTTS(withoutFurigana)
-        val japaneseOnly = extractJapaneseOnly(normalizedCommas)
-        return japaneseOnly.trim().takeIf { it.isNotEmpty() } ?: ""
+        val japaneseAndEnglish = extractJapaneseOnly(normalizedCommas)
+        return japaneseAndEnglish.trim().takeIf { it.isNotEmpty() } ?: ""
     }
     
     /**
