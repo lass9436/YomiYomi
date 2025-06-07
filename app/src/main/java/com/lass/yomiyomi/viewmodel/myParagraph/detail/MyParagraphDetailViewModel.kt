@@ -36,7 +36,7 @@ class MyParagraphDetailViewModel @Inject constructor(
     private val _availableLevels = MutableStateFlow<List<Level>>(Level.values().toList())
     val availableLevels: StateFlow<List<Level>> = _availableLevels.asStateFlow()
 
-    fun loadParagraphDetail(paragraphId: String) {
+    fun loadParagraphDetail(paragraphId: Int) {
         viewModelScope.launch {
             _isLoading.value = true
             try {

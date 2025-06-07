@@ -23,8 +23,8 @@ import com.lass.yomiyomi.ui.component.empty.EmptyView
 @Composable
 fun ParagraphListLayout(
     paragraphs: List<ParagraphItem>,
-    sentenceCounts: Map<String, Int> = emptyMap(),
-    learningProgress: Map<String, Float> = emptyMap(),
+    sentenceCounts: Map<Int, Int> = emptyMap(),
+    learningProgress: Map<Int, Float> = emptyMap(),
     isLoading: Boolean = false,
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},

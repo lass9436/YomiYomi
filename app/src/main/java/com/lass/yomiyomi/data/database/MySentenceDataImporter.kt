@@ -31,7 +31,7 @@ object MySentenceDataImporter {
                         id = Integer.parseInt(parts[0].trim()), // ID
                         japanese = parts[1].trim(), // 일본어 문장
                         korean = parts[2].trim(), // 한국어 번역
-                        paragraphId = parts[3].trim().takeIf { it.isNotEmpty() }, // paragraphId
+                        paragraphId = parts[3].trim().takeIf { it.isNotEmpty() }?.toInt(), // paragraphId (Int)
                         orderInParagraph = Integer.parseInt(parts[4].trim()), // 단락 내 순서
                         category = parts[5].trim(), // 카테고리
                         level = parts[6].trim(), // 레벨

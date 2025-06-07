@@ -313,10 +313,10 @@ fun MainScreen(
         composable(
             route = Routes.SINGLE_PARAGRAPH_QUIZ.route,
             arguments = listOf(navArgument("paragraphId") { 
-                type = NavType.StringType 
+                type = NavType.IntType 
             })
         ) { backStackEntry ->
-            val paragraphId = backStackEntry.arguments?.getString("paragraphId") ?: ""
+            val paragraphId = backStackEntry.arguments?.getInt("paragraphId") ?: 0
             SingleParagraphQuizScreen(
                 paragraphId = paragraphId,
                 onBack = { navController.popBackStack() }
@@ -325,10 +325,10 @@ fun MainScreen(
         composable(
             route = Routes.MY_PARAGRAPH_DETAIL.route,
             arguments = listOf(navArgument("paragraphId") { 
-                type = NavType.StringType 
+                type = NavType.IntType 
             })
         ) { backStackEntry ->
-            val paragraphId = backStackEntry.arguments?.getString("paragraphId") ?: ""
+            val paragraphId = backStackEntry.arguments?.getInt("paragraphId") ?: 0
             ParagraphDetailScreen(
                 paragraphId = paragraphId,
                 onBack = { navController.popBackStack() },

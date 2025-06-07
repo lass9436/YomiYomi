@@ -159,7 +159,7 @@ class MyParagraphQuizViewModel @Inject constructor(
             try {
                 // 단일 문장으로 퀴즈 생성
                 val quiz = ParagraphQuizGenerator.generateParagraphQuiz(
-                    paragraphId = "single_sentence_${sentence.id}",
+                    paragraphId = sentence.id,
                     paragraphTitle = "문장 퀴즈",
                     japaneseText = sentence.japanese,
                     koreanText = sentence.korean,
@@ -207,7 +207,7 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
     }
 
-    override fun loadQuizByParagraphId(paragraphId: String, quizType: ParagraphQuizType) {
+    override fun loadQuizByParagraphId(paragraphId: Int, quizType: ParagraphQuizType) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
             _hasInsufficientData.value = false

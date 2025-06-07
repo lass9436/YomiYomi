@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SingleParagraphQuizScreen(
-    paragraphId: String,
+    paragraphId: Int,
     onBack: () -> Unit,
     myParagraphQuizViewModel: MyParagraphQuizViewModelInterface = hiltViewModel<MyParagraphQuizViewModel>()
 ) {

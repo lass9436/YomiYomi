@@ -43,7 +43,7 @@ class MyParagraphDetailViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleParagraph = ParagraphItem(
-        paragraphId = "test-paragraph",
+        paragraphId = 1,
         title = "일본 여행 준비하기",
         description = "일본 여행을 위한 기본 회화와 유용한 표현들을 배워봅시다.",
         category = "여행",
@@ -61,7 +61,7 @@ class MyParagraphDetailViewModelTest {
             category = "여행",
             level = Level.N5,
             learningProgress = 0.8f,
-            paragraphId = "test-paragraph",
+            paragraphId = 1,
             orderInParagraph = 1,
             reviewCount = 2,
             lastReviewedAt = null,
@@ -74,7 +74,7 @@ class MyParagraphDetailViewModelTest {
             category = "여행",
             level = Level.N5,
             learningProgress = 0.6f,
-            paragraphId = "test-paragraph",
+            paragraphId = 1,
             orderInParagraph = 2,
             reviewCount = 1,
             lastReviewedAt = null,
@@ -87,7 +87,7 @@ class MyParagraphDetailViewModelTest {
             category = "여행",
             level = Level.N5,
             learningProgress = 0.9f,
-            paragraphId = "test-paragraph",
+            paragraphId = 1,
             orderInParagraph = 3,
             reviewCount = 5,
             lastReviewedAt = null,
@@ -126,7 +126,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `loadParagraphDetail - 문단 상세 정보 로드 성공`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } returns sampleParagraph
         coEvery { mySentenceRepository.getSentencesByParagraph(paragraphId) } returns sampleSentences
         coEvery { mySentenceRepository.getDistinctCategories() } returns sampleCategories
@@ -151,7 +151,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `loadParagraphDetail - 문단이 존재하지 않는 경우`() = runTest {
         // Given
-        val paragraphId = "non-existent"
+        val paragraphId = 999
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } returns null
         coEvery { mySentenceRepository.getSentencesByParagraph(paragraphId) } returns emptyList()
         coEvery { mySentenceRepository.getDistinctCategories() } returns sampleCategories
@@ -171,7 +171,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `insertSentence - 새 문장 추가 성공`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
         val newSentence = SentenceItem(
             id = 0, // insert 시 DB에서 자동 생성
             japanese = "新{あら}しい文章{ぶんしょう}です。",
@@ -212,7 +212,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `insertSentence - 첫 번째 문장 추가 (기존 문장이 없는 경우)`() = runTest {
         // Given
-        val paragraphId = "empty-paragraph"
+        val paragraphId = 1
         val firstSentence = SentenceItem(
             id = 0,
             japanese = "最初{さいしょ}の文章{ぶんしょう}です。",
@@ -253,7 +253,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `updateSentence - 문장 수정 성공`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
 
         // 기존 데이터 로드
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } returns sampleParagraph
@@ -289,7 +289,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `deleteSentence - 문장 삭제 성공`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
 
         // 기존 데이터 로드
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } returns sampleParagraph
@@ -320,7 +320,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `deleteSentence - 존재하지 않는 문장 삭제 시도`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
 
         // 기존 데이터 로드
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } returns sampleParagraph
@@ -347,7 +347,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `Repository 에러 처리 - loadParagraphDetail`() = runTest {
         // Given
-        val paragraphId = "error-paragraph"
+        val paragraphId = 999
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } throws RuntimeException("Database Error")
 
         // When
@@ -364,7 +364,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `Repository 에러 처리 - insertSentence`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
         val newSentence = sampleSentences[0].copy(id = 0, paragraphId = paragraphId)
 
         // 기본 상태 설정
@@ -390,7 +390,7 @@ class MyParagraphDetailViewModelTest {
     @Test
     fun `로딩 상태 변화 확인`() = runTest {
         // Given
-        val paragraphId = "test-paragraph"
+        val paragraphId = 1
 
         // Repository 호출이 느리게 되도록 설정
         coEvery { myParagraphRepository.getParagraphById(paragraphId) } coAnswers {

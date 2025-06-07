@@ -25,15 +25,15 @@ object MyParagraphDataImporter {
             // 정규식을 사용해 데이터를 분리
             val parts = regex.findAll(line).map { it.value.trim('"') }.toList()
 
-            if (parts.size >= 7) { // 데이터 유효성 검사 (7개 이상의 항목이 있어야 함)
+            if (parts.size >= 6) { // 데이터 유효성 검사 (6개 이상의 항목이 있어야 함)
                 myParagraphList.add(
                     MyParagraph(
-                        paragraphId = parts[1].trim(), // paragraphId
-                        title = parts[2].trim(), // 제목
-                        description = parts[3].trim(), // 설명
-                        category = parts[4].trim(), // 카테고리
-                        level = parts[5].trim(), // 레벨
-                        totalSentences = Integer.parseInt(parts[6].trim()), // 총 문장 수
+                        paragraphId = parts[0].trim().toInt(), // paragraphId (Int)
+                        title = parts[1].trim(), // 제목
+                        description = parts[2].trim(), // 설명
+                        category = parts[3].trim(), // 카테고리
+                        level = parts[4].trim(), // 레벨 (CSV에서는 difficulty 컬럼이지만 실제로는 level)
+                        totalSentences = parts[5].trim().toInt(), // 총 문장 수
                         createdAt = System.currentTimeMillis()
                     )
                 )

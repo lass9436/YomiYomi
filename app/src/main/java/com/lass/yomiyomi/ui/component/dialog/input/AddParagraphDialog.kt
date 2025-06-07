@@ -191,7 +191,7 @@ fun ParagraphInputDialog(
                                 level = level,
                                 totalSentences = sentenceCount
                             ) ?: ParagraphItem(
-                                paragraphId = "", // 새 문단은 빈 ID로 시작 (Repository에서 생성)
+                                paragraphId = 0, // 새 문단은 0으로 시작 (Repository에서 실제 ID 생성)
                                 title = title.trim(),
                                 description = description.trim(),
                                 category = category,

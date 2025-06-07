@@ -23,7 +23,7 @@ interface MySentenceDao {
     suspend fun deleteSentenceById(id: Int)
 
     @Query("DELETE FROM sentence WHERE paragraphId = :paragraphId")
-    suspend fun deleteSentencesByParagraphId(paragraphId: String)
+    suspend fun deleteSentencesByParagraphId(paragraphId: Int)
 
     // 조회
     @Query("SELECT * FROM sentence WHERE id = :id")
@@ -34,7 +34,7 @@ interface MySentenceDao {
 
     // 문단별 조회
     @Query("SELECT * FROM sentence WHERE paragraphId = :paragraphId ORDER BY orderInParagraph")
-    suspend fun getSentencesByParagraph(paragraphId: String): List<MySentence>
+    suspend fun getSentencesByParagraph(paragraphId: Int): List<MySentence>
 
     // 개별 문장들만 조회 (문단에 속하지 않은)
     @Query("SELECT * FROM sentence WHERE paragraphId IS NULL ORDER BY createdAt DESC")
@@ -59,6 +59,14 @@ interface MySentenceDao {
     // 🔥 레벨별 랜덤 문장 가져오기 (개별 문장만)
     @Query("SELECT * FROM sentence WHERE paragraphId IS NULL AND (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
     suspend fun getRandomIndividualSentenceByLevel(level: String?): MySentence?
+
+    // 🔥 모든 문장에서 랜덤으로 가져오기 (개별 문장 + 문단 문장 모두 포함)
+    @Query("SELECT * FROM sentence ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomSentence(): MySentence?
+
+    // 🔥 모든 문장에서 레벨별 랜덤으로 가져오기 (개별 문장 + 문단 문장 모두 포함)
+    @Query("SELECT * FROM sentence WHERE (:level = 'ALL' OR level = :level) ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomSentenceByLevel(level: String?): MySentence?
 
     // 검색
     @Query("""
@@ -88,12 +96,12 @@ interface MySentenceDao {
 
 // GROUP BY 결과용 데이터 클래스
 data class MySentenceCountByParagraph(
-    val paragraphId: String,
+    val paragraphId: Int,
     val count: Int
 )
 
 // 🔥 문단별 학습 진도 평균용 데이터 클래스 추가
 data class MySentenceLearningProgressByParagraph(
-    val paragraphId: String,
+    val paragraphId: Int,
     val averageProgress: Float
 ) 

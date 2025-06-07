@@ -20,11 +20,11 @@ interface MyParagraphDao {
     suspend fun deleteParagraph(myParagraph: MyParagraph)
 
     @Query("DELETE FROM paragraph WHERE paragraphId = :paragraphId")
-    suspend fun deleteParagraphById(paragraphId: String)
+    suspend fun deleteParagraphById(paragraphId: Int)
 
     // 조회
     @Query("SELECT * FROM paragraph WHERE paragraphId = :paragraphId")
-    suspend fun getParagraphById(paragraphId: String): MyParagraph?
+    suspend fun getParagraphById(paragraphId: Int): MyParagraph?
 
     @Query("SELECT * FROM paragraph ORDER BY createdAt DESC")
     suspend fun getAllParagraphs(): List<MyParagraph>
@@ -72,7 +72,7 @@ interface MyParagraphDao {
 
 // JOIN 결과용 데이터 클래스
 data class MyParagraphWithCount(
-    val paragraphId: String,
+    val paragraphId: Int,
     val title: String,
     val description: String,
     val category: String,

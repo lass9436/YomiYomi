@@ -41,7 +41,7 @@ class MyParagraphRandomViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private val sampleParagraphN5 = ParagraphItem(
-        paragraphId = "1",
+        paragraphId = 1,
         title = "일본 여행 준비하기",
         description = "일본 여행을 위한 기본 회화와 유용한 표현들을 배워봅시다.",
         category = "여행",
@@ -52,7 +52,7 @@ class MyParagraphRandomViewModelTest {
     )
 
     private val sampleParagraphN4 = ParagraphItem(
-        paragraphId = "2",
+        paragraphId = 2,
         title = "일본 요리 체험",
         description = "일본 요리를 만들어보면서 다양한 표현을 익혀봅시다.",
         category = "요리",
@@ -70,7 +70,7 @@ class MyParagraphRandomViewModelTest {
             category = "여행",
             level = Level.N5,
             learningProgress = 0.8f,
-            paragraphId = "1",
+            paragraphId = 1,
             orderInParagraph = 1,
             reviewCount = 2,
             lastReviewedAt = null,
@@ -83,7 +83,7 @@ class MyParagraphRandomViewModelTest {
             category = "여행",
             level = Level.N5,
             learningProgress = 0.6f,
-            paragraphId = "1",
+            paragraphId = 1,
             orderInParagraph = 2,
             reviewCount = 1,
             lastReviewedAt = null,
@@ -96,7 +96,7 @@ class MyParagraphRandomViewModelTest {
             category = "여행",
             level = Level.N5,
             learningProgress = 0.9f,
-            paragraphId = "1",
+            paragraphId = 1,
             orderInParagraph = 3,
             reviewCount = 5,
             lastReviewedAt = null,
@@ -112,7 +112,7 @@ class MyParagraphRandomViewModelTest {
             category = "요리",
             level = Level.N4,
             learningProgress = 0.4f,
-            paragraphId = "2",
+            paragraphId = 2,
             orderInParagraph = 1,
             reviewCount = 0,
             lastReviewedAt = null,
@@ -125,7 +125,7 @@ class MyParagraphRandomViewModelTest {
             category = "요리",
             level = Level.N4,
             learningProgress = 0.3f,
-            paragraphId = "2",
+            paragraphId = 2,
             orderInParagraph = 2,
             reviewCount = 1,
             lastReviewedAt = null,
@@ -140,7 +140,7 @@ class MyParagraphRandomViewModelTest {
 
         // 기본적으로 전체 레벨 조회 시 N5 문단과 문장들 반환하도록 설정
         coEvery { myParagraphRepository.getRandomParagraphByLevel(null) } returns sampleParagraphN5
-        coEvery { mySentenceRepository.getSentencesByParagraph("1") } returns sampleSentencesN5
+        coEvery { mySentenceRepository.getSentencesByParagraph(1) } returns sampleSentencesN5
 
         viewModel = MyParagraphRandomViewModel(myParagraphRepository, mySentenceRepository)
     }
@@ -160,14 +160,14 @@ class MyParagraphRandomViewModelTest {
         Assert.assertEquals(sampleSentencesN5, viewModel.sentences.value)
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(null) }
-        coVerify { mySentenceRepository.getSentencesByParagraph("1") }
+        coVerify { mySentenceRepository.getSentencesByParagraph(1) }
     }
 
     @Test
     fun `fetchRandomParagraphByLevel - 전체 레벨에서 랜덤 문단 가져오기`() = runTest {
         // Given
         coEvery { myParagraphRepository.getRandomParagraphByLevel(null) } returns sampleParagraphN4
-        coEvery { mySentenceRepository.getSentencesByParagraph("2") } returns sampleSentencesN4
+        coEvery { mySentenceRepository.getSentencesByParagraph(2) } returns sampleSentencesN4
 
         // When
         viewModel.fetchRandomParagraphByLevel(null)
@@ -178,7 +178,7 @@ class MyParagraphRandomViewModelTest {
         Assert.assertEquals(sampleSentencesN4, viewModel.sentences.value)
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(null) }
-        coVerify { mySentenceRepository.getSentencesByParagraph("2") }
+        coVerify { mySentenceRepository.getSentencesByParagraph(2) }
     }
 
     @Test
@@ -186,7 +186,7 @@ class MyParagraphRandomViewModelTest {
         // Given
         val level = "N5"
         coEvery { myParagraphRepository.getRandomParagraphByLevel(level) } returns sampleParagraphN5
-        coEvery { mySentenceRepository.getSentencesByParagraph("1") } returns sampleSentencesN5
+        coEvery { mySentenceRepository.getSentencesByParagraph(1) } returns sampleSentencesN5
 
         // When
         viewModel.fetchRandomParagraphByLevel(level)
@@ -197,7 +197,7 @@ class MyParagraphRandomViewModelTest {
         Assert.assertEquals(sampleSentencesN5, viewModel.sentences.value)
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
-        coVerify { mySentenceRepository.getSentencesByParagraph("1") }
+        coVerify { mySentenceRepository.getSentencesByParagraph(1) }
     }
 
     @Test
@@ -205,7 +205,7 @@ class MyParagraphRandomViewModelTest {
         // Given
         val level = "N4"
         coEvery { myParagraphRepository.getRandomParagraphByLevel(level) } returns sampleParagraphN4
-        coEvery { mySentenceRepository.getSentencesByParagraph("2") } returns sampleSentencesN4
+        coEvery { mySentenceRepository.getSentencesByParagraph(2) } returns sampleSentencesN4
 
         // When
         viewModel.fetchRandomParagraphByLevel(level)
@@ -216,7 +216,7 @@ class MyParagraphRandomViewModelTest {
         Assert.assertEquals(sampleSentencesN4, viewModel.sentences.value)
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
-        coVerify { mySentenceRepository.getSentencesByParagraph("2") }
+        coVerify { mySentenceRepository.getSentencesByParagraph(2) }
     }
 
     @Test
@@ -234,16 +234,16 @@ class MyParagraphRandomViewModelTest {
         Assert.assertTrue(viewModel.sentences.value.isEmpty())
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
-        coVerify(exactly = 1) { mySentenceRepository.getSentencesByParagraph("1") }
+        coVerify(exactly = 1) { mySentenceRepository.getSentencesByParagraph(1) }
     }
 
     @Test
     fun `fetchRandomParagraphByLevel - 문단은 있지만 문장이 없는 경우`() = runTest {
         // Given
         val level = "N3"
-        val emptyParagraph = sampleParagraphN5.copy(paragraphId = "empty", level = Level.N3)
+        val emptyParagraph = sampleParagraphN5.copy(paragraphId = 0, level = Level.N3)
         coEvery { myParagraphRepository.getRandomParagraphByLevel(level) } returns emptyParagraph
-        coEvery { mySentenceRepository.getSentencesByParagraph("empty") } returns emptyList()
+        coEvery { mySentenceRepository.getSentencesByParagraph(0) } returns emptyList()
 
         // When
         viewModel.fetchRandomParagraphByLevel(level)
@@ -254,7 +254,7 @@ class MyParagraphRandomViewModelTest {
         Assert.assertTrue(viewModel.sentences.value.isEmpty())
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
-        coVerify { mySentenceRepository.getSentencesByParagraph("empty") }
+        coVerify { mySentenceRepository.getSentencesByParagraph(0) }
     }
 
     @Test
@@ -279,7 +279,7 @@ class MyParagraphRandomViewModelTest {
         // Given
         val level = "N5"
         coEvery { myParagraphRepository.getRandomParagraphByLevel(level) } returns sampleParagraphN5
-        coEvery { mySentenceRepository.getSentencesByParagraph("1") } throws RuntimeException("Database Error")
+        coEvery { mySentenceRepository.getSentencesByParagraph(1) } throws RuntimeException("Database Error")
 
         // When
         viewModel.fetchRandomParagraphByLevel(level)
@@ -290,7 +290,7 @@ class MyParagraphRandomViewModelTest {
         Assert.assertTrue(viewModel.sentences.value.isEmpty())
         Assert.assertFalse(viewModel.isLoading.value)
         coVerify { myParagraphRepository.getRandomParagraphByLevel(level) }
-        coVerify { mySentenceRepository.getSentencesByParagraph("1") }
+        coVerify { mySentenceRepository.getSentencesByParagraph(1) }
     }
 
     @Test
@@ -303,7 +303,7 @@ class MyParagraphRandomViewModelTest {
             delay(100)
             sampleParagraphN5
         }
-        coEvery { mySentenceRepository.getSentencesByParagraph("1") } coAnswers {
+        coEvery { mySentenceRepository.getSentencesByParagraph(1) } coAnswers {
             delay(50)
             sampleSentencesN5
         }
@@ -331,9 +331,9 @@ class MyParagraphRandomViewModelTest {
     fun `여러 번 연속 호출 시 마지막 결과만 반영`() = runTest {
         // Given
         coEvery { myParagraphRepository.getRandomParagraphByLevel("N5") } returns sampleParagraphN5
-        coEvery { mySentenceRepository.getSentencesByParagraph("1") } returns sampleSentencesN5
+        coEvery { mySentenceRepository.getSentencesByParagraph(1) } returns sampleSentencesN5
         coEvery { myParagraphRepository.getRandomParagraphByLevel("N4") } returns sampleParagraphN4
-        coEvery { mySentenceRepository.getSentencesByParagraph("2") } returns sampleSentencesN4
+        coEvery { mySentenceRepository.getSentencesByParagraph(2) } returns sampleSentencesN4
 
         // When
         viewModel.fetchRandomParagraphByLevel("N5")

@@ -4,7 +4,7 @@ import com.lass.yomiyomi.domain.model.data.InfoRowData
 import com.lass.yomiyomi.domain.model.constant.Level
 
 data class ParagraphItem(
-    val paragraphId: String,
+    val paragraphId: Int,
     val title: String,
     val description: String,
     val category: String,

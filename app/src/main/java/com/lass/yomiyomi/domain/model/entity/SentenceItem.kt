@@ -7,7 +7,7 @@ data class SentenceItem(
     val id: Int,
     val japanese: String,           // "私[わたし]は学生[がくせい]です"
     val korean: String,             // "나는 학생입니다"
-    val paragraphId: String? = null,
+    val paragraphId: Int? = null,
     val orderInParagraph: Int = 0,
     val category: String,
     val level: Level,

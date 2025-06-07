@@ -60,7 +60,7 @@ class MyParagraphRandomViewModel @Inject constructor(
 class DummyParagraphRandomViewModel : MyParagraphRandomViewModelInterface {
     override val randomParagraph: StateFlow<ParagraphItem?> = MutableStateFlow(
         ParagraphItem(
-            paragraphId = "1",
+            paragraphId = 1,
             title = "일본 여행 준비하기",
             description = "일본 여행을 위한 기본 회화와 유용한 표현들을 배워봅시다.",
             category = "여행",
@@ -80,7 +80,7 @@ class DummyParagraphRandomViewModel : MyParagraphRandomViewModelInterface {
                 category = "여행",
                 level = com.lass.yomiyomi.domain.model.constant.Level.N4,
                 learningProgress = 0.8f,
-                paragraphId = "1",
+                paragraphId = 1,
                 orderInParagraph = 1,
                 createdAt = System.currentTimeMillis()
             ),
@@ -91,7 +91,7 @@ class DummyParagraphRandomViewModel : MyParagraphRandomViewModelInterface {
                 category = "여행",
                 level = com.lass.yomiyomi.domain.model.constant.Level.N4,
                 learningProgress = 0.6f,
-                paragraphId = "1",
+                paragraphId = 1,
                 orderInParagraph = 2,
                 createdAt = System.currentTimeMillis()
             )

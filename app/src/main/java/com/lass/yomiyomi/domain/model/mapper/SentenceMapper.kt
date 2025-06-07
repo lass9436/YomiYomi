@@ -63,7 +63,7 @@ fun ParagraphItem.toParagraphEntity(): MyParagraph = MyParagraph(
 
 // List 변환 함수들 (Entity -> Domain)
 fun List<MySentence>.toSentenceItems(): List<SentenceItem> = map { it.toSentenceItem() }
-fun List<MyParagraph>.toParagraphItems(sentenceCounts: Map<String, Int> = emptyMap()): List<ParagraphItem> =
+fun List<MyParagraph>.toParagraphItems(sentenceCounts: Map<Int, Int> = emptyMap()): List<ParagraphItem> =
     map { it.toParagraphItem(sentenceCounts[it.paragraphId] ?: 0) }
 
 // List 변환 함수들 (Domain -> Entity)

@@ -32,11 +32,11 @@ class MyParagraphViewModel @Inject constructor(
     private val _allParagraphs = MutableStateFlow<List<ParagraphItem>>(emptyList())
     private val _searchQuery = MutableStateFlow("")
 
-    private val _learningProgress = MutableStateFlow<Map<String, Float>>(emptyMap())
-    val learningProgress: StateFlow<Map<String, Float>> = _learningProgress.asStateFlow()
+    private val _learningProgress = MutableStateFlow<Map<Int, Float>>(emptyMap())
+    val learningProgress: StateFlow<Map<Int, Float>> = _learningProgress.asStateFlow()
 
-    private val _sentenceCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
-    val sentenceCounts: StateFlow<Map<String, Int>> = _sentenceCounts.asStateFlow()
+    private val _sentenceCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val sentenceCounts: StateFlow<Map<Int, Int>> = _sentenceCounts.asStateFlow()
 
     override val paragraphs: StateFlow<List<ParagraphItem>> = combine(
         _allParagraphs,
@@ -127,7 +127,7 @@ class MyParagraphViewModel @Inject constructor(
         }
     }
 
-    fun deleteParagraph(paragraphId: String) {
+    fun deleteParagraph(paragraphId: Int) {
         viewModelScope.launch {
             try {
                 myParagraphRepository.deleteParagraphById(paragraphId)
@@ -155,7 +155,7 @@ class MyParagraphViewModel @Inject constructor(
     }
 
     // 특정 문단 조회
-    suspend fun getParagraphById(paragraphId: String): ParagraphItem? {
+    suspend fun getParagraphById(paragraphId: Int): ParagraphItem? {
         return try {
             myParagraphRepository.getParagraphById(paragraphId)
         } catch (e: Exception) {

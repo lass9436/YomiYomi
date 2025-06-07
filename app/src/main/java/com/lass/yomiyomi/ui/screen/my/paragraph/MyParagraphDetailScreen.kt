@@ -10,7 +10,7 @@ import com.lass.yomiyomi.viewmodel.myParagraph.detail.MyParagraphDetailViewModel
 
 @Composable
 fun ParagraphDetailScreen(
-    paragraphId: String,
+    paragraphId: Int,
     onBack: () -> Unit,
     onQuiz: (() -> Unit)? = null,
     viewModel: MyParagraphDetailViewModel = hiltViewModel()

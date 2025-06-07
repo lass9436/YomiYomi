@@ -50,7 +50,7 @@ class MySentenceRepository(private val context: Context) {
     }
 
     // 문단별 조회
-    suspend fun getSentencesByParagraph(paragraphId: String): List<SentenceItem> {
+    suspend fun getSentencesByParagraph(paragraphId: Int): List<SentenceItem> {
         return mySentenceDao.getSentencesByParagraph(paragraphId).toSentenceItems()
     }
 
@@ -84,9 +84,14 @@ class MySentenceRepository(private val context: Context) {
         return mySentenceDao.getRandomIndividualSentenceByLevel(level)?.toSentenceItem()
     }
 
-    // ViewModel 호환성을 위한 메소드
+    // 🔥 모든 문장에서 랜덤으로 가져오기 (개별 문장 + 문단 문장 모두 포함)
+    suspend fun getRandomSentence(): SentenceItem? {
+        return mySentenceDao.getRandomSentence()?.toSentenceItem()
+    }
+
+    // ViewModel 호환성을 위한 메소드 - 이제 모든 문장을 포함
     suspend fun getRandomSentenceByLevel(level: String?): SentenceItem? {
-        return getRandomIndividualSentenceByLevel(level)
+        return mySentenceDao.getRandomSentenceByLevel(level)?.toSentenceItem()
     }
 
     // 검색
@@ -101,13 +106,13 @@ class MySentenceRepository(private val context: Context) {
     }
 
     // 통계
-    suspend fun getSentenceCountsByParagraph(): Map<String, Int> {
+    suspend fun getSentenceCountsByParagraph(): Map<Int, Int> {
         return mySentenceDao.getSentenceCountsByParagraph()
             .associate { it.paragraphId to it.count }
     }
 
     // 🔥 문단별 학습 진도 평균 계산 추가
-    suspend fun getLearningProgressByParagraph(): Map<String, Float> {
+    suspend fun getLearningProgressByParagraph(): Map<Int, Float> {
         return mySentenceDao.getLearningProgressByParagraph()
             .associate { it.paragraphId to it.averageProgress }
     }

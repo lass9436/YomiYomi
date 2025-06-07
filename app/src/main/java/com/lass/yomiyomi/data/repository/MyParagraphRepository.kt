@@ -45,14 +45,14 @@ class MyParagraphRepository(private val context: Context) {
     }
 
     @Transaction
-    suspend fun deleteParagraphById(paragraphId: String) {
+    suspend fun deleteParagraphById(paragraphId: Int) {
         // 관련 문장들도 함께 삭제
         sentenceDao.deleteSentencesByParagraphId(paragraphId)
         paragraphDao.deleteParagraphById(paragraphId)
     }
 
     // 조회
-    suspend fun getParagraphById(paragraphId: String): ParagraphItem? {
+    suspend fun getParagraphById(paragraphId: Int): ParagraphItem? {
         return paragraphDao.getParagraphById(paragraphId)?.toParagraphItem()
     }
 

@@ -1,7 +1,7 @@
 package com.lass.yomiyomi.domain.model.data
 
 data class ParagraphQuiz(
-    val paragraphId: String,          // 문단 ID
+    val paragraphId: Int,          // 문단 ID
     val title: String,                // 문단 제목
     val originalText: String,         // 원본 일본어 텍스트 (후리가나 포함)
     val displayText: String,          // 빈칸이 있는 표시용 텍스트

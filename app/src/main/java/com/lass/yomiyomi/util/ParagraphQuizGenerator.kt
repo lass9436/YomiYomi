@@ -16,7 +16,7 @@ object ParagraphQuizGenerator {
      * @return ParagraphQuiz 객체
      */
     fun generateParagraphQuiz(
-        paragraphId: String,
+        paragraphId: Int,
         paragraphTitle: String,
         japaneseText: String,
         koreanText: String,
