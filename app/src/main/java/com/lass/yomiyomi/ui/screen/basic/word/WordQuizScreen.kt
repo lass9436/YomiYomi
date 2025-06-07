@@ -45,7 +45,7 @@ fun WordQuizScreen(
         options = quizData?.options ?: emptyList(),
         showDialog = showDialog,
         answerResult = answerResult,
-        searchUrl = "https://jisho.org/search/",
+        searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=",
         insufficientDataMessage = if (!isLoading && quizData == null) "단어 데이터가 부족합니다.\n새로고침 해주세요." else null
     )
 
