@@ -20,7 +20,7 @@ object MySentenceDataImporter {
         val regex = Regex("""((?<=^|,)"(?:[^"]|"")*"|[^",]+)""") // CSV 데이터 분리용 정규식
 
         reader.forEachLine { line ->
-            if (line.startsWith("#")) return@forEachLine // 주석 행 (#으로 시작) 건너뛰기
+            if (line.startsWith("#") || line.startsWith("id,")) return@forEachLine // 주석 행과 헤더 행 건너뛰기
 
             // 정규식을 사용해 데이터를 분리
             val parts = regex.findAll(line).map { it.value.trim('"') }.toList()
