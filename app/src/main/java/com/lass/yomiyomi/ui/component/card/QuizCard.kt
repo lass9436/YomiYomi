@@ -41,6 +41,7 @@ fun QuizCard(
             MainTextWithTTS(
                 text = question,
                 fontSize = 32.sp,
+                autoPlay = true,
                 onTextClick = {
                     val intent = Intent(
                         Intent.ACTION_VIEW,

@@ -20,6 +20,7 @@ fun MainTextWithTTS(
     text: String,
     fontSize: TextUnit = 48.sp,
     onTextClick: (() -> Unit)? = null,
+    autoPlay: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -48,7 +49,8 @@ fun MainTextWithTTS(
         ) {
             UnifiedTTSButton(
                 text = text,
-                size = 50.dp
+                size = 50.dp,
+                autoPlay = autoPlay
             )
         }
     }

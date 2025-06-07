@@ -27,6 +27,7 @@ fun UnifiedTTSButton(
     modifier: Modifier = Modifier,
     size: Dp = 28.dp,
     isEnabled: Boolean = true,
+    autoPlay: Boolean = false,
     speechManager: SpeechManager? = null
 ) {
     // 🎯 speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
@@ -40,6 +41,16 @@ fun UnifiedTTSButton(
     }
     
     if (finalText.isBlank()) return
+    
+    // autoPlay가 true이고 텍스트가 변경될 때 자동 재생
+    LaunchedEffect(finalText, autoPlay) {
+        if (autoPlay && finalText.isNotBlank()) {
+            val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
+            if (japaneseText.isNotEmpty()) {
+                finalSpeechManager.speakWithOriginalText(finalText, japaneseText)
+            }
+        }
+    }
     
     val isSpeaking by finalSpeechManager.isSpeaking.collectAsState()
     val currentSpeakingText by finalSpeechManager.currentSpeakingText.collectAsState()

@@ -47,6 +47,7 @@ fun ItemCard(
             // 통일된 메인 텍스트 + TTS 컴포넌트 사용
             MainTextWithTTS(
                 text = item.getMainText(),
+                autoPlay = true,
                 onTextClick = {
                     val searchUrl = "https://ja.dict.naver.com/#/search?range=word&query=${item.getMainText()}"
                     val intent = Intent(Intent.ACTION_VIEW, searchUrl.toUri())
