@@ -26,7 +26,19 @@ object JapaneseTextFilter {
         val code = char.code
         return isHiragana(code) || isKatakana(code) || isKanji(code) || isJapanesePunctuation(code) || 
                char == ' ' || char == ',' ||  // TTS pause를 위한 공백과 영어 쉼표 허용
-               char.isLetterOrDigit()  // 영문자와 숫자 허용 (TTS가 자동으로 읽어줌)
+               isEnglishOrDigit(char)  // 영문자와 숫자만 허용, 한글 제외
+    }
+    
+    /**
+     * 영문자 또는 숫자인지 확인 (한글 제외)
+     * @param char 확인할 문자
+     * @return 영문자 또는 숫자 여부
+     */
+    private fun isEnglishOrDigit(char: Char): Boolean {
+        val code = char.code
+        return (code in 0x0041..0x005A) ||  // A-Z (대문자)
+               (code in 0x0061..0x007A) ||  // a-z (소문자)
+               (code in 0x0030..0x0039)     // 0-9 (숫자)
     }
     
     /**
