@@ -35,7 +35,8 @@ fun InfoRowWithTTS(
             Spacer(modifier = Modifier.width(8.dp))
             UnifiedTTSButton(
                 text = value,
-                size = 28.dp
+                size = 28.dp,
+                modifier = Modifier.height(28.dp)
             )
         }
     }

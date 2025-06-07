@@ -48,7 +48,7 @@ fun MainTextWithTTS(
         ) {
             UnifiedTTSButton(
                 text = text,
-                size = 32.dp
+                size = 50.dp
             )
         }
     }

@@ -79,7 +79,7 @@ fun KanjiTextWithAdaptiveTTS(
             if (textWidth > 0.dp) {
                 UnifiedTTSButton(
                     text = text,
-                    size = 32.dp,
+                    size = 45.dp,
                     modifier = Modifier.offset(x = textWidth / 2 + 15.dp)
                 )
             }

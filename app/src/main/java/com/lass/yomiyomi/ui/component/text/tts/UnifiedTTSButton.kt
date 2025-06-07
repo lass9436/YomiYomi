@@ -25,7 +25,7 @@ fun UnifiedTTSButton(
     text: String = "",
     sentences: List<SentenceItem> = emptyList(),
     modifier: Modifier = Modifier,
-    size: Dp = 32.dp,
+    size: Dp = 28.dp,
     isEnabled: Boolean = true,
     speechManager: SpeechManager? = null
 ) {
@@ -71,7 +71,7 @@ fun UnifiedTTSButton(
             }
         },
         enabled = isEnabled && finalText.isNotBlank(),
-        modifier = modifier.size(size)
+        modifier = modifier
     ) {
         Icon(
             imageVector = if (isThisTextSpeaking) Icons.Default.Close else Icons.Default.PlayArrow,
@@ -81,11 +81,15 @@ fun UnifiedTTSButton(
             } else {
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             },
-            modifier = if (isThisTextSpeaking) {
-                Modifier.graphicsLayer { rotationZ = rotation }
-            } else {
-                Modifier
-            }
+            modifier = Modifier
+                .size(size * 0.6f) // 아이콘 크기를 size의 60%로 설정
+                .then(
+                    if (isThisTextSpeaking) {
+                        Modifier.graphicsLayer { rotationZ = rotation }
+                    } else {
+                        Modifier
+                    }
+                )
         )
     }
 } 

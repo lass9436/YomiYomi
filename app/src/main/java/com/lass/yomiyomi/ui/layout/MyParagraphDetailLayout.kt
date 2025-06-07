@@ -69,7 +69,7 @@ fun MyParagraphDetailLayout(
                         
                         UnifiedTTSButton(
                             text = allJapaneseText,
-                            size = 24.dp
+                            size = 32.dp
                         )
                     }
                     
