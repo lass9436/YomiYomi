@@ -30,7 +30,7 @@ object JapaneseTextFilter {
     }
     
     /**
-     * 영문자 또는 숫자인지 확인 (한글 제외)
+     * 영문자 또는 숫자인지 확인 (한글 제외, 전각/반각 숫자 모두 포함)
      * @param char 확인할 문자
      * @return 영문자 또는 숫자 여부
      */
@@ -38,7 +38,8 @@ object JapaneseTextFilter {
         val code = char.code
         return (code in 0x0041..0x005A) ||  // A-Z (대문자)
                (code in 0x0061..0x007A) ||  // a-z (소문자)
-               (code in 0x0030..0x0039)     // 0-9 (숫자)
+               (code in 0x0030..0x0039) ||  // 0-9 (반각 숫자)
+               (code in 0xFF10..0xFF19)     // ０-９ (전각 숫자)
     }
     
     /**
@@ -123,9 +124,9 @@ object JapaneseTextFilter {
      * 1. 후리가나 대괄호 제거
      * 2. 쉼표 정규화 (pause 인식을 위해)
      * 3. 일본어와 영문자 추출
-     * 4. 실제 일본어가 없으면 빈 문자열 반환
+     * 4. 실제 일본어나 의미있는 콘텐츠가 없으면 빈 문자열 반환
      * @param text 원본 텍스트
-     * @return TTS에 적합한 정리된 텍스트 (일본어가 없으면 빈 문자열)
+     * @return TTS에 적합한 정리된 텍스트 (의미있는 콘텐츠가 없으면 빈 문자열)
      */
     fun prepareTTSText(text: String): String {
         val withoutFurigana = removeFurigana(text)
@@ -133,13 +134,14 @@ object JapaneseTextFilter {
         val japaneseAndEnglish = extractJapaneseOnly(normalizedCommas)
         val cleanedText = japaneseAndEnglish.trim()
         
-        // 실제 일본어(히라가나, 카타카나, 한자)가 있는지 확인
-        val hasActualJapanese = cleanedText.any { char ->
+        // 실제 일본어(히라가나, 카타카나, 한자) 또는 숫자가 있는지 확인
+        val hasActualContent = cleanedText.any { char ->
             val code = char.code
-            isHiragana(code) || isKatakana(code) || isKanji(code)
+            isHiragana(code) || isKatakana(code) || isKanji(code) || 
+            (code in 0x0030..0x0039) || (code in 0xFF10..0xFF19) // 반각/전각 숫자 포함
         }
         
-        return if (hasActualJapanese) cleanedText else ""
+        return if (hasActualContent) cleanedText else ""
     }
     
     /**
