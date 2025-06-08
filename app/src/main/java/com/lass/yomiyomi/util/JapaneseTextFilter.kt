@@ -18,15 +18,15 @@ object JapaneseTextFilter {
     }
     
     /**
-     * 문자가 일본어 문자인지 확인 (TTS용 공백, 쉼표, 영문자, 숫자 포함)
+     * 문자가 일본어 문자인지 확인 (TTS용 공백과 영문자, 숫자 포함)
      * @param char 확인할 문자
      * @return 일본어 문자 여부
      */
     private fun isJapaneseCharacter(char: Char): Boolean {
         val code = char.code
         return isHiragana(code) || isKatakana(code) || isKanji(code) || isJapanesePunctuation(code) || 
-               char == ' ' || char == ',' ||  // TTS pause를 위한 공백과 영어 쉼표 허용
-               isEnglishOrDigit(char)  // 영문자와 숫자만 허용, 한글 제외
+               char == ' ' ||  // TTS pause를 위한 공백 허용
+               isEnglishOrDigit(char)  // 영문자와 숫자만 허용, 한글과 콤마 제외
     }
     
     /**
@@ -109,12 +109,13 @@ object JapaneseTextFilter {
     
     /**
      * TTS를 위한 쉼표 정규화
-     * 일본어 쉼표(、)를 영어 쉼표 + 공백(, )으로 변환하여 TTS가 pause를 인식하도록 함
+     * 일본어 쉼표(、)와 영어 쉼표(,)를 짧은 공백으로 변환하여 TTS가 pause를 인식하도록 함
+     * "콤마"라고 읽지 않도록 콤마 자체는 제거하고 공백으로 대체
      * @param text 원본 텍스트
      * @return 정규화된 텍스트
      */
     fun normalizeCommasForTTS(text: String): String {
-        return text.replace("、", ", ").replace(",", ", ").replace("  ", " ")
+        return text.replace("、", " ").replace(",", " ").replace(Regex(" +"), " ")
     }
     
     /**
@@ -122,14 +123,23 @@ object JapaneseTextFilter {
      * 1. 후리가나 대괄호 제거
      * 2. 쉼표 정규화 (pause 인식을 위해)
      * 3. 일본어와 영문자 추출
+     * 4. 실제 일본어가 없으면 빈 문자열 반환
      * @param text 원본 텍스트
-     * @return TTS에 적합한 정리된 텍스트
+     * @return TTS에 적합한 정리된 텍스트 (일본어가 없으면 빈 문자열)
      */
     fun prepareTTSText(text: String): String {
         val withoutFurigana = removeFurigana(text)
         val normalizedCommas = normalizeCommasForTTS(withoutFurigana)
         val japaneseAndEnglish = extractJapaneseOnly(normalizedCommas)
-        return japaneseAndEnglish.trim().takeIf { it.isNotEmpty() } ?: ""
+        val cleanedText = japaneseAndEnglish.trim()
+        
+        // 실제 일본어(히라가나, 카타카나, 한자)가 있는지 확인
+        val hasActualJapanese = cleanedText.any { char ->
+            val code = char.code
+            isHiragana(code) || isKatakana(code) || isKanji(code)
+        }
+        
+        return if (hasActualJapanese) cleanedText else ""
     }
     
     /**
