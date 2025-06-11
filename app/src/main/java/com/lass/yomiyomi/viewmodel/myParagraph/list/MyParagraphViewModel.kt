@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.data.repository.MyParagraphRepository
 import com.lass.yomiyomi.data.repository.MySentenceRepository
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.Level
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -37,6 +38,10 @@ class MyParagraphViewModel @Inject constructor(
 
     private val _sentenceCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
     val sentenceCounts: StateFlow<Map<Int, Int>> = _sentenceCounts.asStateFlow()
+
+    // 백그라운드 TTS용 문장 데이터
+    private val _sentencesMap = MutableStateFlow<Map<Int, List<SentenceItem>>>(emptyMap())
+    val sentencesMap: StateFlow<Map<Int, List<SentenceItem>>> = _sentencesMap.asStateFlow()
 
     override val paragraphs: StateFlow<List<ParagraphItem>> = combine(
         _allParagraphs,
@@ -84,11 +89,33 @@ class MyParagraphViewModel @Inject constructor(
                 // 🔥 문단별 문장 개수도 함께 로드
                 val countsMap = mySentenceRepository.getSentenceCountsByParagraph()
                 _sentenceCounts.value = countsMap
+                
+                // 🔥 백그라운드 TTS용 문장 데이터 로드
+                loadSentencesMap(paragraphList)
             } catch (e: Exception) {
                 // Handle error
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    // 백그라운드 TTS용 문장 데이터 로드
+    private suspend fun loadSentencesMap(paragraphs: List<ParagraphItem>) {
+        try {
+            val sentencesMap = mutableMapOf<Int, List<SentenceItem>>()
+            
+            paragraphs.forEach { paragraph ->
+                val sentences = mySentenceRepository.getSentencesByParagraph(paragraph.paragraphId)
+                if (sentences.isNotEmpty()) {
+                    sentencesMap[paragraph.paragraphId] = sentences.sortedBy { it.orderInParagraph }
+                }
+            }
+            
+            _sentencesMap.value = sentencesMap
+        } catch (e: Exception) {
+            // Handle error
+            _sentencesMap.value = emptyMap()
         }
     }
 

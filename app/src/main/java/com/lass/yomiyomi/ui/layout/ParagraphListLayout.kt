@@ -13,11 +13,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.ui.component.card.ParagraphCard
 import com.lass.yomiyomi.ui.component.search.SearchTextField
 import com.lass.yomiyomi.ui.component.filter.ParagraphFilterPanel
 import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
 import com.lass.yomiyomi.ui.component.empty.EmptyView
+import com.lass.yomiyomi.ui.component.button.BackgroundTTSButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +27,7 @@ fun ParagraphListLayout(
     paragraphs: List<ParagraphItem>,
     sentenceCounts: Map<Int, Int> = emptyMap(),
     learningProgress: Map<Int, Float> = emptyMap(),
+    sentencesMap: Map<Int, List<SentenceItem>> = emptyMap(),
     isLoading: Boolean = false,
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
@@ -67,6 +70,24 @@ fun ParagraphListLayout(
             color = MaterialTheme.colorScheme.outline,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
+        
+        // 백그라운드 TTS 버튼
+        if (paragraphs.isNotEmpty() && sentencesMap.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                BackgroundTTSButton(
+                    paragraphs = paragraphs,
+                    sentencesMap = sentencesMap,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
         
         // 문단 목록
         if (isLoading) {

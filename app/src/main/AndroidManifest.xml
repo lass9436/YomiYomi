@@ -7,6 +7,11 @@
     
     <!-- TTS 권한 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- 백그라운드 TTS 권한 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".YomiYomiApplication"
@@ -31,6 +36,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 백그라운드 TTS 서비스 -->
+        <service
+            android:name=".speech.BackgroundTTSService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
 
         <receiver android:name=".widget.WidgetStreakProvider"
             android:exported="false">

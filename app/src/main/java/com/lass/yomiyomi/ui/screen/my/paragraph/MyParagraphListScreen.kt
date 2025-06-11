@@ -34,6 +34,7 @@ fun ParagraphListScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val learningProgress by viewModel.learningProgress.collectAsStateWithLifecycle()
     val sentenceCounts by viewModel.sentenceCounts.collectAsStateWithLifecycle()
+    val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle() // 백그라운드 TTS용 문장 데이터
     
     // 검색 쿼리는 로컬 상태로 관리
     var searchQuery by remember { mutableStateOf("") }
@@ -101,6 +102,7 @@ fun ParagraphListScreen(
             paragraphs = paragraphs,
             sentenceCounts = sentenceCounts,
             learningProgress = learningProgress,
+            sentencesMap = sentencesMap, // 백그라운드 TTS용 문장 데이터 전달
             isLoading = isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },

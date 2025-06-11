@@ -19,6 +19,7 @@ import com.lass.yomiyomi.ui.component.search.SearchTextField
 import com.lass.yomiyomi.ui.component.filter.SentenceFilterPanel
 import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
 import com.lass.yomiyomi.ui.component.empty.EmptyView
+import com.lass.yomiyomi.ui.component.button.BackgroundTTSButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,6 +77,23 @@ fun SentenceListLayout(
             color = MaterialTheme.colorScheme.outline,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
+        
+        // 백그라운드 TTS 버튼
+        if (sentences.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                BackgroundTTSButton(
+                    sentences = sentences,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
         
         // 문장 목록
         if (isLoading) {

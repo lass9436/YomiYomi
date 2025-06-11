@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
 
+    // 미디어 세션 및 백그라운드 TTS용 의존성
+    implementation(libs.androidx.media)
+
     // Room 의존성
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
