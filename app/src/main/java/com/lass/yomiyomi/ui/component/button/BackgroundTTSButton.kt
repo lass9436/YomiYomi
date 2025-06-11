@@ -44,94 +44,122 @@ fun BackgroundTTSButton(
     val currentText by backgroundTTSManager.currentText.collectAsState()
     val progress by backgroundTTSManager.progress.collectAsState()
     val settings by backgroundTTSManager.settings.collectAsState()
-    
-    val rotation by animateFloatAsState(
-        targetValue = if (isPlaying) 360f else 0f,
-        animationSpec = if (isPlaying) {
-            infiniteRepeatable(
-                animation = tween(3000, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            )
-        } else {
-            tween(200)
-        },
-        label = "rotation"
-    )
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 메인 버튼
-        FilledTonalButton(
-            onClick = {
-                if (isPlaying) {
-                    backgroundTTSManager.stop()
-                } else {
-                    if (sentences.isNotEmpty()) {
-                        backgroundTTSManager.startSentenceLearning(sentences)
-                    } else if (paragraphs.isNotEmpty()) {
-                        backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
-                    }
-                }
-            },
-            enabled = isReady && (sentences.isNotEmpty() || paragraphs.isNotEmpty()),
-            modifier = Modifier.height(56.dp)
+        // 메인 컨트롤 행 (한 줄로 배치)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
-                contentDescription = if (isPlaying) "백그라운드 학습 중지" else "백그라운드 학습 시작",
-                modifier = Modifier
-                    .size(24.dp)
-                    .then(
+            // 재생/정지 버튼과 텍스트
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                IconButton(
+                    onClick = {
                         if (isPlaying) {
-                            Modifier.graphicsLayer { rotationZ = rotation }
+                            // 재생 중이면 정지
+                            backgroundTTSManager.stop()
                         } else {
-                            Modifier
+                            // 재생 중이 아니면 시작
+                            if (sentences.isNotEmpty()) {
+                                println("BackgroundTTS Debug: Starting sentence learning with ${sentences.size} sentences")
+                                backgroundTTSManager.startSentenceLearning(sentences)
+                            } else if (paragraphs.isNotEmpty()) {
+                                println("BackgroundTTS Debug: Starting paragraph learning with ${paragraphs.size} paragraphs, sentencesMap size: ${sentencesMap.size}")
+                                backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
+                            } else {
+                                println("BackgroundTTS Debug: No sentences or paragraphs available")
+                            }
+                        }
+                    },
+                    enabled = isReady && (sentences.isNotEmpty() || paragraphs.isNotEmpty())
+                ) {
+                    Icon(
+                        imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
+                        contentDescription = if (isPlaying) "학습 중지" else "백그라운드 학습 시작",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                Text(
+                    text = if (isPlaying) "학습 중..." else "백그라운드 학습",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            
+            // 설정 버튼과 텍스트
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { showSettingsDialog = true },
+                    enabled = !isPlaying
+                ) {
+                    Icon(
+                        Icons.Default.Settings,
+                        contentDescription = "설정",
+                        modifier = Modifier.size(20.dp),
+                        tint = if (isPlaying) {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
                         }
                     )
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = if (isPlaying) "학습 중지" else "백그라운드 학습",
-                fontSize = 16.sp
-            )
+                }
+                
+                Text(
+                    text = "설정",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isPlaying) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            }
         }
         
-        // 설정 버튼
-        TextButton(
-            onClick = { showSettingsDialog = true },
-            enabled = !isPlaying
-        ) {
-            Icon(
-                Icons.Default.Settings,
-                contentDescription = "설정",
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("설정", fontSize = 12.sp)
-        }
-        
-        // 진행상황 표시
+        // 진행상황 표시 (학습 중일 때만)
         if (isPlaying && progress.totalCount > 0) {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+            
             LinearProgressIndicator(
                 progress = { progress.progressPercent },
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary
             )
-            Text(
-                text = "${progress.currentIndex + 1}/${progress.totalCount}",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
             
-            if (currentText.isNotBlank()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = if (currentText.length > 30) "${currentText.take(30)}..." else currentText,
-                    fontSize = 10.sp,
+                    text = "${progress.currentIndex + 1}/${progress.totalCount}",
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                
+                if (currentText.isNotBlank()) {
+                    Text(
+                        text = if (currentText.length > 25) "${currentText.take(25)}..." else currentText,
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }

@@ -27,6 +27,9 @@ class SpeechManager @Inject constructor(
     private var speechRecognizer: SpeechRecognizer? = null
     private var textToSpeech: TextToSpeech? = null
     
+    // BackgroundTTSManager 참조 (늦은 초기화)
+    private var backgroundTTSManager: BackgroundTTSManager? = null
+    
     private val _speechState = MutableStateFlow(SpeechState())
     val speechState: StateFlow<SpeechState> = _speechState.asStateFlow()
     
@@ -252,10 +255,25 @@ class SpeechManager @Inject constructor(
     }
 
     /**
+     * BackgroundTTSManager 참조 설정 (순환 의존성 방지)
+     */
+    fun setBackgroundTTSManager(manager: BackgroundTTSManager) {
+        this.backgroundTTSManager = manager
+    }
+
+    /**
      * 텍스트를 일본어로 읽기 (원본 텍스트 추적 지원)
      */
     fun speakWithOriginalText(originalText: String, processedText: String, utteranceId: String = "yomiyomi_speech") {
         if (!_speechState.value.isTTSReady) return
+        
+        // 백그라운드 TTS가 실행 중이면 일반 TTS 차단
+        if (backgroundTTSManager?.isPlaying?.value == true) {
+            _speechState.value = _speechState.value.copy(
+                error = "백그라운드 학습이 진행 중입니다"
+            )
+            return
+        }
         
         // 텍스트 검증 - 둘 다 비어있으면 실행하지 않음
         if (originalText.isBlank() && processedText.isBlank()) return
@@ -288,6 +306,14 @@ class SpeechManager @Inject constructor(
     fun speak(text: String, utteranceId: String = "yomiyomi_speech") {
         if (!_speechState.value.isTTSReady) return
         if (text.isBlank()) return
+        
+        // 백그라운드 TTS가 실행 중이면 일반 TTS 차단
+        if (backgroundTTSManager?.isPlaying?.value == true) {
+            _speechState.value = _speechState.value.copy(
+                error = "백그라운드 학습이 진행 중입니다"
+            )
+            return
+        }
         
         try {
             // 원본 텍스트를 저장 (버튼 매칭용)

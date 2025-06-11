@@ -45,6 +45,12 @@ class BackgroundTTSService : Service() {
         serviceScope.launch {
             backgroundTTSManager.isPlaying.collectLatest { isPlaying ->
                 updateNotification(isPlaying)
+                
+                // TTS가 정지되고 큐가 비어있으면 서비스 종료
+                if (!isPlaying && backgroundTTSManager.progress.value.totalCount == 0) {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    stopSelf()
+                }
             }
         }
         
@@ -61,8 +67,8 @@ class BackgroundTTSService : Service() {
                 startForeground(NOTIFICATION_ID, createNotification(false))
             }
             ACTION_STOP -> {
+                // 매니저에서 TTS만 정지하고, 서비스는 상태 관찰을 통해 자동 종료
                 backgroundTTSManager.stop()
-                stopSelf()
             }
             ACTION_PLAY_PAUSE -> {
                 backgroundTTSManager.togglePlayPause()
@@ -75,7 +81,7 @@ class BackgroundTTSService : Service() {
             }
         }
         
-        return START_STICKY
+        return START_NOT_STICKY // 서비스가 죽어도 자동 재시작하지 않음
     }
     
     override fun onBind(intent: Intent?): IBinder? = null

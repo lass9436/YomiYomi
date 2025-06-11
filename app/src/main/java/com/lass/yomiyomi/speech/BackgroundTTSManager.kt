@@ -22,7 +22,8 @@ import com.lass.yomiyomi.util.JapaneseTextFilter
  */
 @Singleton
 class BackgroundTTSManager @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val speechManager: SpeechManager // 충돌 방지를 위해 주입
 ) {
     private var textToSpeech: TextToSpeech? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -98,6 +99,9 @@ class BackgroundTTSManager @Inject constructor(
     fun startSentenceLearning(sentences: List<SentenceItem>) {
         if (!_isReady.value || sentences.isEmpty()) return
         
+        // 기존 SpeechManager TTS 정지하여 충돌 방지
+        speechManager.stopSpeaking()
+        
         currentQueue.clear()
         currentIndex = 0
         
@@ -140,7 +144,16 @@ class BackgroundTTSManager @Inject constructor(
      * 문단 리스트로 백그라운드 학습 시작 (문단별 랜덤, 문단 내 순차)
      */
     fun startParagraphLearning(paragraphs: List<ParagraphItem>, sentencesMap: Map<Int, List<SentenceItem>>) {
-        if (!_isReady.value || paragraphs.isEmpty()) return
+        if (!_isReady.value || paragraphs.isEmpty()) {
+            println("BackgroundTTS Debug: TTS not ready or paragraphs empty. Ready=${_isReady.value}, Paragraphs=${paragraphs.size}")
+            return
+        }
+        
+        // 기존 SpeechManager TTS 정지하여 충돌 방지
+        speechManager.stopSpeaking()
+        
+        println("BackgroundTTS Debug: Starting paragraph learning with ${paragraphs.size} paragraphs")
+        println("BackgroundTTS Debug: SentencesMap size: ${sentencesMap.size}")
         
         currentQueue.clear()
         currentIndex = 0
@@ -150,6 +163,8 @@ class BackgroundTTSManager @Inject constructor(
         
         shuffledParagraphs.forEach { paragraph ->
             val sentences = sentencesMap[paragraph.paragraphId]?.sortedBy { it.orderInParagraph } ?: emptyList()
+            
+            println("BackgroundTTS Debug: Paragraph ${paragraph.paragraphId} has ${sentences.size} sentences")
             
             sentences.forEach { sentence ->
                 val settings = _settings.value
@@ -178,6 +193,13 @@ class BackgroundTTSManager @Inject constructor(
                     )
                 }
             }
+        }
+        
+        println("BackgroundTTS Debug: Total queue size: ${currentQueue.size}")
+        
+        if (currentQueue.isEmpty()) {
+            println("BackgroundTTS Debug: Queue is empty, cannot start")
+            return
         }
         
         updateProgress()
@@ -287,10 +309,8 @@ class BackgroundTTSManager @Inject constructor(
         currentIndex = 0
         updateProgress()
         
-        val intent = Intent(context, BackgroundTTSService::class.java).apply {
-            action = BackgroundTTSService.ACTION_STOP
-        }
-        context.startService(intent)
+        // 서비스 정지는 서비스 자체에서 관리하도록 함
+        // 백그라운드 제한을 피하기 위해 직접 서비스 종료 시도하지 않음
     }
 
     /**

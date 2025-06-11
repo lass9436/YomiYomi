@@ -25,8 +25,14 @@ object SpeechModule {
     @Provides
     @Singleton
     fun provideBackgroundTTSManager(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        speechManager: SpeechManager
     ): BackgroundTTSManager {
-        return BackgroundTTSManager(context)
+        val backgroundTTSManager = BackgroundTTSManager(context, speechManager)
+        
+        // 상호 참조 설정 (순환 의존성 방지를 위해 초기화 후 설정)
+        speechManager.setBackgroundTTSManager(backgroundTTSManager)
+        
+        return backgroundTTSManager
     }
 } 
