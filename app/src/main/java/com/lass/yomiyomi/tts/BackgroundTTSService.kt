@@ -16,6 +16,8 @@ import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
 import com.lass.yomiyomi.R
 import com.lass.yomiyomi.MainActivity
+import androidx.media.app.NotificationCompat.MediaStyle
+import android.support.v4.media.session.MediaSessionCompat
 
 @AndroidEntryPoint
 class BackgroundTTSService : Service() {
@@ -36,10 +38,16 @@ class BackgroundTTSService : Service() {
     
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     
+    private lateinit var mediaSession: MediaSessionCompat
+    
     override fun onCreate() {
         super.onCreate()
         
         createNotificationChannel()
+        
+        // MediaSessionCompat 생성 및 활성화
+        mediaSession = MediaSessionCompat(this, "YomiYomiTTS")
+        mediaSession.isActive = true
         
         // BackgroundTTSManager 상태 관찰
         serviceScope.launch {
@@ -152,6 +160,12 @@ class BackgroundTTSService : Service() {
             .setContentIntent(mainPendingIntent)
             .setOngoing(true)
             .setSilent(true)
+            // MediaStyle 적용
+            .setStyle(
+                MediaStyle()
+                    .setMediaSession(mediaSession.sessionToken)
+                    .setShowActionsInCompactView(0, 1, 2)
+            )
             .addAction(
                 android.R.drawable.ic_media_previous,
                 "이전",
