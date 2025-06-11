@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.tts.ForegroundTTSManager
+import com.lass.yomiyomi.media.ForegroundTTSManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import com.lass.yomiyomi.util.rememberSpeechManager
 

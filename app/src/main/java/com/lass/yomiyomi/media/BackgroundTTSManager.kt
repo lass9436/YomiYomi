@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.tts
+package com.lass.yomiyomi.media
 
 import android.content.Context
 import android.content.Intent
@@ -255,7 +255,7 @@ class BackgroundTTSManager @Inject constructor(
 
     private fun startService() {
         val intent = Intent(context, BackgroundTTSService::class.java).apply {
-            action = BackgroundTTSService.ACTION_START
+            setAction(BackgroundTTSService.ACTION_START)
         }
         context.startForegroundService(intent)
     }
@@ -350,7 +350,7 @@ data class TTSItem(
     val text: String,
     val processedText: String,
     val isJapanese: Boolean,
-    val source: com.lass.yomiyomi.domain.model.entity.SentenceItem,
+    val source: SentenceItem,
     val paragraphTitle: String? = null
 )
 

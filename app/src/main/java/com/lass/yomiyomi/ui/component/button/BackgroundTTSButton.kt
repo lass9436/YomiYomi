@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
-import com.lass.yomiyomi.tts.BackgroundTTSSettings
-import com.lass.yomiyomi.di.SpeechManagerEntryPoint
+import com.lass.yomiyomi.media.BackgroundTTSSettings
+import com.lass.yomiyomi.di.MediaManagerEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 
 /**
@@ -30,7 +30,7 @@ fun BackgroundTTSButton(
     val backgroundTTSManager = remember {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
-            SpeechManagerEntryPoint::class.java
+            MediaManagerEntryPoint::class.java
         ).backgroundTTSManager()
     }
     

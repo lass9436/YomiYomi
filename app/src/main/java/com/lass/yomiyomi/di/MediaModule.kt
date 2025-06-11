@@ -1,9 +1,9 @@
 package com.lass.yomiyomi.di
 
 import android.content.Context
-import com.lass.yomiyomi.tts.ForegroundTTSManager
-import com.lass.yomiyomi.tts.BackgroundTTSManager
-import com.lass.yomiyomi.speech.SpeechRecognitionManager
+import com.lass.yomiyomi.media.ForegroundTTSManager
+import com.lass.yomiyomi.media.BackgroundTTSManager
+import com.lass.yomiyomi.media.SpeechRecognitionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,11 +14,11 @@ import javax.inject.Provider
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SpeechModule {
+object MediaModule {
 
     @Provides
     @Singleton
-    fun provideSpeechManager(
+    fun provideForegroundTTSManager(
         @ApplicationContext context: Context,
         backgroundTTSManagerProvider: Provider<BackgroundTTSManager>
     ): ForegroundTTSManager {

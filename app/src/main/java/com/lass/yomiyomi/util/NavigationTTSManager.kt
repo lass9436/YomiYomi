@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.lass.yomiyomi.di.SpeechManagerEntryPoint
+import com.lass.yomiyomi.di.MediaManagerEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 
 /**
@@ -19,8 +19,8 @@ fun NavigationTTSManager(navController: NavController) {
     val speechManager = remember {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
-            SpeechManagerEntryPoint::class.java
-        ).speechManager()
+            MediaManagerEntryPoint::class.java
+        ).foregroundTTSManager()
     }
     
     // 🎯 핵심: Navigation destination 변화 감지하여 TTS 정지

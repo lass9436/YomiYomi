@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.tts
+package com.lass.yomiyomi.media
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -137,35 +137,35 @@ class BackgroundTTSService : Service() {
     
     private fun createNotification(isPlaying: Boolean, currentText: String, progress: TTSProgress): Notification {
         val mainIntent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         val mainPendingIntent = PendingIntent.getActivity(
             this, 0, mainIntent, PendingIntent.FLAG_IMMUTABLE
         )
         
         val playPauseIntent = Intent(this, BackgroundTTSService::class.java).apply {
-            action = ACTION_PLAY_PAUSE
+            setAction(ACTION_PLAY_PAUSE)
         }
         val playPausePendingIntent = PendingIntent.getService(
             this, 0, playPauseIntent, PendingIntent.FLAG_IMMUTABLE
         )
         
         val skipNextIntent = Intent(this, BackgroundTTSService::class.java).apply {
-            action = ACTION_SKIP_NEXT
+            setAction(ACTION_SKIP_NEXT)
         }
         val skipNextPendingIntent = PendingIntent.getService(
             this, 1, skipNextIntent, PendingIntent.FLAG_IMMUTABLE
         )
         
         val skipPreviousIntent = Intent(this, BackgroundTTSService::class.java).apply {
-            action = ACTION_SKIP_PREVIOUS
+            setAction(ACTION_SKIP_PREVIOUS)
         }
         val skipPreviousPendingIntent = PendingIntent.getService(
             this, 2, skipPreviousIntent, PendingIntent.FLAG_IMMUTABLE
         )
         
         val stopIntent = Intent(this, BackgroundTTSService::class.java).apply {
-            action = ACTION_STOP
+            setAction(ACTION_STOP)
         }
         val stopPendingIntent = PendingIntent.getService(
             this, 3, stopIntent, PendingIntent.FLAG_IMMUTABLE

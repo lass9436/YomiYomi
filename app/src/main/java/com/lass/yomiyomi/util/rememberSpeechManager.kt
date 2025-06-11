@@ -3,9 +3,9 @@ package com.lass.yomiyomi.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.lass.yomiyomi.di.SpeechManagerEntryPoint
-import com.lass.yomiyomi.tts.ForegroundTTSManager
-import com.lass.yomiyomi.speech.SpeechRecognitionManager
+import com.lass.yomiyomi.di.MediaManagerEntryPoint
+import com.lass.yomiyomi.media.ForegroundTTSManager
+import com.lass.yomiyomi.media.SpeechRecognitionManager
 import dagger.hilt.android.EntryPointAccessors
 
 /**
@@ -18,8 +18,8 @@ fun rememberSpeechManager(): ForegroundTTSManager {
     val speechManager = remember {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
-            SpeechManagerEntryPoint::class.java
-        ).speechManager()
+            MediaManagerEntryPoint::class.java
+        ).foregroundTTSManager()
     }
     
     return speechManager
@@ -31,7 +31,7 @@ fun rememberSpeechRecognitionManager(): SpeechRecognitionManager {
     val speechRecognitionManager = remember {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
-            SpeechManagerEntryPoint::class.java
+            MediaManagerEntryPoint::class.java
         ).speechRecognitionManager()
     }
     return speechRecognitionManager

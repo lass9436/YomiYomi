@@ -10,9 +10,9 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
-import com.lass.yomiyomi.tts.ForegroundTTSManager
-import com.lass.yomiyomi.tts.BackgroundTTSManager
-import com.lass.yomiyomi.speech.SpeechRecognitionManager
+import com.lass.yomiyomi.media.ForegroundTTSManager
+import com.lass.yomiyomi.media.BackgroundTTSManager
+import com.lass.yomiyomi.media.SpeechRecognitionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
