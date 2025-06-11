@@ -125,3 +125,13 @@ YomiYomiは漢字、単語、文章、段落学習のための総合的なAndroi
   <img src="https://github.com/user-attachments/assets/8108b6b0-877d-4247-a5d2-d60574dc4fe6" width="30%" />
 </p>
 
+### バックグラウンド再生
+- バックグラウンドで文章または段落を再生
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/db71dc51-c7c2-4437-95b9-647ba5c7a4b5" width="30%" />
+  &nbsp;
+  <img src="https://github.com/user-attachments/assets/b5bfc705-688c-498e-8d71-87ce1acab375" width="30%" />
+  &nbsp;
+  <img src="https://github.com/user-attachments/assets/370198c7-2197-4811-b121-e9049dcdd4ce" width="30%" />
+</p>
+
