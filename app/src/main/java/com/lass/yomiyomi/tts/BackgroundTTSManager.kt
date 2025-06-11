@@ -69,8 +69,11 @@ class BackgroundTTSManager @Inject constructor(
                         }
                         
                         override fun onDone(utteranceId: String?) {
-                            _isPlaying.value = false
-                            // 다음 아이템 재생
+                            // 마지막 문장(반복 아님)일 때만 false
+                            val isLast = currentIndex >= currentQueue.size - 1 && !_settings.value.isRepeat
+                            if (isLast) {
+                                _isPlaying.value = false
+                            }
                             coroutineScope.launch {
                                 delay(1000) // 1초 간격
                                 playNextItem()
@@ -78,8 +81,11 @@ class BackgroundTTSManager @Inject constructor(
                         }
                         
                         override fun onError(utteranceId: String?) {
-                            _isPlaying.value = false
-                            // 다음 아이템으로 넘어가기
+                            // 마지막 문장(반복 아님)일 때만 false
+                            val isLast = currentIndex >= currentQueue.size - 1 && !_settings.value.isRepeat
+                            if (isLast) {
+                                _isPlaying.value = false
+                            }
                             coroutineScope.launch {
                                 delay(500)
                                 playNextItem()
