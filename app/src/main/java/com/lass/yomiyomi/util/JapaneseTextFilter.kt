@@ -120,28 +120,26 @@ object JapaneseTextFilter {
     }
     
     /**
-     * TTS용 텍스트 정리
+     * TTS용 텍스트 정리 (단순화 버전)
      * 1. 후리가나 대괄호 제거
      * 2. 쉼표 정규화 (pause 인식을 위해)
      * 3. 일본어와 영문자 추출
-     * 4. 실제 일본어나 의미있는 콘텐츠가 없으면 빈 문자열 반환
+     * 4. 빈 문자열이어도 반환 (호출측에서 처리)
      * @param text 원본 텍스트
-     * @return TTS에 적합한 정리된 텍스트 (의미있는 콘텐츠가 없으면 빈 문자열)
+     * @return TTS에 적합한 정리된 텍스트
      */
     fun prepareTTSText(text: String): String {
-        val withoutFurigana = removeFurigana(text)
-        val normalizedCommas = normalizeCommasForTTS(withoutFurigana)
-        val japaneseAndEnglish = extractJapaneseOnly(normalizedCommas)
-        val cleanedText = japaneseAndEnglish.trim()
+        if (text.isBlank()) return ""
         
-        // 실제 일본어(히라가나, 카타카나, 한자) 또는 숫자가 있는지 확인
-        val hasActualContent = cleanedText.any { char ->
-            val code = char.code
-            isHiragana(code) || isKatakana(code) || isKanji(code) || 
-            (code in 0x0030..0x0039) || (code in 0xFF10..0xFF19) // 반각/전각 숫자 포함
+        try {
+            val withoutFurigana = removeFurigana(text)
+            val normalizedCommas = normalizeCommasForTTS(withoutFurigana)  
+            val japaneseAndEnglish = extractJapaneseOnly(normalizedCommas)
+            return japaneseAndEnglish.trim()
+        } catch (e: Exception) {
+            // 처리 중 오류 발생시 원본 텍스트 반환
+            return text
         }
-        
-        return if (hasActualContent) cleanedText else ""
     }
     
     /**

@@ -60,17 +60,27 @@ fun MyParagraphDetailLayout(
                     }
                 },
                 actions = {
-                    // 전체 문장 읽기 버튼
+                    // 전체 문장 읽기 버튼  
                     if (sentences.isNotEmpty()) {
-                        val allJapaneseText = sentences
-                            .sortedBy { it.orderInParagraph }
-                            .joinToString("。") { it.japanese.replace(Regex("\\[.*?\\]"), "") }
-                            .plus("。")
+                        val allJapaneseText = try {
+                            sentences
+                                .sortedBy { it.orderInParagraph }
+                                .joinToString("。") { 
+                                    // 후리가나 제거는 UnifiedTTSButton 내부에서 처리하므로 여기서는 원본 유지
+                                    it.japanese
+                                }
+                                .plus("。")
+                        } catch (e: Exception) {
+                            // 텍스트 처리 실패시 첫 번째 문장만 사용
+                            sentences.firstOrNull()?.japanese ?: ""
+                        }
                         
-                        UnifiedTTSButton(
-                            text = allJapaneseText,
-                            size = 32.dp
-                        )
+                        if (allJapaneseText.isNotBlank()) {
+                            UnifiedTTSButton(
+                                text = allJapaneseText,
+                                size = 32.dp
+                            )
+                        }
                     }
                     
                     IconButton(

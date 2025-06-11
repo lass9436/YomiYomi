@@ -30,10 +30,10 @@ fun UnifiedTTSButton(
     autoPlay: Boolean = false,
     speechManager: SpeechManager? = null
 ) {
-    // 🎯 speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
+    // speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
     val finalSpeechManager = speechManager ?: rememberSpeechManager()
     
-    // 🎯 입력 데이터 검증 및 텍스트 생성
+    // 입력 데이터 검증 및 텍스트 생성
     val finalText = when {
         text.isNotBlank() -> text
         sentences.isNotEmpty() -> sentences.joinToString("。") { it.japanese }
@@ -46,9 +46,9 @@ fun UnifiedTTSButton(
     LaunchedEffect(finalText, autoPlay) {
         if (autoPlay && finalText.isNotBlank()) {
             val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
-            if (japaneseText.isNotEmpty()) {
-                finalSpeechManager.speakWithOriginalText(finalText, japaneseText)
-            }
+            // 처리된 텍스트가 비어있더라도 원본 텍스트로 TTS 시도
+            val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
+            finalSpeechManager.speakWithOriginalText(finalText, textToSpeak)
         }
     }
     
@@ -76,9 +76,9 @@ fun UnifiedTTSButton(
                 finalSpeechManager.stopSpeaking()
             } else {
                 val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
-                if (japaneseText.isNotEmpty()) {
-                    finalSpeechManager.speakWithOriginalText(finalText, japaneseText)
-                }
+                // 처리된 텍스트가 비어있더라도 원본 텍스트로 TTS 시도
+                val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
+                finalSpeechManager.speakWithOriginalText(finalText, textToSpeak)
             }
         },
         enabled = isEnabled && finalText.isNotBlank(),

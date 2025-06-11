@@ -257,14 +257,29 @@ class SpeechManager @Inject constructor(
     fun speakWithOriginalText(originalText: String, processedText: String, utteranceId: String = "yomiyomi_speech") {
         if (!_speechState.value.isTTSReady) return
         
-        // 원본 텍스트를 저장 (버튼 매칭용)
-        _currentSpeakingText.value = originalText
+        // 텍스트 검증 - 둘 다 비어있으면 실행하지 않음
+        if (originalText.isBlank() && processedText.isBlank()) return
         
-        val params = Bundle().apply {
-            putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+        try {
+            // 원본 텍스트를 저장 (버튼 매칭용)
+            _currentSpeakingText.value = originalText
+            
+            // 실제 TTS에 사용할 텍스트 결정 (processedText가 비어있으면 originalText 사용)
+            val textToSpeak = if (processedText.isNotBlank()) processedText else originalText
+            
+            val params = Bundle().apply {
+                putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+            }
+            
+            textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
+        } catch (e: Exception) {
+            // TTS 실패시 상태 초기화
+            _isSpeaking.value = false
+            _currentSpeakingText.value = ""
+            _speechState.value = _speechState.value.copy(
+                error = "음성 재생 중 오류가 발생했습니다: ${e.message}"
+            )
         }
-        
-        textToSpeech?.speak(processedText, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
     }
 
     /**
@@ -272,24 +287,39 @@ class SpeechManager @Inject constructor(
      */
     fun speak(text: String, utteranceId: String = "yomiyomi_speech") {
         if (!_speechState.value.isTTSReady) return
+        if (text.isBlank()) return
         
-        // 원본 텍스트를 저장 (버튼 매칭용)
-        _currentSpeakingText.value = text
-        
-        val params = Bundle().apply {
-            putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+        try {
+            // 원본 텍스트를 저장 (버튼 매칭용)
+            _currentSpeakingText.value = text
+            
+            val params = Bundle().apply {
+                putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
+            }
+            
+            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
+        } catch (e: Exception) {
+            // TTS 실패시 상태 초기화
+            _isSpeaking.value = false
+            _currentSpeakingText.value = ""
+            _speechState.value = _speechState.value.copy(
+                error = "음성 재생 중 오류가 발생했습니다: ${e.message}"
+            )
         }
-        
-        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
     }
 
     /**
      * TTS 중지
      */
     fun stopSpeaking() {
-        textToSpeech?.stop()
-        _isSpeaking.value = false
-        _currentSpeakingText.value = ""
+        try {
+            textToSpeech?.stop()
+        } catch (e: Exception) {
+            // 중지 실패는 무시하고 상태만 초기화
+        } finally {
+            _isSpeaking.value = false
+            _currentSpeakingText.value = ""
+        }
     }
 
     /**
