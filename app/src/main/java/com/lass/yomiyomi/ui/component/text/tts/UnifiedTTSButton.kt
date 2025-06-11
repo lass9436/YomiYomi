@@ -8,12 +8,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.di.MediaManagerEntryPoint
 import com.lass.yomiyomi.media.ForegroundTTSManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
-import com.lass.yomiyomi.util.rememberSpeechManager
+import dagger.hilt.android.EntryPointAccessors
 
 /**
  * 통일된 TTS 버튼 컴포넌트
@@ -29,8 +31,11 @@ fun UnifiedTTSButton(
     autoPlay: Boolean = false,
     foregroundTTSManager: ForegroundTTSManager? = null
 ) {
-    // speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
-    val finalSpeechManager = foregroundTTSManager ?: rememberSpeechManager()
+    val context = LocalContext.current
+    val finalSpeechManager = foregroundTTSManager ?: EntryPointAccessors.fromApplication(
+        context.applicationContext,
+        MediaManagerEntryPoint::class.java
+    ).mediaManager().foregroundTTSManager
     
     // 입력 데이터 검증 및 텍스트 생성
     val finalText = when {

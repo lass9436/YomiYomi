@@ -7,9 +7,7 @@ import com.lass.yomiyomi.domain.model.data.SentenceQuiz
 import com.lass.yomiyomi.domain.model.constant.SentenceQuizType
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.data.repository.MySentenceRepository
-import com.lass.yomiyomi.media.ForegroundTTSManager
-import com.lass.yomiyomi.media.BackgroundTTSManager
-import com.lass.yomiyomi.media.SpeechRecognitionManager
+import com.lass.yomiyomi.media.MediaManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,9 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MySentenceQuizViewModel @Inject constructor(
     private val mySentenceRepository: MySentenceRepository,
-    private val foregroundTTSManager: ForegroundTTSManager,
-    private val backgroundTTSManager: BackgroundTTSManager,
-    private val speechRecognitionManager: SpeechRecognitionManager
+    private val mediaManager: MediaManager
 ) : ViewModel(), MySentenceQuizViewModelInterface {
 
     private val _quizState = MutableStateFlow<SentenceQuiz?>(null)
@@ -35,8 +31,8 @@ class MySentenceQuizViewModel @Inject constructor(
     private val _hasInsufficientData = MutableStateFlow(false)
     override val hasInsufficientData: StateFlow<Boolean> = _hasInsufficientData.asStateFlow()
 
-    override val isListening: StateFlow<Boolean> = speechRecognitionManager.isListening
-    override val recognizedText: StateFlow<String> = speechRecognitionManager.recognizedText
+    override val isListening: StateFlow<Boolean> = mediaManager.speechRecognitionManager.isListening
+    override val recognizedText: StateFlow<String> = mediaManager.speechRecognitionManager.recognizedText
 
     // 현재 문장 데이터를 저장 (퀴즈 타입 변경 시 재사용)
     private var currentSentence: SentenceItem? = null
@@ -134,15 +130,14 @@ class MySentenceQuizViewModel @Inject constructor(
     }
 
     override fun startListening() {
-        // 정책: 음성 인식 시작 시 TTS 모두 중지
-        foregroundTTSManager.stopSpeaking()
-        backgroundTTSManager.stop()
-        speechRecognitionManager.clearRecognizedText()
-        speechRecognitionManager.startListening()
+        mediaManager.foregroundTTSManager.stopSpeaking()
+        mediaManager.backgroundTTSManager.stop()
+        mediaManager.speechRecognitionManager.clearRecognizedText()
+        mediaManager.speechRecognitionManager.startListening()
     }
 
     override fun stopListening() {
-        speechRecognitionManager.stopListening()
+        mediaManager.speechRecognitionManager.stopListening()
     }
 
     override fun checkAnswer(recognizedAnswer: String): Boolean {
@@ -173,6 +168,11 @@ class MySentenceQuizViewModel @Inject constructor(
     }
 
     override fun clearRecognizedText() {
-        speechRecognitionManager.clearRecognizedText()
+        mediaManager.speechRecognitionManager.clearRecognizedText()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mediaManager.stopAll()
     }
 } 

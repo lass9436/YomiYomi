@@ -14,20 +14,21 @@ import dagger.hilt.android.EntryPointAccessors
  * 모든 스크린에서 speechManager 의존성 제거 가능!
  */
 @Composable
-fun NavigationTTSManager(navController: NavController) {
+fun NavigationMediaManager(navController: NavController) {
     val context = LocalContext.current
-    val speechManager = remember {
+    val mediaManager = remember {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
             MediaManagerEntryPoint::class.java
-        ).foregroundTTSManager()
+        ).mediaManager()
     }
     
     // 🎯 핵심: Navigation destination 변화 감지하여 TTS 정지
     // 뒤로가기, 탭 전환, 새 화면 이동 모두 감지!
     LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, _, _ ->
-            speechManager.stopSpeaking() // 🔥 무조건 즉시!
+            mediaManager.foregroundTTSManager.stopSpeaking() // 🔥 무조건 즉시!
+            mediaManager.speechRecognitionManager.stopListening() // 🔥 녹음도 반드시 중지!
         }
     }
 } 

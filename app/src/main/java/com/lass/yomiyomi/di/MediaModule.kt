@@ -4,6 +4,7 @@ import android.content.Context
 import com.lass.yomiyomi.media.ForegroundTTSManager
 import com.lass.yomiyomi.media.BackgroundTTSManager
 import com.lass.yomiyomi.media.SpeechRecognitionManager
+import com.lass.yomiyomi.media.MediaManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,5 +39,15 @@ object MediaModule {
         @ApplicationContext context: Context
     ): SpeechRecognitionManager {
         return SpeechRecognitionManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediaManager(
+        foregroundTTSManager: ForegroundTTSManager,
+        backgroundTTSManager: BackgroundTTSManager,
+        speechRecognitionManager: SpeechRecognitionManager
+    ): MediaManager {
+        return MediaManager(foregroundTTSManager, backgroundTTSManager, speechRecognitionManager)
     }
 } 

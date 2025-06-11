@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.media.BackgroundTTSSettings
+import com.lass.yomiyomi.media.MediaManager
 import com.lass.yomiyomi.di.MediaManagerEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 
@@ -27,19 +28,19 @@ fun BackgroundTTSButton(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val backgroundTTSManager = remember {
+    val mediaManager = remember {
         EntryPointAccessors.fromApplication(
             context.applicationContext,
             MediaManagerEntryPoint::class.java
-        ).backgroundTTSManager()
+        ).mediaManager()
     }
     
     var showSettingsDialog by remember { mutableStateOf(false) }
-    val isPlaying by backgroundTTSManager.isPlaying.collectAsState()
-    val isReady by backgroundTTSManager.isReady.collectAsState()
-    val currentText by backgroundTTSManager.currentText.collectAsState()
-    val progress by backgroundTTSManager.progress.collectAsState()
-    val settings by backgroundTTSManager.settings.collectAsState()
+    val isPlaying by mediaManager.backgroundTTSManager.isPlaying.collectAsState()
+    val isReady by mediaManager.backgroundTTSManager.isReady.collectAsState()
+    val currentText by mediaManager.backgroundTTSManager.currentText.collectAsState()
+    val progress by mediaManager.backgroundTTSManager.progress.collectAsState()
+    val settings by mediaManager.backgroundTTSManager.settings.collectAsState()
 
     Column(
         modifier = modifier,
@@ -60,15 +61,15 @@ fun BackgroundTTSButton(
                     onClick = {
                         if (isPlaying) {
                             // 재생 중이면 정지
-                            backgroundTTSManager.stop()
+                            mediaManager.backgroundTTSManager.stop()
                         } else {
                             // 재생 중이 아니면 시작
                             if (sentences.isNotEmpty()) {
                                 println("BackgroundTTS Debug: Starting sentence learning with ${sentences.size} sentences")
-                                backgroundTTSManager.startSentenceLearning(sentences)
+                                mediaManager.backgroundTTSManager.startSentenceLearning(sentences)
                             } else if (paragraphs.isNotEmpty()) {
                                 println("BackgroundTTS Debug: Starting paragraph learning with ${paragraphs.size} paragraphs, sentencesMap size: ${sentencesMap.size}")
-                                backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
+                                mediaManager.backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
                             } else {
                                 println("BackgroundTTS Debug: No sentences or paragraphs available")
                             }
@@ -165,7 +166,7 @@ fun BackgroundTTSButton(
         BackgroundTTSSettingsDialog(
             settings = settings,
             onSettingsChange = { newSettings ->
-                backgroundTTSManager.updateSettings(newSettings)
+                mediaManager.backgroundTTSManager.updateSettings(newSettings)
             },
             onDismiss = { showSettingsDialog = false }
         )

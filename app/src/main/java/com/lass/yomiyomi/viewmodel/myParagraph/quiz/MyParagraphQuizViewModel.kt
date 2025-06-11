@@ -10,9 +10,7 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
-import com.lass.yomiyomi.media.ForegroundTTSManager
-import com.lass.yomiyomi.media.BackgroundTTSManager
-import com.lass.yomiyomi.media.SpeechRecognitionManager
+import com.lass.yomiyomi.media.MediaManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,9 +23,7 @@ import javax.inject.Inject
 class MyParagraphQuizViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
     private val mySentenceRepository: MySentenceRepository,
-    private val foregroundTTSManager: ForegroundTTSManager,
-    private val backgroundTTSManager: BackgroundTTSManager,
-    private val speechRecognitionManager: SpeechRecognitionManager
+    private val mediaManager: MediaManager
 ) : ViewModel(), MyParagraphQuizViewModelInterface {
 
     // 퀴즈 상태
@@ -43,12 +39,10 @@ class MyParagraphQuizViewModel @Inject constructor(
     override val hasInsufficientData: StateFlow<Boolean> = _hasInsufficientData.asStateFlow()
 
     // 음성 인식 상태
-    private val _isListening = MutableStateFlow(false)
-    override val isListening: StateFlow<Boolean> = speechRecognitionManager.isListening
+    override val isListening: StateFlow<Boolean> = mediaManager.speechRecognitionManager.isListening
 
     // 인식된 텍스트
-    private val _recognizedText = MutableStateFlow("")
-    override val recognizedText: StateFlow<String> = speechRecognitionManager.recognizedText
+    override val recognizedText: StateFlow<String> = mediaManager.speechRecognitionManager.recognizedText
 
     // 퀴즈 완료 상태
     private val _isQuizCompleted = MutableStateFlow(false)
@@ -71,17 +65,17 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     private fun setupSpeechRecognitionManager() {
         viewModelScope.launch {
-            speechRecognitionManager.recognizedText.collect { result ->
-                _recognizedText.value = result
-                _isListening.value = false
+            recognizedText.collect { result ->
                 if (result.isNotEmpty()) {
                     processRecognizedText(result)
                 }
             }
         }
         viewModelScope.launch {
-            speechRecognitionManager.isListening.collect { listening ->
-                _isListening.value = listening
+            isListening.collect { listening ->
+                if (!listening) {
+                    processRecognizedText(recognizedText.value)
+                }
             }
         }
     }
@@ -261,19 +255,14 @@ class MyParagraphQuizViewModel @Inject constructor(
     }
 
     override fun startListening() {
-        if (!_isListening.value) {
-            // 정책: 음성 인식 시작 시 TTS 모두 중지
-            foregroundTTSManager.stopSpeaking()
-            backgroundTTSManager.stop()
-            speechRecognitionManager.clearRecognizedText()
-            speechRecognitionManager.startListening()
-        }
+        mediaManager.foregroundTTSManager.stopSpeaking()
+        mediaManager.backgroundTTSManager.stop()
+        mediaManager.speechRecognitionManager.clearRecognizedText()
+        mediaManager.speechRecognitionManager.startListening()
     }
 
     override fun stopListening() {
-        if (_isListening.value) {
-            speechRecognitionManager.stopListening()
-        }
+        mediaManager.speechRecognitionManager.stopListening()
     }
 
     override fun processRecognizedText(recognizedAnswer: String): List<String> {
@@ -391,14 +380,11 @@ class MyParagraphQuizViewModel @Inject constructor(
     }
 
     override fun clearRecognizedText() {
-        _recognizedText.value = ""
-        speechRecognitionManager.clearRecognizedText()
+        mediaManager.speechRecognitionManager.clearRecognizedText()
     }
 
     override fun onCleared() {
         super.onCleared()
-        foregroundTTSManager.destroy()
-        backgroundTTSManager.destroy()
-        speechRecognitionManager.destroy()
+        mediaManager.stopAll()
     }
 } 
