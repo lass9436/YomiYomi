@@ -19,19 +19,17 @@ object MediaModule {
     @Provides
     @Singleton
     fun provideForegroundTTSManager(
-        @ApplicationContext context: Context,
-        backgroundTTSManagerProvider: Provider<BackgroundTTSManager>
+        @ApplicationContext context: Context
     ): ForegroundTTSManager {
-        return ForegroundTTSManager(context, backgroundTTSManagerProvider)
+        return ForegroundTTSManager(context)
     }
 
     @Provides
     @Singleton
     fun provideBackgroundTTSManager(
-        @ApplicationContext context: Context,
-        foregroundTTSManager: ForegroundTTSManager
+        @ApplicationContext context: Context
     ): BackgroundTTSManager {
-        return BackgroundTTSManager(context, foregroundTTSManager)
+        return BackgroundTTSManager(context)
     }
 
     @Provides

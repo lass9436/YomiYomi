@@ -18,12 +18,10 @@ import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
-import javax.inject.Provider
 
 @Singleton
 class ForegroundTTSManager @Inject constructor(
-    private val context: Context,
-    private val backgroundTTSManagerProvider: Provider<BackgroundTTSManager>
+    private val context: Context
 ) : DefaultLifecycleObserver {
     private var speechRecognizer: SpeechRecognizer? = null
     private var textToSpeech: TextToSpeech? = null
@@ -258,14 +256,6 @@ class ForegroundTTSManager @Inject constructor(
     fun speakWithOriginalText(originalText: String, processedText: String, utteranceId: String = "yomiyomi_speech") {
         if (!_foregroundTTSState.value.isTTSReady) return
 
-        // Provider를 통해 안전하게 참조
-        if (backgroundTTSManagerProvider.get().isPlaying.value == true) {
-            _foregroundTTSState.value = _foregroundTTSState.value.copy(
-                error = "백그라운드 학습이 진행 중입니다"
-            )
-            return
-        }
-
         // 텍스트 검증 - 둘 다 비어있으면 실행하지 않음
         if (originalText.isBlank() && processedText.isBlank()) return
 
@@ -297,14 +287,6 @@ class ForegroundTTSManager @Inject constructor(
     fun speak(text: String, utteranceId: String = "yomiyomi_speech") {
         if (!_foregroundTTSState.value.isTTSReady) return
         if (text.isBlank()) return
-
-        // Provider를 통해 안전하게 참조
-        if (backgroundTTSManagerProvider.get().isPlaying.value == true) {
-            _foregroundTTSState.value = _foregroundTTSState.value.copy(
-                error = "백그라운드 학습이 진행 중입니다"
-            )
-            return
-        }
 
         try {
             // 원본 텍스트를 저장 (버튼 매칭용)
