@@ -373,7 +373,7 @@ data class BackgroundTTSSettings(
     val includeJapanese: Boolean = true,
     val includeKorean: Boolean = false,
     val isRepeat: Boolean = true,
-    val speechRate: Float = 0.8f,
+    val speechRate: Float = 1.0f,
     val pitch: Float = 1.0f,
     val pauseInterval: Long = 1000L // 문장 간 간격 (ms)
 )
