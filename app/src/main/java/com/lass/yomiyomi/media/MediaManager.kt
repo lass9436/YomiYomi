@@ -2,15 +2,53 @@ package com.lass.yomiyomi.media
 
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.StateFlow
+import com.lass.yomiyomi.domain.model.entity.SentenceItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.media.BackgroundTTSSettings
 
 @Singleton
 class MediaManager @Inject constructor(
-    val foregroundTTSManager: ForegroundTTSManager,
-    val backgroundTTSManager: BackgroundTTSManager,
-    val speechRecognitionManager: SpeechRecognitionManager
+    private val foregroundTTSManager: ForegroundTTSManager,
+    private val backgroundTTSManager: BackgroundTTSManager,
+    private val speechRecognitionManager: SpeechRecognitionManager
 ) {
-    fun stopAll() {
+    val isListening: StateFlow<Boolean> get() = speechRecognitionManager.isListening
+    val recognizedText: StateFlow<String> get() = speechRecognitionManager.recognizedText
+    val foregroundTTSIsSpeaking get() = foregroundTTSManager.isSpeaking
+    val foregroundTTSCurrentSpeakingText get() = foregroundTTSManager.currentSpeakingText
+    val backgroundTTSIsPlaying get() = backgroundTTSManager.isPlaying
+    val backgroundTTSIsReady get() = backgroundTTSManager.isReady
+    val backgroundTTSCurrentText get() = backgroundTTSManager.currentText
+    val backgroundTTSProgress get() = backgroundTTSManager.progress
+    val backgroundTTSSettings get() = backgroundTTSManager.settings
+
+    // 포그라운드 TTS와 음성인식(녹음)만 멈추고, 백그라운드 TTS는 멈추지 않음
+    fun stopForegroundAndRecognition() {
         foregroundTTSManager.stopSpeaking()
         speechRecognitionManager.stopListening()
     }
+
+    fun startListeningWithPolicy() {
+        foregroundTTSManager.stopSpeaking()
+        backgroundTTSManager.stop()
+        speechRecognitionManager.clearRecognizedText()
+        speechRecognitionManager.startListening()
+    }
+
+    fun stopListening() {
+        speechRecognitionManager.stopListening()
+    }
+
+    fun clearRecognizedText() {
+        speechRecognitionManager.clearRecognizedText()
+    }
+
+    fun stopBackgroundTTS() = backgroundTTSManager.stop()
+    fun startBackgroundSentenceLearning(sentences: List<SentenceItem>) = backgroundTTSManager.startSentenceLearning(sentences)
+    fun startBackgroundParagraphLearning(paragraphs: List<ParagraphItem>, sentencesMap: Map<Int, List<SentenceItem>>) = backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
+    fun updateBackgroundTTSSettings(settings: BackgroundTTSSettings) = backgroundTTSManager.updateSettings(settings)
+
+    fun speakForegroundTTSWithOriginalText(original: String, tts: String) = foregroundTTSManager.speakWithOriginalText(original, tts)
+    fun stopForegroundTTSSpeaking() = foregroundTTSManager.stopSpeaking()
 } 

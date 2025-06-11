@@ -32,10 +32,23 @@ fun UnifiedTTSButton(
     foregroundTTSManager: ForegroundTTSManager? = null
 ) {
     val context = LocalContext.current
-    val finalSpeechManager = foregroundTTSManager ?: EntryPointAccessors.fromApplication(
-        context.applicationContext,
-        MediaManagerEntryPoint::class.java
-    ).mediaManager().foregroundTTSManager
+    val mediaManager = remember {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            MediaManagerEntryPoint::class.java
+        ).mediaManager()
+    }
+    val finalSpeechManager = foregroundTTSManager
+    val isSpeaking by (foregroundTTSManager?.isSpeaking ?: mediaManager.foregroundTTSIsSpeaking).collectAsState()
+    val currentSpeakingText by (foregroundTTSManager?.currentSpeakingText ?: mediaManager.foregroundTTSCurrentSpeakingText).collectAsState()
+    val speakWithOriginalText: (String, String) -> Unit = { original, tts ->
+        foregroundTTSManager?.speakWithOriginalText(original, tts)
+            ?: mediaManager.speakForegroundTTSWithOriginalText(original, tts)
+    }
+    val stopSpeaking: () -> Unit = {
+        foregroundTTSManager?.stopSpeaking()
+            ?: mediaManager.stopForegroundTTSSpeaking()
+    }
     
     // 입력 데이터 검증 및 텍스트 생성
     val finalText = when {
@@ -50,14 +63,10 @@ fun UnifiedTTSButton(
     LaunchedEffect(finalText, autoPlay) {
         if (autoPlay && finalText.isNotBlank()) {
             val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
-            // 처리된 텍스트가 비어있더라도 원본 텍스트로 TTS 시도
             val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
-            finalSpeechManager.speakWithOriginalText(finalText, textToSpeak)
+            speakWithOriginalText(finalText, textToSpeak)
         }
     }
-    
-    val isSpeaking by finalSpeechManager.isSpeaking.collectAsState()
-    val currentSpeakingText by finalSpeechManager.currentSpeakingText.collectAsState()
     
     val isThisTextSpeaking = isSpeaking && currentSpeakingText == finalText
     
@@ -77,12 +86,11 @@ fun UnifiedTTSButton(
     IconButton(
         onClick = {
             if (isThisTextSpeaking) {
-                finalSpeechManager.stopSpeaking()
+                stopSpeaking()
             } else {
                 val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
-                // 처리된 텍스트가 비어있더라도 원본 텍스트로 TTS 시도
                 val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
-                finalSpeechManager.speakWithOriginalText(finalText, textToSpeak)
+                speakWithOriginalText(finalText, textToSpeak)
             }
         },
         enabled = isEnabled && finalText.isNotBlank(),

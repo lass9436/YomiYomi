@@ -27,8 +27,7 @@ fun NavigationMediaManager(navController: NavController) {
     // 뒤로가기, 탭 전환, 새 화면 이동 모두 감지!
     LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, _, _ ->
-            mediaManager.foregroundTTSManager.stopSpeaking() // 🔥 무조건 즉시!
-            mediaManager.speechRecognitionManager.stopListening() // 🔥 녹음도 반드시 중지!
+            mediaManager.stopForegroundAndRecognition() // 포그라운드 TTS, 음성인식(녹음)만 중지. 백그라운드는 멈추지 않음
         }
     }
 } 

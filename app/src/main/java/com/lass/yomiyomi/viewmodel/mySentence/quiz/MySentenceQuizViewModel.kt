@@ -31,8 +31,8 @@ class MySentenceQuizViewModel @Inject constructor(
     private val _hasInsufficientData = MutableStateFlow(false)
     override val hasInsufficientData: StateFlow<Boolean> = _hasInsufficientData.asStateFlow()
 
-    override val isListening: StateFlow<Boolean> = mediaManager.speechRecognitionManager.isListening
-    override val recognizedText: StateFlow<String> = mediaManager.speechRecognitionManager.recognizedText
+    override val isListening: StateFlow<Boolean> = mediaManager.isListening
+    override val recognizedText: StateFlow<String> = mediaManager.recognizedText
 
     // 현재 문장 데이터를 저장 (퀴즈 타입 변경 시 재사용)
     private var currentSentence: SentenceItem? = null
@@ -130,14 +130,11 @@ class MySentenceQuizViewModel @Inject constructor(
     }
 
     override fun startListening() {
-        mediaManager.foregroundTTSManager.stopSpeaking()
-        mediaManager.backgroundTTSManager.stop()
-        mediaManager.speechRecognitionManager.clearRecognizedText()
-        mediaManager.speechRecognitionManager.startListening()
+        mediaManager.startListeningWithPolicy()
     }
 
     override fun stopListening() {
-        mediaManager.speechRecognitionManager.stopListening()
+        mediaManager.stopListening()
     }
 
     override fun checkAnswer(recognizedAnswer: String): Boolean {
@@ -168,11 +165,11 @@ class MySentenceQuizViewModel @Inject constructor(
     }
 
     override fun clearRecognizedText() {
-        mediaManager.speechRecognitionManager.clearRecognizedText()
+        mediaManager.clearRecognizedText()
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaManager.stopAll()
+        mediaManager.stopForegroundAndRecognition()
     }
 } 

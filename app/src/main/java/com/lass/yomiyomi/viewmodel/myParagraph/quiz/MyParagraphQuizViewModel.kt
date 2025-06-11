@@ -39,10 +39,10 @@ class MyParagraphQuizViewModel @Inject constructor(
     override val hasInsufficientData: StateFlow<Boolean> = _hasInsufficientData.asStateFlow()
 
     // 음성 인식 상태
-    override val isListening: StateFlow<Boolean> = mediaManager.speechRecognitionManager.isListening
+    override val isListening: StateFlow<Boolean> = mediaManager.isListening
 
     // 인식된 텍스트
-    override val recognizedText: StateFlow<String> = mediaManager.speechRecognitionManager.recognizedText
+    override val recognizedText: StateFlow<String> = mediaManager.recognizedText
 
     // 퀴즈 완료 상태
     private val _isQuizCompleted = MutableStateFlow(false)
@@ -255,14 +255,11 @@ class MyParagraphQuizViewModel @Inject constructor(
     }
 
     override fun startListening() {
-        mediaManager.foregroundTTSManager.stopSpeaking()
-        mediaManager.backgroundTTSManager.stop()
-        mediaManager.speechRecognitionManager.clearRecognizedText()
-        mediaManager.speechRecognitionManager.startListening()
+        mediaManager.startListeningWithPolicy()
     }
 
     override fun stopListening() {
-        mediaManager.speechRecognitionManager.stopListening()
+        mediaManager.stopListening()
     }
 
     override fun processRecognizedText(recognizedAnswer: String): List<String> {
@@ -380,11 +377,11 @@ class MyParagraphQuizViewModel @Inject constructor(
     }
 
     override fun clearRecognizedText() {
-        mediaManager.speechRecognitionManager.clearRecognizedText()
+        mediaManager.clearRecognizedText()
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaManager.stopAll()
+        mediaManager.stopForegroundAndRecognition()
     }
 } 
