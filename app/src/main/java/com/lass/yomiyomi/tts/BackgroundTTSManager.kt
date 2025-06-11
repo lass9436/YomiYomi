@@ -226,7 +226,10 @@ class BackgroundTTSManager @Inject constructor(
         
         val item = currentQueue[currentIndex]
         _currentText.value = item.text
-        
+
+        // 언어 동적 변경
+        textToSpeech?.language = if (item.isJapanese) Locale.JAPANESE else Locale.KOREAN
+
         val textToSpeak = if (item.processedText.isNotBlank()) item.processedText else item.text
         
         val params = Bundle().apply {
