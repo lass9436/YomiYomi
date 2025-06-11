@@ -8,14 +8,11 @@ import com.lass.yomiyomi.domain.model.constant.Level
 import com.lass.yomiyomi.domain.model.constant.ParagraphQuizType
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.domain.model.data.BlankItem
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
-import com.lass.yomiyomi.speech.SpeechManager
-import com.lass.yomiyomi.util.JapaneseTextFilter
+import com.lass.yomiyomi.tts.SpeechManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

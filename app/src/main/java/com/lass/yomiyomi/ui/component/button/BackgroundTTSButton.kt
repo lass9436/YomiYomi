@@ -1,7 +1,5 @@
 package com.lass.yomiyomi.ui.component.button
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -9,14 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
-import com.lass.yomiyomi.speech.BackgroundTTSManager
-import com.lass.yomiyomi.speech.BackgroundTTSSettings
+import com.lass.yomiyomi.tts.BackgroundTTSSettings
 import com.lass.yomiyomi.di.SpeechManagerEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 

@@ -39,7 +39,7 @@
 
         <!-- 백그라운드 TTS 서비스 -->
         <service
-            android:name=".speech.BackgroundTTSService"
+            android:name=".tts.BackgroundTTSService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />

@@ -1,6 +1,5 @@
 package com.lass.yomiyomi.ui.component.text.tts
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -12,7 +11,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.speech.SpeechManager
+import com.lass.yomiyomi.tts.SpeechManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import com.lass.yomiyomi.util.rememberSpeechManager
 

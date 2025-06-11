@@ -7,7 +7,7 @@ import com.lass.yomiyomi.domain.model.data.SentenceQuiz
 import com.lass.yomiyomi.domain.model.constant.SentenceQuizType
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.data.repository.MySentenceRepository
-import com.lass.yomiyomi.speech.SpeechManager
+import com.lass.yomiyomi.tts.SpeechManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.lass.yomiyomi.di.SpeechManagerEntryPoint
-import com.lass.yomiyomi.speech.SpeechManager
+import com.lass.yomiyomi.tts.SpeechManager
 import dagger.hilt.android.EntryPointAccessors
 
 /**

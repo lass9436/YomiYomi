@@ -1,4 +1,4 @@
-package com.lass.yomiyomi.speech
+package com.lass.yomiyomi.tts
 
 import android.content.Context
 import android.content.Intent
