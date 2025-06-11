@@ -11,6 +11,8 @@ import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
 import com.lass.yomiyomi.tts.ForegroundTTSManager
+import com.lass.yomiyomi.tts.BackgroundTTSManager
+import com.lass.yomiyomi.speech.SpeechRecognitionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +25,9 @@ import javax.inject.Inject
 class MyParagraphQuizViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
     private val mySentenceRepository: MySentenceRepository,
-    private val foregroundTTSManager: ForegroundTTSManager
+    private val foregroundTTSManager: ForegroundTTSManager,
+    private val backgroundTTSManager: BackgroundTTSManager,
+    private val speechRecognitionManager: SpeechRecognitionManager
 ) : ViewModel(), MyParagraphQuizViewModelInterface {
 
     // 퀴즈 상태
@@ -40,11 +44,11 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     // 음성 인식 상태
     private val _isListening = MutableStateFlow(false)
-    override val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
+    override val isListening: StateFlow<Boolean> = speechRecognitionManager.isListening
 
     // 인식된 텍스트
     private val _recognizedText = MutableStateFlow("")
-    override val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
+    override val recognizedText: StateFlow<String> = speechRecognitionManager.recognizedText
 
     // 퀴즈 완료 상태
     private val _isQuizCompleted = MutableStateFlow(false)
@@ -62,24 +66,21 @@ class MyParagraphQuizViewModel @Inject constructor(
     private var currentParagraph: ParagraphItem? = null
 
     init {
-        setupSpeechManager()
+        setupSpeechRecognitionManager()
     }
 
-    private fun setupSpeechManager() {
+    private fun setupSpeechRecognitionManager() {
         viewModelScope.launch {
-            foregroundTTSManager.recognizedText.collect { result ->
+            speechRecognitionManager.recognizedText.collect { result ->
                 _recognizedText.value = result
                 _isListening.value = false
-                
-                // 음성 인식이 완료되고 텍스트가 있으면 자동으로 정답 확인
                 if (result.isNotEmpty()) {
                     processRecognizedText(result)
                 }
             }
         }
-        
         viewModelScope.launch {
-            foregroundTTSManager.isListening.collect { listening ->
+            speechRecognitionManager.isListening.collect { listening ->
                 _isListening.value = listening
             }
         }
@@ -261,13 +262,17 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     override fun startListening() {
         if (!_isListening.value) {
-            foregroundTTSManager.startListening()
+            // 정책: 음성 인식 시작 시 TTS 모두 중지
+            foregroundTTSManager.stopSpeaking()
+            backgroundTTSManager.stop()
+            speechRecognitionManager.clearRecognizedText()
+            speechRecognitionManager.startListening()
         }
     }
 
     override fun stopListening() {
         if (_isListening.value) {
-            foregroundTTSManager.stopListening()
+            speechRecognitionManager.stopListening()
         }
     }
 
@@ -387,11 +392,13 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     override fun clearRecognizedText() {
         _recognizedText.value = ""
-        foregroundTTSManager.clearRecognizedText()
+        speechRecognitionManager.clearRecognizedText()
     }
 
     override fun onCleared() {
         super.onCleared()
         foregroundTTSManager.destroy()
+        backgroundTTSManager.destroy()
+        speechRecognitionManager.destroy()
     }
 } 

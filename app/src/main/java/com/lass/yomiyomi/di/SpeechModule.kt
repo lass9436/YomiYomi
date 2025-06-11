@@ -3,6 +3,7 @@ package com.lass.yomiyomi.di
 import android.content.Context
 import com.lass.yomiyomi.tts.ForegroundTTSManager
 import com.lass.yomiyomi.tts.BackgroundTTSManager
+import com.lass.yomiyomi.speech.SpeechRecognitionManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +32,13 @@ object SpeechModule {
         foregroundTTSManager: ForegroundTTSManager
     ): BackgroundTTSManager {
         return BackgroundTTSManager(context, foregroundTTSManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSpeechRecognitionManager(
+        @ApplicationContext context: Context
+    ): SpeechRecognitionManager {
+        return SpeechRecognitionManager(context)
     }
 } 

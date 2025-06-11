@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.lass.yomiyomi.di.SpeechManagerEntryPoint
 import com.lass.yomiyomi.tts.ForegroundTTSManager
+import com.lass.yomiyomi.speech.SpeechRecognitionManager
 import dagger.hilt.android.EntryPointAccessors
 
 /**
@@ -22,4 +23,16 @@ fun rememberSpeechManager(): ForegroundTTSManager {
     }
     
     return speechManager
+}
+
+@Composable
+fun rememberSpeechRecognitionManager(): SpeechRecognitionManager {
+    val context = LocalContext.current
+    val speechRecognitionManager = remember {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            SpeechManagerEntryPoint::class.java
+        ).speechRecognitionManager()
+    }
+    return speechRecognitionManager
 } 
