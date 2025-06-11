@@ -127,3 +127,13 @@ YomiYomi는 한자, 단어, 문장, 문단 학습을 위한 종합적인 안드�
   <img src="https://github.com/user-attachments/assets/fac5d8d1-68c9-4145-8afb-fa6a53b73631" width="30%" />
   <img src="https://github.com/user-attachments/assets/8108b6b0-877d-4247-a5d2-d60574dc4fe6" width="30%" />
 </p>
+
+### 백그라운드 재생
+- 백그라운드에서 문장 혹은 문단 재생
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/db71dc51-c7c2-4437-95b9-647ba5c7a4b5" width="30%" />
+  &nbsp;
+  <img src="https://github.com/user-attachments/assets/b5bfc705-688c-498e-8d71-87ce1acab375" width="30%" />
+  &nbsp;
+  <img src="https://github.com/user-attachments/assets/370198c7-2197-4811-b121-e9049dcdd4ce" width="30%" />
+</p>
