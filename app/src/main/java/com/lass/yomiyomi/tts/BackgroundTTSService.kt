@@ -18,6 +18,8 @@ import com.lass.yomiyomi.R
 import com.lass.yomiyomi.MainActivity
 import androidx.media.app.NotificationCompat.MediaStyle
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v4.media.MediaMetadataCompat
 
 @AndroidEntryPoint
 class BackgroundTTSService : Service() {
@@ -49,6 +51,22 @@ class BackgroundTTSService : Service() {
         mediaSession = MediaSessionCompat(this, "YomiYomiTTS")
         mediaSession.isActive = true
         
+        // 미디어 버튼 콜백 등록
+        mediaSession.setCallback(object : MediaSessionCompat.Callback() {
+            override fun onPlay() {
+                backgroundTTSManager.resume()
+            }
+            override fun onPause() {
+                backgroundTTSManager.pause()
+            }
+            override fun onSkipToNext() {
+                backgroundTTSManager.skipNext()
+            }
+            override fun onSkipToPrevious() {
+                backgroundTTSManager.skipPrevious()
+            }
+        })
+        
         // BackgroundTTSManager 상태 관찰
         serviceScope.launch {
             backgroundTTSManager.isPlaying.collectLatest { isPlaying ->
@@ -72,7 +90,7 @@ class BackgroundTTSService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
-                startForeground(NOTIFICATION_ID, createNotification(false))
+                startForeground(NOTIFICATION_ID, createNotification(false, "", TTSProgress(0, 0)))
             }
             ACTION_STOP -> {
                 // 매니저에서 TTS만 정지하고, 서비스는 상태 관찰을 통해 자동 종료
@@ -117,7 +135,7 @@ class BackgroundTTSService : Service() {
         }
     }
     
-    private fun createNotification(isPlaying: Boolean): Notification {
+    private fun createNotification(isPlaying: Boolean, currentText: String, progress: TTSProgress): Notification {
         val mainIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -153,13 +171,26 @@ class BackgroundTTSService : Service() {
             this, 3, stopIntent, PendingIntent.FLAG_IMMUTABLE
         )
         
+        val displayText = if (currentText.isNotBlank()) {
+            val progressText = "${progress.currentIndex + 1}/${progress.totalCount}"
+            if (currentText.length > 50) {
+                "${currentText.take(50)}... ($progressText)"
+            } else {
+                "$currentText ($progressText)"
+            }
+        } else {
+            "대기 중..."
+        }
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("YomiYomi - 백그라운드 학습")
-            .setContentText("일본어 문장을 읽고 있습니다...")
+            .setContentText(displayText)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(mainPendingIntent)
             .setOngoing(true)
             .setSilent(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
+            .setOnlyAlertOnce(false)
             // MediaStyle 적용
             .setStyle(
                 MediaStyle()
@@ -190,9 +221,34 @@ class BackgroundTTSService : Service() {
     }
     
     private fun updateNotification(isPlaying: Boolean) {
-        val notification = createNotification(isPlaying)
+        val currentText = backgroundTTSManager.currentText.value
+        val progress = backgroundTTSManager.progress.value
+        // PlaybackState 설정
+        val stateBuilder = PlaybackStateCompat.Builder()
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY or
+                PlaybackStateCompat.ACTION_PAUSE or
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                PlaybackStateCompat.ACTION_PLAY_PAUSE
+            )
+            .setState(
+                if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED,
+                PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                1.0f
+            )
+        mediaSession.setPlaybackState(stateBuilder.build())
+
+        // MediaMetadata 설정
+        val metadata = MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, if (currentText.isNotBlank()) currentText else "YomiYomi TTS")
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "YomiYomi")
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Background Learning")
+            .build()
+        mediaSession.setMetadata(metadata)
+
+        val notification = createNotification(isPlaying, currentText, progress)
         val notificationManager = NotificationManagerCompat.from(this)
-        
         try {
             notificationManager.notify(NOTIFICATION_ID, notification)
         } catch (e: SecurityException) {
@@ -204,26 +260,15 @@ class BackgroundTTSService : Service() {
         serviceScope.launch {
             val isPlaying = backgroundTTSManager.isPlaying.value
             val progress = backgroundTTSManager.progress.value
-            
-            val displayText = if (currentText.isNotBlank()) {
-                val progressText = "${progress.currentIndex + 1}/${progress.totalCount}"
-                if (currentText.length > 50) {
-                    "${currentText.take(50)}... ($progressText)"
-                } else {
-                    "$currentText ($progressText)"
-                }
-            } else {
-                "대기 중..."
-            }
-            
-            val notification = NotificationCompat.Builder(this@BackgroundTTSService, CHANNEL_ID)
-                .setContentTitle("YomiYomi - 백그라운드 학습")
-                .setContentText(displayText)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setOngoing(true)
-                .setSilent(true)
+            // MediaMetadata도 갱신!
+            val metadata = MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, if (currentText.isNotBlank()) currentText else "YomiYomi TTS")
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "YomiYomi")
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Background Learning")
                 .build()
-            
+            mediaSession.setMetadata(metadata)
+
+            val notification = createNotification(isPlaying, currentText, progress)
             val notificationManager = NotificationManagerCompat.from(this@BackgroundTTSService)
             try {
                 notificationManager.notify(NOTIFICATION_ID, notification)
