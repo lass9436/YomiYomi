@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
-import com.lass.yomiyomi.tts.SpeechManager
+import com.lass.yomiyomi.tts.ForegroundTTSManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import com.lass.yomiyomi.util.rememberSpeechManager
 
@@ -27,10 +27,10 @@ fun UnifiedTTSButton(
     size: Dp = 28.dp,
     isEnabled: Boolean = true,
     autoPlay: Boolean = false,
-    speechManager: SpeechManager? = null
+    foregroundTTSManager: ForegroundTTSManager? = null
 ) {
     // speechManager 파라미터가 있으면 사용, 없으면 로컬 생성
-    val finalSpeechManager = speechManager ?: rememberSpeechManager()
+    val finalSpeechManager = foregroundTTSManager ?: rememberSpeechManager()
     
     // 입력 데이터 검증 및 텍스트 생성
     val finalText = when {

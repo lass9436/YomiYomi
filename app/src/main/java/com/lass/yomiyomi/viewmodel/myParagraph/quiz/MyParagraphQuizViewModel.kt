@@ -10,7 +10,7 @@ import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.data.ParagraphQuiz
 import com.lass.yomiyomi.util.ParagraphQuizGenerator
-import com.lass.yomiyomi.tts.SpeechManager
+import com.lass.yomiyomi.tts.ForegroundTTSManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class MyParagraphQuizViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
     private val mySentenceRepository: MySentenceRepository,
-    private val speechManager: SpeechManager
+    private val foregroundTTSManager: ForegroundTTSManager
 ) : ViewModel(), MyParagraphQuizViewModelInterface {
 
     // 퀴즈 상태
@@ -67,7 +67,7 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     private fun setupSpeechManager() {
         viewModelScope.launch {
-            speechManager.recognizedText.collect { result ->
+            foregroundTTSManager.recognizedText.collect { result ->
                 _recognizedText.value = result
                 _isListening.value = false
                 
@@ -79,7 +79,7 @@ class MyParagraphQuizViewModel @Inject constructor(
         }
         
         viewModelScope.launch {
-            speechManager.isListening.collect { listening ->
+            foregroundTTSManager.isListening.collect { listening ->
                 _isListening.value = listening
             }
         }
@@ -261,13 +261,13 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     override fun startListening() {
         if (!_isListening.value) {
-            speechManager.startListening()
+            foregroundTTSManager.startListening()
         }
     }
 
     override fun stopListening() {
         if (_isListening.value) {
-            speechManager.stopListening()
+            foregroundTTSManager.stopListening()
         }
     }
 
@@ -387,11 +387,11 @@ class MyParagraphQuizViewModel @Inject constructor(
 
     override fun clearRecognizedText() {
         _recognizedText.value = ""
-        speechManager.clearRecognizedText()
+        foregroundTTSManager.clearRecognizedText()
     }
 
     override fun onCleared() {
         super.onCleared()
-        speechManager.destroy()
+        foregroundTTSManager.destroy()
     }
 } 

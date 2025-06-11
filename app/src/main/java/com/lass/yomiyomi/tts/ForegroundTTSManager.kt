@@ -21,29 +21,29 @@ import javax.inject.Singleton
 import javax.inject.Provider
 
 @Singleton
-class SpeechManager @Inject constructor(
+class ForegroundTTSManager @Inject constructor(
     private val context: Context,
     private val backgroundTTSManagerProvider: Provider<BackgroundTTSManager>
 ) : DefaultLifecycleObserver {
     private var speechRecognizer: SpeechRecognizer? = null
     private var textToSpeech: TextToSpeech? = null
-    
-    private val _speechState = MutableStateFlow(SpeechState())
-    val speechState: StateFlow<SpeechState> = _speechState.asStateFlow()
-    
+
+    private val _foregroundTTSState = MutableStateFlow(ForegroundTTSState())
+    val foregroundTTSState: StateFlow<ForegroundTTSState> = _foregroundTTSState.asStateFlow()
+
     private val _isListening = MutableStateFlow(false)
     val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
-    
+
     private val _isSpeaking = MutableStateFlow(false)
     val isSpeaking: StateFlow<Boolean> = _isSpeaking.asStateFlow()
-    
+
     // 현재 재생 중인 텍스트 추적
     private val _currentSpeakingText = MutableStateFlow("")
     val currentSpeakingText: StateFlow<String> = _currentSpeakingText.asStateFlow()
-    
+
     private val _recognizedText = MutableStateFlow("")
     val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
-    
+
     // 코루틴 스코프 추가
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var stopListeningJob: Job? = null
@@ -51,11 +51,11 @@ class SpeechManager @Inject constructor(
     init {
         initializeTTS()
         initializeSpeechRecognizer()
-        
+
         // 🚀 앱 라이프사이클 관찰자 등록 - 백그라운드 시 TTS 자동 정지
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
-    
+
     // 🎯 앱이 백그라운드로 갈 때 TTS 자동 정지
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
@@ -74,39 +74,39 @@ class SpeechManager @Inject constructor(
             if (status == TextToSpeech.SUCCESS) {
                 val result = textToSpeech?.setLanguage(Locale.JAPANESE)
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    _speechState.value = _speechState.value.copy(
+                    _foregroundTTSState.value = _foregroundTTSState.value.copy(
                         error = "일본어 TTS가 지원되지 않습니다"
                     )
                 } else {
                     // TTS 설정
                     textToSpeech?.setSpeechRate(0.8f) // 조금 느리게
                     textToSpeech?.setPitch(1.0f)
-                    
+
                     textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                         override fun onStart(utteranceId: String?) {
                             _isSpeaking.value = true
                         }
-                        
+
                         override fun onDone(utteranceId: String?) {
                             _isSpeaking.value = false
                             _currentSpeakingText.value = ""
                         }
-                        
+
                         override fun onError(utteranceId: String?) {
                             _isSpeaking.value = false
                             _currentSpeakingText.value = ""
-                            _speechState.value = _speechState.value.copy(
+                            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                                 error = "음성 재생 중 오류가 발생했습니다"
                             )
                         }
                     })
-                    
-                    _speechState.value = _speechState.value.copy(
+
+                    _foregroundTTSState.value = _foregroundTTSState.value.copy(
                         isTTSReady = true
                     )
                 }
             } else {
-                _speechState.value = _speechState.value.copy(
+                _foregroundTTSState.value = _foregroundTTSState.value.copy(
                     error = "TTS 초기화에 실패했습니다"
                 )
             }
@@ -119,7 +119,7 @@ class SpeechManager @Inject constructor(
             speechRecognizer?.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
                     _isListening.value = true
-                    _speechState.value = _speechState.value.copy(
+                    _foregroundTTSState.value = _foregroundTTSState.value.copy(
                         error = null
                     )
                 }
@@ -130,7 +130,7 @@ class SpeechManager @Inject constructor(
 
                 override fun onRmsChanged(rmsdB: Float) {
                     // 음성 레벨 변화 (시각적 피드백용)
-                    _speechState.value = _speechState.value.copy(
+                    _foregroundTTSState.value = _foregroundTTSState.value.copy(
                         audioLevel = rmsdB
                     )
                 }
@@ -157,7 +157,7 @@ class SpeechManager @Inject constructor(
                         SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "권한 부족"
                         else -> "알 수 없는 오류"
                     }
-                    _speechState.value = _speechState.value.copy(
+                    _foregroundTTSState.value = _foregroundTTSState.value.copy(
                         error = errorMessage
                     )
                 }
@@ -168,7 +168,7 @@ class SpeechManager @Inject constructor(
                     if (!matches.isNullOrEmpty()) {
                         val recognizedText = matches[0]
                         _recognizedText.value = recognizedText
-                        _speechState.value = _speechState.value.copy(
+                        _foregroundTTSState.value = _foregroundTTSState.value.copy(
                             lastRecognizedText = recognizedText,
                             error = null
                         )
@@ -178,7 +178,7 @@ class SpeechManager @Inject constructor(
                 override fun onPartialResults(partialResults: Bundle?) {
                     val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                     if (!matches.isNullOrEmpty()) {
-                        _speechState.value = _speechState.value.copy(
+                        _foregroundTTSState.value = _foregroundTTSState.value.copy(
                             partialText = matches[0]
                         )
                     }
@@ -188,12 +188,12 @@ class SpeechManager @Inject constructor(
                     // 기타 이벤트
                 }
             })
-            
-            _speechState.value = _speechState.value.copy(
+
+            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                 isSpeechRecognitionAvailable = true
             )
         } else {
-            _speechState.value = _speechState.value.copy(
+            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                 error = "음성 인식을 사용할 수 없습니다"
             )
         }
@@ -207,11 +207,11 @@ class SpeechManager @Inject constructor(
         if (speechRecognizer == null) {
             reinitializeSpeechRecognizer()
         }
-        
-        if (!_speechState.value.isSpeechRecognitionAvailable) {
+
+        if (!_foregroundTTSState.value.isSpeechRecognitionAvailable) {
             return
         }
-        
+
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ja-JP") // 일본어 설정
@@ -220,7 +220,7 @@ class SpeechManager @Inject constructor(
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
         }
-        
+
         speechRecognizer?.startListening(intent)
     }
 
@@ -230,10 +230,10 @@ class SpeechManager @Inject constructor(
     fun stopListening() {
         // UI에서는 즉시 중지된 것처럼 보이게 함
         _isListening.value = false
-        
+
         // 기존 중지 작업이 있으면 취소
         stopListeningJob?.cancel()
-        
+
         // 0.5초 후에 실제로 음성 인식 중지
         stopListeningJob = coroutineScope.launch {
             delay(500L) // 0.5초 딜레이
@@ -246,7 +246,7 @@ class SpeechManager @Inject constructor(
      */
     fun clearRecognizedText() {
         _recognizedText.value = ""
-        _speechState.value = _speechState.value.copy(
+        _foregroundTTSState.value = _foregroundTTSState.value.copy(
             lastRecognizedText = "",
             partialText = ""
         )
@@ -256,36 +256,36 @@ class SpeechManager @Inject constructor(
      * 텍스트를 일본어로 읽기 (원본 텍스트 추적 지원)
      */
     fun speakWithOriginalText(originalText: String, processedText: String, utteranceId: String = "yomiyomi_speech") {
-        if (!_speechState.value.isTTSReady) return
-        
+        if (!_foregroundTTSState.value.isTTSReady) return
+
         // Provider를 통해 안전하게 참조
         if (backgroundTTSManagerProvider.get().isPlaying.value == true) {
-            _speechState.value = _speechState.value.copy(
+            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                 error = "백그라운드 학습이 진행 중입니다"
             )
             return
         }
-        
+
         // 텍스트 검증 - 둘 다 비어있으면 실행하지 않음
         if (originalText.isBlank() && processedText.isBlank()) return
-        
+
         try {
             // 원본 텍스트를 저장 (버튼 매칭용)
             _currentSpeakingText.value = originalText
-            
+
             // 실제 TTS에 사용할 텍스트 결정 (processedText가 비어있으면 originalText 사용)
             val textToSpeak = if (processedText.isNotBlank()) processedText else originalText
-            
+
             val params = Bundle().apply {
                 putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
             }
-            
+
             textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
         } catch (e: Exception) {
             // TTS 실패시 상태 초기화
             _isSpeaking.value = false
             _currentSpeakingText.value = ""
-            _speechState.value = _speechState.value.copy(
+            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                 error = "음성 재생 중 오류가 발생했습니다: ${e.message}"
             )
         }
@@ -295,31 +295,31 @@ class SpeechManager @Inject constructor(
      * 텍스트를 일본어로 읽기
      */
     fun speak(text: String, utteranceId: String = "yomiyomi_speech") {
-        if (!_speechState.value.isTTSReady) return
+        if (!_foregroundTTSState.value.isTTSReady) return
         if (text.isBlank()) return
-        
+
         // Provider를 통해 안전하게 참조
         if (backgroundTTSManagerProvider.get().isPlaying.value == true) {
-            _speechState.value = _speechState.value.copy(
+            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                 error = "백그라운드 학습이 진행 중입니다"
             )
             return
         }
-        
+
         try {
             // 원본 텍스트를 저장 (버튼 매칭용)
             _currentSpeakingText.value = text
-            
+
             val params = Bundle().apply {
                 putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId)
             }
-            
+
             textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
         } catch (e: Exception) {
             // TTS 실패시 상태 초기화
             _isSpeaking.value = false
             _currentSpeakingText.value = ""
-            _speechState.value = _speechState.value.copy(
+            _foregroundTTSState.value = _foregroundTTSState.value.copy(
                 error = "음성 재생 중 오류가 발생했습니다: ${e.message}"
             )
         }
@@ -363,11 +363,11 @@ class SpeechManager @Inject constructor(
     fun destroy() {
         // 🧹 라이프사이클 관찰자 해제
         ProcessLifecycleOwner.get().lifecycle.removeObserver(this)
-        
+
         // 코루틴 스코프 정리
         stopListeningJob?.cancel()
         coroutineScope.cancel()
-        
+
         speechRecognizer?.destroy()
         textToSpeech?.shutdown()
         speechRecognizer = null
@@ -381,23 +381,23 @@ class SpeechManager @Inject constructor(
         // 기존 SpeechRecognizer 정리
         speechRecognizer?.destroy()
         speechRecognizer = null
-        
+
         // 에러 상태 초기화
-        _speechState.value = _speechState.value.copy(
+        _foregroundTTSState.value = _foregroundTTSState.value.copy(
             error = null,
             isSpeechRecognitionAvailable = false
         )
-        
+
         // 새로 초기화
         initializeSpeechRecognizer()
     }
 }
 
-data class SpeechState(
+data class ForegroundTTSState(
     val isSpeechRecognitionAvailable: Boolean = false,
     val isTTSReady: Boolean = false,
     val lastRecognizedText: String = "",
     val partialText: String = "",
     val audioLevel: Float = 0f,
     val error: String? = null
-) 
+)

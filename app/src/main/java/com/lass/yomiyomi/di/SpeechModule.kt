@@ -1,7 +1,7 @@
 package com.lass.yomiyomi.di
 
 import android.content.Context
-import com.lass.yomiyomi.tts.SpeechManager
+import com.lass.yomiyomi.tts.ForegroundTTSManager
 import com.lass.yomiyomi.tts.BackgroundTTSManager
 import dagger.Module
 import dagger.Provides
@@ -20,16 +20,16 @@ object SpeechModule {
     fun provideSpeechManager(
         @ApplicationContext context: Context,
         backgroundTTSManagerProvider: Provider<BackgroundTTSManager>
-    ): SpeechManager {
-        return SpeechManager(context, backgroundTTSManagerProvider)
+    ): ForegroundTTSManager {
+        return ForegroundTTSManager(context, backgroundTTSManagerProvider)
     }
 
     @Provides
     @Singleton
     fun provideBackgroundTTSManager(
         @ApplicationContext context: Context,
-        speechManager: SpeechManager
+        foregroundTTSManager: ForegroundTTSManager
     ): BackgroundTTSManager {
-        return BackgroundTTSManager(context, speechManager)
+        return BackgroundTTSManager(context, foregroundTTSManager)
     }
 } 

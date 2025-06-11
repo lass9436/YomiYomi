@@ -23,7 +23,7 @@ import com.lass.yomiyomi.util.JapaneseTextFilter
 @Singleton
 class BackgroundTTSManager @Inject constructor(
     private val context: Context,
-    private val speechManager: SpeechManager // 충돌 방지를 위해 주입
+    private val foregroundTTSManager: ForegroundTTSManager // 충돌 방지를 위해 주입
 ) {
     private var textToSpeech: TextToSpeech? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -100,7 +100,7 @@ class BackgroundTTSManager @Inject constructor(
         if (!_isReady.value || sentences.isEmpty()) return
         
         // 기존 SpeechManager TTS 정지하여 충돌 방지
-        speechManager.stopSpeaking()
+        foregroundTTSManager.stopSpeaking()
         
         currentQueue.clear()
         currentIndex = 0
@@ -150,7 +150,7 @@ class BackgroundTTSManager @Inject constructor(
         }
         
         // 기존 SpeechManager TTS 정지하여 충돌 방지
-        speechManager.stopSpeaking()
+        foregroundTTSManager.stopSpeaking()
         
         println("BackgroundTTS Debug: Starting paragraph learning with ${paragraphs.size} paragraphs")
         println("BackgroundTTS Debug: SentencesMap size: ${sentencesMap.size}")
@@ -341,7 +341,7 @@ data class TTSItem(
     val text: String,
     val processedText: String,
     val isJapanese: Boolean,
-    val source: SentenceItem,
+    val source: com.lass.yomiyomi.domain.model.entity.SentenceItem,
     val paragraphTitle: String? = null
 )
 
@@ -367,4 +367,4 @@ data class BackgroundTTSSettings(
     val speechRate: Float = 0.8f,
     val pitch: Float = 1.0f,
     val pauseInterval: Long = 1000L // 문장 간 간격 (ms)
-) 
+)

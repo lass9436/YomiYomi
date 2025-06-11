@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.lass.yomiyomi.di.SpeechManagerEntryPoint
-import com.lass.yomiyomi.tts.SpeechManager
+import com.lass.yomiyomi.tts.ForegroundTTSManager
 import dagger.hilt.android.EntryPointAccessors
 
 /**
@@ -12,7 +12,7 @@ import dagger.hilt.android.EntryPointAccessors
  * NavigationTTSManager가 화면 전환 시 TTS 정지를 담당
  */
 @Composable
-fun rememberSpeechManager(): SpeechManager {
+fun rememberSpeechManager(): ForegroundTTSManager {
     val context = LocalContext.current
     val speechManager = remember {
         EntryPointAccessors.fromApplication(
