@@ -61,7 +61,7 @@ YomiYomiは漢字、単語、文章、段落学習のための総合的なAndroi
 │   ├── 📂 repository    # リポジトリ実装
 │   └── 📂 model         # データモデル
 ├── 📂 di                # 依存性注入
-├── 📂 speech            # 音声認識・TTS管理
+├── 📂 media            # 音声認識・TTS管理
 ├── 📂 util              # ユーティリティクラス
 └── 📂 widget            # ホーム画面ウィジェット   
 ```

@@ -64,7 +64,7 @@ YomiYomi는 한자, 단어, 문장, 문단 학습을 위한 종합적인 안드�
 │   ├── 📂 repository     # 데이터 저장소 구현
 │   └── 📂 model          # 데이터 모델
 ├── 📂 di                 # Dependency Injection
-├── 📂 speech             # 음성 인식/TTS 관리
+├── 📂 media             # 음성 인식/TTS 관리
 ├── 📂 util               # 유틸리티 클래스
 └── 📂 widget             # 홈 화면 위젯
 ```
