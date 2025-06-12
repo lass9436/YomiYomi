@@ -65,9 +65,10 @@ fun SentenceCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     FuriganaText(
-                        japaneseText = sentence.japanese,
+                        text = sentence.japanese,
                         displayMode = displayMode,
                         fontSize = 18.sp,
+                        furiganaSize = 12.sp,
                         modifier = Modifier.weight(1f)
                     )
                     

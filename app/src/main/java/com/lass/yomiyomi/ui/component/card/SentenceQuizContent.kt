@@ -69,9 +69,10 @@ fun SentenceQuizContent(
                     // 문제 텍스트 - 후리가나가 포함되어 있으면 FuriganaText 사용
                     if (FuriganaParser.hasKanji(question)) {
                         FuriganaText(
-                            japaneseText = question,
+                            text = question,
                             displayMode = DisplayMode.FULL,
                             fontSize = 24.sp,
+                            furiganaSize = 16.sp,
                             modifier = Modifier.padding(bottom = 32.dp)
                         )
                     } else {

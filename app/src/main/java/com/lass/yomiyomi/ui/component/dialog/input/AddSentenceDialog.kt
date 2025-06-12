@@ -123,9 +123,10 @@ fun SentenceInputDialog(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             FuriganaText(
-                                japaneseText = japanese,
+                                text = japanese,
                                 displayMode = DisplayMode.FULL,
-                                fontSize = 16.sp
+                                fontSize = 16.sp,
+                                furiganaSize = 12.sp
                             )
                         }
                     }

@@ -140,9 +140,10 @@ fun ParagraphQuizContent(
                             // 각 문장을 개별 Row로 표시
                             sentences.forEach { sentence ->
                                 FuriganaText(
-                                    japaneseText = sentence.japanese,
+                                    text = sentence.japanese,
                                     displayMode = DisplayMode.FULL,
                                     fontSize = 18.sp,
+                                    furiganaSize = 12.sp,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(vertical = 4.dp),
