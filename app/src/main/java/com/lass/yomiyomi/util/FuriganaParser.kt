@@ -6,70 +6,63 @@ object FuriganaParser {
     fun parse(text: String): List<TextSegment> {
         val segments = mutableListOf<TextSegment>()
         var i = 0
-        
         while (i < text.length) {
-            // 한자[후리가나] 패턴을 찾는다
             val kanjiStart = i
             var foundKanjiWithFurigana = false
-            
-            // 연속된 한자 찾기
-            while (i < text.length && isKanji(text[i])) {
-                i++
-            }
-            
-            // 한자 다음에 [후리가나]가 있는지 확인
-            if (i > kanjiStart && i < text.length && text[i] == '[') {
-                val furiganaStart = i + 1
-                val furiganaEnd = text.indexOf(']', furiganaStart)
-                
-                if (furiganaEnd != -1) {
-                    // 한자[후리가나] 패턴 발견!
-                    val kanjiText = text.substring(kanjiStart, i)
-                    val furigana = text.substring(furiganaStart, furiganaEnd)
-                    segments.add(TextSegment(kanjiText, furigana))
-                    i = furiganaEnd + 1
-                    foundKanjiWithFurigana = true
-                }
-            }
-            
+            val result = parseKanjiWithFurigana(text, i, segments)
+            i = result.first
+            foundKanjiWithFurigana = result.second
             if (!foundKanjiWithFurigana) {
-                // 한자[후리가나] 패턴이 아닌 경우, 연속된 일반 텍스트로 처리
-                val normalTextStart = kanjiStart
-                i = kanjiStart
-                
-                // 다음 한자[후리가나] 패턴이 나올 때까지 계속 읽기
-                while (i < text.length) {
-                    if (isKanji(text[i])) {
-                        // 한자 시작점 찾기
-                        val nextKanjiStart = i
-                        while (i < text.length && isKanji(text[i])) {
-                            i++
-                        }
-                        // 다음이 [후리가나]인지 확인
-                        if (i < text.length && text[i] == '[') {
-                            val nextFuriganaEnd = text.indexOf(']', i)
-                            if (nextFuriganaEnd != -1) {
-                                // 다음 한자[후리가나] 패턴 발견, 여기서 멈춤
-                                i = nextKanjiStart
-                                break
-                            }
-                        }
-                        // 한자[후리가나] 패턴이 아니면 계속 진행
-                    } else {
-                        i++
-                    }
-                }
-                if (i > normalTextStart) {
-                    val normalText = text.substring(normalTextStart, i)
-                    // 모든 일반 텍스트(가나, 숫자, 기타) 무조건 한 글자씩 쪼갬
-                    normalText.forEach { c ->
-                        segments.add(TextSegment(c.toString(), null))
-                    }
-                }
+                i = parseNormalText(text, kanjiStart, segments)
             }
         }
-        
         return segments
+    }
+    
+    private fun parseKanjiWithFurigana(text: String, start: Int, segments: MutableList<TextSegment>): Pair<Int, Boolean> {
+        var i = start
+        while (i < text.length && isKanji(text[i])) {
+            i++
+        }
+        if (i > start && i < text.length && text[i] == '[') {
+            val furiganaStart = i + 1
+            val furiganaEnd = text.indexOf(']', furiganaStart)
+            if (furiganaEnd != -1) {
+                val kanjiText = text.substring(start, i)
+                val furigana = text.substring(furiganaStart, furiganaEnd)
+                segments.add(TextSegment(kanjiText, furigana))
+                return Pair(furiganaEnd + 1, true)
+            }
+        }
+        return Pair(start, false)
+    }
+    
+    private fun parseNormalText(text: String, start: Int, segments: MutableList<TextSegment>): Int {
+        var i = start
+        while (i < text.length) {
+            if (isKanji(text[i])) {
+                val nextKanjiStart = i
+                while (i < text.length && isKanji(text[i])) {
+                    i++
+                }
+                if (i < text.length && text[i] == '[') {
+                    val nextFuriganaEnd = text.indexOf(']', i)
+                    if (nextFuriganaEnd != -1) {
+                        i = nextKanjiStart
+                        break
+                    }
+                }
+            } else {
+                i++
+            }
+        }
+        if (i > start) {
+            val normalText = text.substring(start, i)
+            normalText.forEach { c ->
+                segments.add(TextSegment(c.toString(), null))
+            }
+        }
+        return i
     }
     
     // 한자인지 판별 (간단한 유니코드 범위 체크)
