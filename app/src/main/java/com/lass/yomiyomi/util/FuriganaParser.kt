@@ -45,7 +45,6 @@ object FuriganaParser {
                         while (i < text.length && isKanji(text[i])) {
                             i++
                         }
-                        
                         // 다음이 [후리가나]인지 확인
                         if (i < text.length && text[i] == '[') {
                             val nextFuriganaEnd = text.indexOf(']', i)
@@ -60,10 +59,17 @@ object FuriganaParser {
                         i++
                     }
                 }
-                
                 if (i > normalTextStart) {
                     val normalText = text.substring(normalTextStart, i)
-                    segments.add(TextSegment(normalText, null))
+                    // 가나만 블록이 일정 길이(6글자) 이상이면 쪼갬
+                    val kanaChunkSize = 6
+                    if (normalText.all { isKana(it) } && normalText.length > kanaChunkSize) {
+                        normalText.chunked(kanaChunkSize).forEach { chunk ->
+                            segments.add(TextSegment(chunk, null))
+                        }
+                    } else {
+                        segments.add(TextSegment(normalText, null))
+                    }
                 }
             }
         }
@@ -76,6 +82,12 @@ object FuriganaParser {
         return char.code in 0x4E00..0x9FAF || // CJK Unified Ideographs
                char.code in 0x3400..0x4DBF || // CJK Extension A
                char.code == 0x3005             // 々 (반복 기호)
+    }
+
+    // 가나(히라가나/가타카나)인지 판별
+    fun isKana(char: Char): Boolean {
+        return (char.code in 0x3040..0x309F) || // 히라가나
+               (char.code in 0x30A0..0x30FF)    // 가타카나
     }
     
     fun hasKanji(text: String): Boolean {

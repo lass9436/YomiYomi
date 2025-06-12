@@ -44,13 +44,11 @@ class MediaManager @Inject constructor(
         speechRecognitionManager.clearRecognizedText()
     }
 
-    fun stopBackgroundTTS() = backgroundTTSManager.stop()
-
     fun stopForegroundTTSSpeaking() = foregroundTTSManager.stopSpeaking()
 
     // 정책 적용: 포그라운드 TTS 재생 (백그라운드 TTS 중지 후 재생)
     fun playForegroundTTS(original: String, tts: String) {
-        stopBackgroundTTS()
+        backgroundTTSManager.stop()
         foregroundTTSManager.speakWithOriginalText(original, tts)
     }
 
@@ -67,4 +65,6 @@ class MediaManager @Inject constructor(
     }
 
     fun updateBackgroundTTSSettings(settings: BackgroundTTSSettings) = backgroundTTSManager.updateSettings(settings)
+
+    fun stopBackgroundTTS() = backgroundTTSManager.stop()
 } 

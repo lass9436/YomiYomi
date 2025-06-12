@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.constant.DisplayMode
 import com.lass.yomiyomi.util.FuriganaParser
 import com.lass.yomiyomi.ui.theme.LocalCustomColors
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun FuriganaText(
@@ -40,96 +41,60 @@ fun FuriganaText(
         
         // 각 세그먼트별 너비 계산 및 줄 분할
         val lines = remember(segments, availableWidthPx, fontSize) {
-            calculateLines(segments, availableWidthPx, textMeasurer, fontSize, furiganaSize, displayMode)
+            calculateLines(segments, availableWidthPx, textMeasurer, fontSize, furiganaSize, displayMode, density)
         }
         
         // 각 줄을 개별 Row로 렌더링
         Column {
             lines.forEach { lineSegments ->
                 Row(
-                    verticalAlignment = Alignment.Bottom,
+                    verticalAlignment = Alignment.Top,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     lineSegments.forEach { segment ->
-                        when {
-                            // 한자 + 요미가나 세그먼트
-                            segment.furigana != null -> {
-                                when (displayMode) {
-                                    DisplayMode.FULL, DisplayMode.JAPANESE_ONLY -> {
-                                        Box(
-                                            modifier = Modifier.padding(horizontal = 1.dp),
-                                            contentAlignment = Alignment.BottomCenter
-                                        ) {
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.spacedBy((-3).dp)
-                                            ) {
-                                                // 퀴즈 모드에서 후리가나 표시 결정
-                                                val displayFurigana = if (quiz != null) {
-                                                    // 퀴즈 모드: 빈칸인지 확인
-                                                    val blankForThisFurigana = quiz.blanks.find { it.correctAnswer == segment.furigana }
-                                                    if (blankForThisFurigana != null) {
-                                                        // 빈칸이면 채워진 답 또는 ___
-                                                        quiz.filledBlanks[blankForThisFurigana.index] ?: "___"
-                                                    } else {
-                                                        // 빈칸이 아니면 원래 후리가나
-                                                        segment.furigana
-                                                    }
-                                                } else {
-                                                    // 일반 모드: 원래 후리가나
-                                                    segment.furigana
-                                                }
-                                                
-                                                Text(
-                                                    text = displayFurigana,
-                                                    fontSize = furiganaSize,
-                                                    color = if (quiz != null && displayFurigana == "___") {
-                                                        // 빈칸: 테마의 빈칸 색상
-                                                        customColors.quizBlank
-                                                    } else if (quiz != null && displayFurigana != segment.furigana) {
-                                                        // 채워진 답: 테마의 채워진 답 색상  
-                                                        customColors.quizFilled
-                                                    } else {
-                                                        // 일반 후리가나: 테마의 후리가나 색상
-                                                        customColors.furigana
-                                                    },
-                                                    textAlign = TextAlign.Center,
-                                                    lineHeight = furiganaSize * 0.8f
-                                                )
-                                                Text(
-                                                    text = segment.text,
-                                                    fontSize = fontSize,
-                                                    textAlign = TextAlign.Center,
-                                                    lineHeight = fontSize * 0.9f
-                                                )
-                                            }
-                                        }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(horizontal = 1.dp)
+                        ) {
+                            val displayFurigana = if (segment.furigana != null) {
+                                if (quiz != null) {
+                                    val blankForThisFurigana = quiz.blanks.find { it.correctAnswer == segment.furigana }
+                                    if (blankForThisFurigana != null) {
+                                        quiz.filledBlanks[blankForThisFurigana.index] ?: "___"
+                                    } else {
+                                        segment.furigana
                                     }
-                                    DisplayMode.JAPANESE_NO_FURIGANA -> {
-                                        Text(
-                                            text = segment.text,
-                                            fontSize = fontSize
-                                        )
-                                    }
-                                    DisplayMode.KOREAN_ONLY -> {
-                                        // 한국어만 모드에서는 일본어 텍스트 숨김
-                                    }
+                                } else {
+                                    segment.furigana
                                 }
+                            } else {
+                                " "
                             }
-                            // 일반 텍스트 (히라가나/카타카나)
-                            else -> {
-                                when (displayMode) {
-                                    DisplayMode.KOREAN_ONLY -> {
-                                        // 한국어만 모드에서는 히라가나/카타카나 숨김
-                                    }
-                                    else -> {
-                                        Text(
-                                            text = segment.text,
-                                            fontSize = fontSize
-                                        )
-                                    }
+                            val fakeFurigana = if (segment.furigana != null) displayFurigana else "あ"
+                            val furiganaColor = if (segment.furigana != null) {
+                                if (quiz != null && displayFurigana == "___") {
+                                    customColors.quizBlank
+                                } else if (quiz != null && displayFurigana != segment.furigana) {
+                                    customColors.quizFilled
+                                } else {
+                                    customColors.furigana
                                 }
+                            } else {
+                                Color.Transparent
                             }
+                            Text(
+                                text = fakeFurigana,
+                                fontSize = furiganaSize,
+                                color = furiganaColor,
+                                textAlign = TextAlign.Center,
+                                lineHeight = furiganaSize * 0.8f
+                            )
+                            Text(
+                                text = segment.text,
+                                fontSize = fontSize,
+                                textAlign = TextAlign.Center,
+                                lineHeight = fontSize * 0.9f
+                            )
                         }
                     }
                 }
@@ -145,73 +110,102 @@ private fun calculateLines(
     textMeasurer: androidx.compose.ui.text.TextMeasurer,
     fontSize: TextUnit,
     furiganaSize: TextUnit,
-    displayMode: DisplayMode
+    displayMode: DisplayMode,
+    density: androidx.compose.ui.unit.Density
 ): List<List<com.lass.yomiyomi.domain.model.data.TextSegment>> {
     val lines = mutableListOf<List<com.lass.yomiyomi.domain.model.data.TextSegment>>()
     var currentLine = mutableListOf<com.lass.yomiyomi.domain.model.data.TextSegment>()
     var currentLineWidth = 0f
+    val segmentHorizontalPaddingPx = with(density) { 4.dp.toPx() }
     
     segments.forEach { segment ->
-        // 각 세그먼트의 렌더링 너비 계산
-        val segmentWidth = when {
-            segment.furigana != null -> {
-                when (displayMode) {
-                    DisplayMode.FULL, DisplayMode.JAPANESE_ONLY -> {
-                        val kanjiWidth = textMeasurer.measure(
-                            text = segment.text,
-                            style = TextStyle(fontSize = fontSize)
-                        ).size.width.toFloat()
-                        val furiganaWidth = textMeasurer.measure(
-                            text = segment.furigana,
-                            style = TextStyle(fontSize = furiganaSize)
-                        ).size.width.toFloat()
-                        maxOf(kanjiWidth, furiganaWidth) + 8f // padding 고려
+        if (segment.furigana == null && segment.text.length > 1) {
+            // 가나 블록: 한 글자씩 추가하며 남은 너비 초과 시 끊기
+            var kanaIdx = 0
+            while (kanaIdx < segment.text.length) {
+                var chunk = ""
+                var chunkWidth = 0f
+                while (kanaIdx < segment.text.length) {
+                    val nextChar = segment.text[kanaIdx].toString()
+                    val nextWidth = textMeasurer.measure(
+                        text = nextChar,
+                        style = TextStyle(fontSize = fontSize)
+                    ).size.width.toFloat() + segmentHorizontalPaddingPx
+                    if (currentLineWidth + chunkWidth + nextWidth > availableWidthPx && chunk.isNotEmpty()) {
+                        break // 이 chunk는 다음 줄로 넘김
                     }
-                    DisplayMode.JAPANESE_NO_FURIGANA -> {
-                        textMeasurer.measure(
-                            text = segment.text,
-                            style = TextStyle(fontSize = fontSize)
-                        ).size.width.toFloat()
-                    }
-                    DisplayMode.KOREAN_ONLY -> {
-                        // 한국어만 모드에서는 일본어 텍스트 숨김 - 너비 0
-                        0f
-                    }
+                    chunk += nextChar
+                    chunkWidth += nextWidth
+                    kanaIdx++
+                }
+                if (currentLineWidth + chunkWidth > availableWidthPx && currentLine.isNotEmpty()) {
+                    lines.add(currentLine.toList())
+                    currentLine.clear()
+                    currentLineWidth = 0f
+                }
+                currentLine.add(com.lass.yomiyomi.domain.model.data.TextSegment(chunk, null))
+                currentLineWidth += chunkWidth
+                if (currentLineWidth >= availableWidthPx) {
+                    lines.add(currentLine.toList())
+                    currentLine.clear()
+                    currentLineWidth = 0f
                 }
             }
-            else -> {
-                when (displayMode) {
-                    DisplayMode.KOREAN_ONLY -> 0f
-                    else -> {
-                        textMeasurer.measure(
-                            text = segment.text,
-                            style = TextStyle(fontSize = fontSize)
-                        ).size.width.toFloat()
-                    }
-                }
-            }
-        }
-        
-        // 줄바꿈 판단
-        if (currentLineWidth + segmentWidth <= availableWidthPx) {
-            currentLine.add(segment)
-            currentLineWidth += segmentWidth
         } else {
-            // 현재 줄이 비어있지 않으면 저장하고 새 줄 시작
-            if (currentLine.isNotEmpty()) {
-                lines.add(currentLine.toList())
-                currentLine.clear()
-                currentLineWidth = 0f
+            // 기존 한자+요미가나 블록 처리
+            val segmentWidth = when {
+                segment.furigana != null -> {
+                    when (displayMode) {
+                        DisplayMode.FULL, DisplayMode.JAPANESE_ONLY -> {
+                            val kanjiWidth = textMeasurer.measure(
+                                text = segment.text,
+                                style = TextStyle(fontSize = fontSize)
+                            ).size.width.toFloat()
+                            val furiganaWidth = textMeasurer.measure(
+                                text = segment.furigana,
+                                style = TextStyle(fontSize = furiganaSize)
+                            ).size.width.toFloat()
+                            maxOf(kanjiWidth, furiganaWidth) + segmentHorizontalPaddingPx
+                        }
+                        DisplayMode.JAPANESE_NO_FURIGANA -> {
+                            textMeasurer.measure(
+                                text = segment.text,
+                                style = TextStyle(fontSize = fontSize)
+                            ).size.width.toFloat() + segmentHorizontalPaddingPx
+                        }
+                        DisplayMode.KOREAN_ONLY -> {
+                            0f
+                        }
+                    }
+                }
+                else -> {
+                    when (displayMode) {
+                        DisplayMode.KOREAN_ONLY -> 0f
+                        else -> {
+                            textMeasurer.measure(
+                                text = segment.text,
+                                style = TextStyle(fontSize = fontSize)
+                            ).size.width.toFloat() + segmentHorizontalPaddingPx
+                        }
+                    }
+                }
             }
-            currentLine.add(segment)
-            currentLineWidth = segmentWidth
+            if (currentLineWidth + segmentWidth <= availableWidthPx) {
+                currentLine.add(segment)
+                currentLineWidth += segmentWidth
+            } else {
+                if (currentLine.isNotEmpty()) {
+                    lines.add(currentLine.toList())
+                    currentLine.clear()
+                    currentLineWidth = 0f
+                }
+                currentLine.add(segment)
+                currentLineWidth = segmentWidth
+            }
         }
     }
-    
-    // 마지막 줄 추가
     if (currentLine.isNotEmpty()) {
         lines.add(currentLine.toList())
     }
-    
     return lines
 }
