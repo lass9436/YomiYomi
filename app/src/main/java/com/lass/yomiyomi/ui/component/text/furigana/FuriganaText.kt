@@ -55,7 +55,7 @@ fun FuriganaText(
                 ) {
                     lineSegments.forEach { segment ->
                         // 퀴즈 모드에서 빈칸(정답 미입력) 상태인지 판별
-                        val isKanaDummy = segment.furigana == null
+                        val isKanaDummy = segment.furigana == null && (segment.text.all { FuriganaParser.isKana(it) } || segment.text.all { it.isDigit() })
                         val isBlank = quiz != null && quiz.blanks.any { it.correctAnswer == segment.furigana } && quiz.filledBlanks[quiz.blanks.first { it.correctAnswer == segment.furigana }.index] == null
                         val isCorrect = quiz != null && segment.furigana != null && quiz.filledBlanks.any { it.value == segment.furigana }
                         val blankBgColor = customColors.quizBlankBg
@@ -71,34 +71,37 @@ fun FuriganaText(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(horizontal = 1.dp)
                         ) {
-                            // 위: 요미가나(있으면) or 빈칸(없으면)
-                            Box(
-                                modifier = if (isBlank) Modifier.background(blankBgColor, shape = RoundedCornerShape(4.dp)) else Modifier
-                            ) {
-                                val displayFurigana = if (segment.furigana != null) {
-                                    if (quiz != null) {
-                                        val blankForThisFurigana = quiz.blanks.find { it.correctAnswer == segment.furigana }
-                                        if (blankForThisFurigana != null) {
-                                            quiz.filledBlanks[blankForThisFurigana.index] ?: segment.furigana
+                            // 위: 요미가나(있으면) or 빈칸(없으면) or fake furigana (가나/숫자)
+                            if (displayMode != DisplayMode.JAPANESE_NO_FURIGANA) {
+                                Box(
+                                    modifier = if (isBlank) Modifier.background(blankBgColor, shape = RoundedCornerShape(4.dp)) else Modifier
+                                ) {
+                                    val displayFurigana = if (segment.furigana != null) {
+                                        if (quiz != null) {
+                                            val blankForThisFurigana = quiz.blanks.find { it.correctAnswer == segment.furigana }
+                                            if (blankForThisFurigana != null) {
+                                                quiz.filledBlanks[blankForThisFurigana.index] ?: segment.furigana
+                                            } else {
+                                                segment.furigana
+                                            }
                                         } else {
                                             segment.furigana
                                         }
                                     } else {
-                                        segment.furigana
+                                        " "
                                     }
-                                } else {
-                                    " "
+                                    val isKanaOrDigit = segment.text.all { FuriganaParser.isKana(it) } || segment.text.all { it.isDigit() }
+                                    val fakeFurigana = if (segment.furigana != null) displayFurigana else if (isKanaOrDigit) "あ" else " "
+                                    Text(
+                                        text = fakeFurigana,
+                                        fontSize = furiganaSize,
+                                        color = furiganaColor.takeIf { segment.furigana != null } ?: Color.Transparent,
+                                        textAlign = TextAlign.Center,
+                                        lineHeight = furiganaSize * 0.8f
+                                    )
                                 }
-                                val fakeFurigana = if (segment.furigana != null) displayFurigana else "あ"
-                                Text(
-                                    text = fakeFurigana,
-                                    fontSize = furiganaSize,
-                                    color = furiganaColor,
-                                    textAlign = TextAlign.Center,
-                                    lineHeight = furiganaSize * 0.8f
-                                )
                             }
-                            // 아래: 한자 or 가나 (배경색 없음)
+                            // 아래: 한자 or 가나 or 숫자 (배경색 없음)
                             Text(
                                 text = segment.text,
                                 fontSize = fontSize,

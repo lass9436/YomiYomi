@@ -61,11 +61,16 @@ object FuriganaParser {
                 }
                 if (i > normalTextStart) {
                     val normalText = text.substring(normalTextStart, i)
-                    // 가나만 블록이 일정 길이(6글자) 이상이면 쪼갬
+                    // 가나/숫자만 블록이 일정 길이(6글자) 이상이면 쪼갬
                     val kanaChunkSize = 6
                     if (normalText.all { isKana(it) } && normalText.length > kanaChunkSize) {
                         normalText.chunked(kanaChunkSize).forEach { chunk ->
                             segments.add(TextSegment(chunk, null))
+                        }
+                    } else if (normalText.all { it.isDigit() }) {
+                        // 숫자는 무조건 한 글자씩 쪼갬
+                        normalText.forEach { c ->
+                            segments.add(TextSegment(c.toString(), null))
                         }
                     } else {
                         segments.add(TextSegment(normalText, null))
