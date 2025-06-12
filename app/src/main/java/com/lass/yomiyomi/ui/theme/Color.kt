@@ -27,3 +27,7 @@ val QuizFilledDark = Color(0xFF66BB6A)    // 더 밝은 초록색 (다크 모드
 // 일반 후리가나 색상 (회색 계열)
 val FuriganaLight = Color(0xFF424242)     // 어두운 회색 (라이트 모드)
 val FuriganaDark = Color(0xFFBDBDBD)      // 밝은 회색 (다크 모드)
+
+// 퀴즈 빈칸 요미가나 배경색 (라이트/다크)
+val QuizBlankBgLight = Color(0xFFD0E6C9) // 연한 녹색 계열, surfaceVariant보다 진하게
+val QuizBlankBgDark = Color(0xFF37513C)  // 다크모드용, surfaceVariant보다 진하게

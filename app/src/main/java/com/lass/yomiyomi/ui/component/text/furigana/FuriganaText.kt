@@ -58,7 +58,7 @@ fun FuriganaText(
                         val isKanaDummy = segment.furigana == null
                         val isBlank = quiz != null && quiz.blanks.any { it.correctAnswer == segment.furigana } && quiz.filledBlanks[quiz.blanks.first { it.correctAnswer == segment.furigana }.index] == null
                         val isCorrect = quiz != null && segment.furigana != null && quiz.filledBlanks.any { it.value == segment.furigana }
-                        val blankBgColor = MaterialTheme.colorScheme.surfaceVariant
+                        val blankBgColor = customColors.quizBlankBg
                         val blankFgColor = blankBgColor // 글자색 = 배경색(숨김)
                         val correctFgColor = customColors.quizFilled // 정답 맞췄을 때 강조색
                         val furiganaColor = when {

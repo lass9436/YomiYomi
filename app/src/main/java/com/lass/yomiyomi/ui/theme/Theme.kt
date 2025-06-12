@@ -55,21 +55,24 @@ private val LightColorScheme = lightColorScheme(
 data class CustomColorScheme(
     val quizBlank: Color,
     val quizFilled: Color,
-    val furigana: Color
+    val furigana: Color,
+    val quizBlankBg: Color
 )
 
 // 라이트 모드 커스텀 색상
 private val LightCustomColors = CustomColorScheme(
     quizBlank = QuizBlankLight,
     quizFilled = QuizFilledLight,
-    furigana = FuriganaLight
+    furigana = FuriganaLight,
+    quizBlankBg = QuizBlankBgLight
 )
 
 // 다크 모드 커스텀 색상
 private val DarkCustomColors = CustomColorScheme(
     quizBlank = QuizBlankDark,
     quizFilled = QuizFilledDark,
-    furigana = FuriganaDark
+    furigana = FuriganaDark,
+    quizBlankBg = QuizBlankBgDark
 )
 
 // CompositionLocal 정의
