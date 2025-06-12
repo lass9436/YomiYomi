@@ -37,9 +37,9 @@ fun FuriganaText(
     BoxWithConstraints(modifier = modifier) {
         val availableWidthPx = with(density) { 
             if (maxWidth == Dp.Unspecified) {
-                (this@BoxWithConstraints.maxWidth - 20.dp).toPx().toInt()
+                (this@BoxWithConstraints.maxWidth - 70.dp).toPx().toInt()
             } else {
-                (maxWidth - 20.dp).toPx().toInt()
+                (maxWidth - 60.dp).toPx().toInt()
             }
         }
         
