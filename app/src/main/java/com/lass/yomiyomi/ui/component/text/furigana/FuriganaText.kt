@@ -35,12 +35,8 @@ fun FuriganaText(
     val customColors = LocalCustomColors.current
     
     BoxWithConstraints(modifier = modifier) {
-        val availableWidthPx = with(density) { 
-            if (maxWidth == Dp.Unspecified) {
-                (this@BoxWithConstraints.maxWidth - 70.dp).toPx().toInt()
-            } else {
-                (maxWidth - 60.dp).toPx().toInt()
-            }
+        val availableWidthPx = with(density) {
+            (this@BoxWithConstraints.maxWidth - 60.dp).toPx().toInt()
         }
         
         val lines = remember(segments, availableWidthPx, textMeasurer, fontSize, furiganaSize, displayMode, density, quiz) {

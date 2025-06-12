@@ -63,14 +63,22 @@ object FuriganaTextLayout {
         furiganaSize: TextUnit,
         displayMode: DisplayMode
     ): Float {
-        // 한자의 너비만 계산 (후리가나는 수직으로 배치되므로 가로 너비에 영향을 주지 않음)
+        // 한자의 너비 계산
         val mainTextWidth = textMeasurer.measure(
             text = segment.text,
             style = androidx.compose.ui.text.TextStyle(fontSize = fontSize)
         ).size.width.toFloat()
 
-        // 좌우 패딩(2.dp)만 추가
-        return mainTextWidth + 2f
+        // 후리가나가 있는 경우 후리가나의 너비도 계산
+        val furiganaWidth = segment.furigana?.let {
+            textMeasurer.measure(
+                text = it,
+                style = androidx.compose.ui.text.TextStyle(fontSize = furiganaSize)
+            ).size.width.toFloat()
+        } ?: 0f
+
+        // 한자와 후리가나 중 더 큰 너비를 사용하고 패딩 추가
+        return maxOf(mainTextWidth, furiganaWidth) + 2f
     }
 
     fun createMeasurePolicy(lines: List<List<TextSegment>>): MeasurePolicy {
