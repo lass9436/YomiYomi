@@ -60,16 +60,14 @@ fun BackgroundTTSButton(
                 IconButton(
                     onClick = {
                         if (isPlaying) {
-                            // 재생 중이면 정지
                             mediaManager.stopBackgroundTTS()
                         } else {
-                            // 재생 중이 아니면 시작
                             if (sentences.isNotEmpty()) {
                                 println("BackgroundTTS Debug: Starting sentence learning with "+sentences.size+" sentences")
-                                mediaManager.startBackgroundSentenceLearning(sentences)
+                                mediaManager.playBackgroundSentenceLearning(sentences)
                             } else if (paragraphs.isNotEmpty()) {
                                 println("BackgroundTTS Debug: Starting paragraph learning with "+paragraphs.size+" paragraphs, sentencesMap size: "+sentencesMap.size)
-                                mediaManager.startBackgroundParagraphLearning(paragraphs, sentencesMap)
+                                mediaManager.playBackgroundParagraphLearning(paragraphs, sentencesMap)
                             } else {
                                 println("BackgroundTTS Debug: No sentences or paragraphs available")
                             }

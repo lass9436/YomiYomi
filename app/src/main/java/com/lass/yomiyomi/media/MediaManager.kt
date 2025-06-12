@@ -45,10 +45,26 @@ class MediaManager @Inject constructor(
     }
 
     fun stopBackgroundTTS() = backgroundTTSManager.stop()
-    fun startBackgroundSentenceLearning(sentences: List<SentenceItem>) = backgroundTTSManager.startSentenceLearning(sentences)
-    fun startBackgroundParagraphLearning(paragraphs: List<ParagraphItem>, sentencesMap: Map<Int, List<SentenceItem>>) = backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
-    fun updateBackgroundTTSSettings(settings: BackgroundTTSSettings) = backgroundTTSManager.updateSettings(settings)
 
-    fun speakForegroundTTSWithOriginalText(original: String, tts: String) = foregroundTTSManager.speakWithOriginalText(original, tts)
     fun stopForegroundTTSSpeaking() = foregroundTTSManager.stopSpeaking()
+
+    // 정책 적용: 포그라운드 TTS 재생 (백그라운드 TTS 중지 후 재생)
+    fun playForegroundTTS(original: String, tts: String) {
+        stopBackgroundTTS()
+        foregroundTTSManager.speakWithOriginalText(original, tts)
+    }
+
+    // 정책 적용: 백그라운드 문장 학습 (포그라운드 TTS 중지 후 재생)
+    fun playBackgroundSentenceLearning(sentences: List<SentenceItem>) {
+        stopForegroundTTSSpeaking()
+        backgroundTTSManager.startSentenceLearning(sentences)
+    }
+
+    // 정책 적용: 백그라운드 단락 학습 (포그라운드 TTS 중지 후 재생)
+    fun playBackgroundParagraphLearning(paragraphs: List<ParagraphItem>, sentencesMap: Map<Int, List<SentenceItem>>) {
+        stopForegroundTTSSpeaking()
+        backgroundTTSManager.startParagraphLearning(paragraphs, sentencesMap)
+    }
+
+    fun updateBackgroundTTSSettings(settings: BackgroundTTSSettings) = backgroundTTSManager.updateSettings(settings)
 } 

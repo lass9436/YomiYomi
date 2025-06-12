@@ -43,7 +43,6 @@ fun UnifiedTTSButton(
     val currentSpeakingText by (foregroundTTSManager?.currentSpeakingText ?: mediaManager.foregroundTTSCurrentSpeakingText).collectAsState()
     val speakWithOriginalText: (String, String) -> Unit = { original, tts ->
         foregroundTTSManager?.speakWithOriginalText(original, tts)
-            ?: mediaManager.speakForegroundTTSWithOriginalText(original, tts)
     }
     val stopSpeaking: () -> Unit = {
         foregroundTTSManager?.stopSpeaking()
@@ -90,7 +89,7 @@ fun UnifiedTTSButton(
             } else {
                 val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
                 val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
-                speakWithOriginalText(finalText, textToSpeak)
+                mediaManager.playForegroundTTS(finalText, textToSpeak)
             }
         },
         enabled = isEnabled && finalText.isNotBlank(),
