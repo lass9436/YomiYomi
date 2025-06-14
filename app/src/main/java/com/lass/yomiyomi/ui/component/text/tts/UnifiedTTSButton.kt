@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.di.MediaManagerEntryPoint
-import com.lass.yomiyomi.media.ForegroundTTSManager
 import com.lass.yomiyomi.util.JapaneseTextFilter
 import dagger.hilt.android.EntryPointAccessors
 
@@ -28,8 +27,7 @@ fun UnifiedTTSButton(
     modifier: Modifier = Modifier,
     size: Dp = 28.dp,
     isEnabled: Boolean = true,
-    autoPlay: Boolean = false,
-    foregroundTTSManager: ForegroundTTSManager? = null
+    autoPlay: Boolean = false
 ) {
     val context = LocalContext.current
     val mediaManager = remember {
@@ -38,37 +36,31 @@ fun UnifiedTTSButton(
             MediaManagerEntryPoint::class.java
         ).mediaManager()
     }
-    val finalSpeechManager = foregroundTTSManager
-    val isSpeaking by (foregroundTTSManager?.isSpeaking ?: mediaManager.foregroundTTSIsSpeaking).collectAsState()
-    val currentSpeakingText by (foregroundTTSManager?.currentSpeakingText ?: mediaManager.foregroundTTSCurrentSpeakingText).collectAsState()
-    val speakWithOriginalText: (String, String) -> Unit = { original, tts ->
-        foregroundTTSManager?.speakWithOriginalText(original, tts)
-    }
-    val stopSpeaking: () -> Unit = {
-        foregroundTTSManager?.stopSpeaking()
-            ?: mediaManager.stopForegroundTTSSpeaking()
-    }
-    
+
+    // MediaManager만 사용
+    val isSpeaking by mediaManager.foregroundTTSIsSpeaking.collectAsState()
+    val currentSpeakingText by mediaManager.foregroundTTSCurrentSpeakingText.collectAsState()
+
     // 입력 데이터 검증 및 텍스트 생성
     val finalText = when {
         text.isNotBlank() -> text
         sentences.isNotEmpty() -> sentences.joinToString("。") { it.japanese }
         else -> ""
     }
-    
+
     if (finalText.isBlank()) return
-    
-    // autoPlay가 true이고 텍스트가 변경될 때 자동 재생
-    LaunchedEffect(finalText, autoPlay) {
+
+    // AutoPlay - MediaManager 사용
+    LaunchedEffect(autoPlay) {
         if (autoPlay && finalText.isNotBlank()) {
             val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
-            val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
-            speakWithOriginalText(finalText, textToSpeak)
+            val textToSpeak = japaneseText.ifEmpty { finalText }
+            mediaManager.playForegroundTTS(finalText, textToSpeak)
         }
     }
-    
+
     val isThisTextSpeaking = isSpeaking && currentSpeakingText == finalText
-    
+
     val rotation by animateFloatAsState(
         targetValue = if (isThisTextSpeaking) 360f else 0f,
         animationSpec = if (isThisTextSpeaking) {
@@ -85,7 +77,7 @@ fun UnifiedTTSButton(
     IconButton(
         onClick = {
             if (isThisTextSpeaking) {
-                stopSpeaking()
+                mediaManager.stopForegroundTTSSpeaking()
             } else {
                 val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
                 val textToSpeak = if (japaneseText.isNotEmpty()) japaneseText else finalText
@@ -114,4 +106,4 @@ fun UnifiedTTSButton(
                 )
         )
     }
-} 
+}
