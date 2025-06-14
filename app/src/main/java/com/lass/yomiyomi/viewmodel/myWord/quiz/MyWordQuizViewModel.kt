@@ -56,7 +56,7 @@ class MyWordQuizViewModel @Inject constructor(
                     // 학습 모드
                     if (priorityWordsInMemory.isEmpty() || currentPriorityIndex >= priorityWordsInMemory.size) {
                         // 새로운 학습 데이터 로드
-                        val (priorityWords, distractors) = myWordRepository.getMyWordsForLearningMode(level.value ?: "ALL")
+                        val (priorityWords, distractors) = loadLearningModeData(level)
                         priorityWordsInMemory = priorityWords
                         distractorsInMemory = distractors
                         currentPriorityIndex = 0
@@ -95,6 +95,15 @@ class MyWordQuizViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    private suspend fun loadLearningModeData(level: Level): Pair<List<MyWordItem>, List<MyWordItem>> {
+        val (priorityWords, randomWords) = myWordRepository.getMyWordsForLearningMode(level.toString())
+        // randomWords에서 priorityWords와 겹치지 않는 것들만 필터링해서 15개만 사용
+        val distractors = randomWords
+            .filterNot { random -> priorityWords.any { priority -> priority.id == random.id } }
+            .take(15)
+        return Pair(priorityWords, distractors)
     }
 
     override fun checkAnswer(selectedIndex: Int, isLearningMode: Boolean) {

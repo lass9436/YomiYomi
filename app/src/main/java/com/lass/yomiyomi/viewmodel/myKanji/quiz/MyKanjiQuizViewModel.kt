@@ -56,7 +56,7 @@ class MyKanjiQuizViewModel @Inject constructor(
                     // 학습 모드
                     if (priorityKanjiInMemory.isEmpty() || currentPriorityIndex >= priorityKanjiInMemory.size) {
                         // 새로운 학습 데이터 로드
-                        val (priorityKanji, distractors) = myKanjiRepository.getMyKanjiForLearningMode(level.value ?: "ALL")
+                        val (priorityKanji, distractors) = loadLearningModeData(level)
                         priorityKanjiInMemory = priorityKanji
                         distractorsInMemory = distractors
                         currentPriorityIndex = 0
@@ -95,6 +95,15 @@ class MyKanjiQuizViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    private suspend fun loadLearningModeData(level: Level): Pair<List<MyKanjiItem>, List<MyKanjiItem>> {
+        val (priorityKanji, randomKanji) = myKanjiRepository.getMyKanjiForLearningMode(level.toString())
+        // randomKanji에서 priorityKanji와 겹치지 않는 것들만 필터링해서 15개만 사용
+        val distractors = randomKanji
+            .filterNot { random -> priorityKanji.any { priority -> priority.id == random.id } }
+            .take(15)
+        return Pair(priorityKanji, distractors)
     }
 
     override fun checkAnswer(selectedIndex: Int, isLearningMode: Boolean) {

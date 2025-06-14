@@ -43,23 +43,17 @@ interface MyWordDao {
     @Query("""
         SELECT * FROM my_word 
         WHERE (:level = 'ALL' OR level = :level)
-        ORDER BY learningWeight DESC 
+        ORDER BY learningWeight DESC, RANDOM()
         LIMIT 5
     """)
     suspend fun getTopPriorityMyWords(level: String): List<MyWord>
 
-    // 학습 모드용 - 오답 보기용 랜덤 15개
+    // 학습 모드용 - 오답 보기용 랜덤 30개
     @Query("""
         SELECT * FROM my_word 
         WHERE (:level = 'ALL' OR level = :level)
-        AND id NOT IN (
-            SELECT id FROM my_word 
-            WHERE (:level = 'ALL' OR level = :level)
-            ORDER BY learningWeight DESC 
-            LIMIT 5
-        )
         ORDER BY RANDOM()
-        LIMIT 15
+        LIMIT 30
     """)
     suspend fun getRandomMyWordDistractors(level: String): List<MyWord>
 

@@ -123,7 +123,12 @@ class WordQuizViewModel @Inject constructor(
     }
 
     private suspend fun loadLearningModeData(level: Level): Pair<List<WordItem>, List<WordItem>> {
-        return repository.getWordsForLearningMode(level.toString())
+        val (priorityWords, randomWords) = repository.getWordsForLearningMode(level.toString())
+        // randomWords에서 priorityWords와 겹치지 않는 것들만 필터링해서 15개만 사용
+        val distractors = randomWords
+            .filterNot { random -> priorityWords.any { priority -> priority.id == random.id } }
+            .take(15)
+        return Pair(priorityWords, distractors)
     }
 
     private suspend fun generateStudyModeQuiz(correctWord: WordItem, distractors: List<WordItem>, quizType: WordQuizType): WordQuiz {

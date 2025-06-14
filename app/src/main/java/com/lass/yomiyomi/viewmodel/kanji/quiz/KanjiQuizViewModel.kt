@@ -120,7 +120,12 @@ class KanjiQuizViewModel @Inject constructor(
     }
 
     private suspend fun loadLearningModeData(level: Level): Pair<List<KanjiItem>, List<KanjiItem>> {
-        return repository.getKanjiForLearningMode(level.toString())
+        val (priorityKanji, randomKanji) = repository.getKanjiForLearningMode(level.toString())
+        // randomKanji에서 priorityKanji와 겹치지 않는 것들만 필터링해서 15개만 사용
+        val distractors = randomKanji
+            .filterNot { random -> priorityKanji.any { priority -> priority.id == random.id } }
+            .take(15)
+        return Pair(priorityKanji, distractors)
     }
 
     private fun generateStudyModeQuiz(correctKanji: KanjiItem, distractors: List<KanjiItem>, quizType: KanjiQuizType): KanjiQuiz {
