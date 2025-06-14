@@ -51,7 +51,7 @@ fun UnifiedTTSButton(
     if (finalText.isBlank()) return
 
     // AutoPlay - MediaManager 사용
-    LaunchedEffect(autoPlay) {
+    LaunchedEffect(autoPlay, finalText) {
         if (autoPlay && finalText.isNotBlank()) {
             val japaneseText = JapaneseTextFilter.prepareTTSText(finalText)
             val textToSpeak = japaneseText.ifEmpty { finalText }
