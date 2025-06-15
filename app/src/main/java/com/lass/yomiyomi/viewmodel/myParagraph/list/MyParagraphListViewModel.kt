@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lass.yomiyomi.data.repository.MyParagraphRepository
 import com.lass.yomiyomi.data.repository.MySentenceRepository
+import com.lass.yomiyomi.data.repository.ParagraphListMappingRepository
+import com.lass.yomiyomi.data.repository.ParagraphListRepository
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.Level
@@ -15,7 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MyParagraphListViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
-    private val mySentenceRepository: MySentenceRepository
+    private val mySentenceRepository: MySentenceRepository,
+    private val paragraphListRepository: ParagraphListRepository,
+    private val paragraphListMappingRepository: ParagraphListMappingRepository
 ) : ViewModel(), MyParagraphListViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)

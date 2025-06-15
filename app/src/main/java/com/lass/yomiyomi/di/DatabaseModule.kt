@@ -9,6 +9,8 @@ import com.lass.yomiyomi.data.repository.MyWordRepository
 import com.lass.yomiyomi.data.repository.MyKanjiRepository
 import com.lass.yomiyomi.data.repository.MySentenceRepository
 import com.lass.yomiyomi.data.repository.MyParagraphRepository
+import com.lass.yomiyomi.data.repository.ParagraphListMappingRepository
+import com.lass.yomiyomi.data.repository.ParagraphListRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,4 +68,17 @@ object DatabaseModule {
     fun provideParagraphRepository(@ApplicationContext context: Context): MyParagraphRepository {
         return MyParagraphRepository(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideParagraphListRepository(@ApplicationContext context: Context): ParagraphListRepository {
+        return ParagraphListRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideParagraphListMappingRepository(@ApplicationContext context: Context): ParagraphListMappingRepository {
+        return ParagraphListMappingRepository(context)
+    }
+
 } 
