@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MyParagraphViewModel @Inject constructor(
+class MyParagraphListViewModel @Inject constructor(
     private val myParagraphRepository: MyParagraphRepository,
     private val mySentenceRepository: MySentenceRepository
-) : ViewModel(), MyParagraphViewModelInterface {
+) : ViewModel(), MyParagraphListViewModelInterface {
 
     private val _isLoading = MutableStateFlow(false)
     override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
