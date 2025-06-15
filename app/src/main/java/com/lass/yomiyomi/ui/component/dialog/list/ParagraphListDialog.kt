@@ -42,6 +42,61 @@ fun ParagraphListDialog(
         title = { Text("문단 보관함 담기", style = MaterialTheme.typography.titleLarge) },
         text = {
             Column {
+                // 새 리스트 추가 버튼
+                if (!showAddInput) {
+                    TextButton(
+                        onClick = { showAddInput = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "추가")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("새 리스트 추가")
+                    }
+                }
+
+                // 새 리스트 추가 입력 필드
+                if (showAddInput) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = newListName,
+                            onValueChange = { newListName = it },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            singleLine = true,
+                            placeholder = { Text("새 리스트 이름") },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    if (newListName.isNotBlank()) {
+                                        onAddListClick(newListName)
+                                        showAddInput = false
+                                        newListName = ""
+                                    }
+                                }
+                            )
+                        )
+                        TextButton(
+                            onClick = {
+                                if (newListName.isNotBlank()) {
+                                    onAddListClick(newListName)
+                                    showAddInput = false
+                                    newListName = ""
+                                }
+                            }
+                        ) {
+                            Text("추가")
+                        }
+                    }
+                }
+
                 // 리스트 목록
                 LazyColumn(modifier = Modifier.heightIn(max = 240.dp)) {
                     items(paragraphLists.size) { idx ->
@@ -120,49 +175,6 @@ fun ParagraphListDialog(
                                         tint = MaterialTheme.colorScheme.error
                                     )
                                 }
-                            }
-                        }
-                    }
-
-                    // 새 리스트 추가 입력 필드
-                    item {
-                        if (showAddInput) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                OutlinedTextField(
-                                    value = newListName,
-                                    onValueChange = { newListName = it },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 8.dp),
-                                    singleLine = true,
-                                    placeholder = { Text("새 리스트 이름") },
-                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            if (newListName.isNotBlank()) {
-                                                onAddListClick(newListName)
-                                                showAddInput = false
-                                                newListName = ""
-                                            }
-                                        }
-                                    )
-                                )
-                            }
-                        } else {
-                            TextButton(
-                                onClick = { showAddInput = true },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 6.dp)
-                            ) {
-                                Icon(Icons.Default.Add, contentDescription = "추가")
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("새 리스트 추가")
                             }
                         }
                     }

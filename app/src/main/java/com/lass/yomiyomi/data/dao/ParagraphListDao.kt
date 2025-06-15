@@ -6,10 +6,10 @@ import com.lass.yomiyomi.data.model.ParagraphList
 @Dao
 interface ParagraphListDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertParagraphList(list: ParagraphList): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllParagraphLists(lists: List<ParagraphList>)
 
     @Update

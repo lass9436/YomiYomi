@@ -36,7 +36,7 @@ import com.lass.yomiyomi.data.model.ParagraphListMapping
         ParagraphList::class,
         ParagraphListMapping::class,
     ],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
