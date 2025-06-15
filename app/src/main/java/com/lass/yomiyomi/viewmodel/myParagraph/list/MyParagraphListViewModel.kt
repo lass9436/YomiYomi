@@ -9,6 +9,8 @@ import com.lass.yomiyomi.data.repository.ParagraphListRepository
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.domain.model.constant.Level
+import com.lass.yomiyomi.domain.model.entity.ParagraphListItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphListMappingItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -47,6 +49,10 @@ class MyParagraphListViewModel @Inject constructor(
     private val _sentencesMap = MutableStateFlow<Map<Int, List<SentenceItem>>>(emptyMap())
     val sentencesMap: StateFlow<Map<Int, List<SentenceItem>>> = _sentencesMap.asStateFlow()
 
+    // 문단 리스트 관련 상태
+    private val _paragraphLists = MutableStateFlow<List<ParagraphListItem>>(emptyList())
+    val paragraphLists: StateFlow<List<ParagraphListItem>> = _paragraphLists.asStateFlow()
+
     override val paragraphs: StateFlow<List<ParagraphItem>> = combine(
         _allParagraphs,
         _selectedCategory,
@@ -76,6 +82,7 @@ class MyParagraphListViewModel @Inject constructor(
 
     init {
         loadParagraphs()
+        loadParagraphLists()
     }
 
     private fun loadParagraphs() {
@@ -191,6 +198,81 @@ class MyParagraphListViewModel @Inject constructor(
             myParagraphRepository.getParagraphById(paragraphId)
         } catch (e: Exception) {
             null
+        }
+    }
+
+    private fun loadParagraphLists() {
+        viewModelScope.launch {
+            try {
+                val lists = paragraphListRepository.getAllLists()
+                _paragraphLists.value = lists
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    // 문단 리스트 관련 기능들
+    fun addNewParagraphList(name: String) {
+        viewModelScope.launch {
+            try {
+                val newList = ParagraphListItem(
+                    listId = 0, // Room이 자동으로 ID 생성
+                    name = name,
+                    description = "",
+                    createdAt = System.currentTimeMillis()
+                )
+                paragraphListRepository.createList(newList)
+                loadParagraphLists()
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun renameParagraphList(listId: Int, newName: String) {
+        viewModelScope.launch {
+            try {
+                val existingList = paragraphListRepository.getListById(listId)
+                existingList?.let {
+                    val updatedList = it.copy(name = newName)
+                    paragraphListRepository.updateList(updatedList)
+                    loadParagraphLists()
+                }
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun deleteParagraphList(listId: Int) {
+        viewModelScope.launch {
+            try {
+                paragraphListRepository.deleteList(listId)
+                // 매핑도 자동으로 삭제됨 (Room의 CASCADE 설정으로)
+                loadParagraphLists()
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun addParagraphToLists(paragraph: ParagraphItem, listIds: List<Int>) {
+        viewModelScope.launch {
+            try {
+                listIds.forEach { listId ->
+                    val mapping = ParagraphListMappingItem(
+                        listId = listId,
+                        paragraphId = paragraph.paragraphId,
+                        sortOrder = 0, // 기본값
+                        createdAt = System.currentTimeMillis()
+                    )
+                    paragraphListMappingRepository.addMapping(mapping)
+                }
+                // 리스트 새로고침은 필요 없음 (매핑만 변경되었으므로)
+            } catch (e: Exception) {
+                // Handle error
+            }
         }
     }
 } 
