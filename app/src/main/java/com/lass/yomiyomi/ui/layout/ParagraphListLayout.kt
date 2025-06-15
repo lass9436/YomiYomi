@@ -42,6 +42,7 @@ fun ParagraphListLayout(
     selectedListId: Int?,
     onListChange: (Int?) -> Unit,
     paragraphLists: List<ParagraphListItem>,
+    availableCategories: List<String>,
     isFilterVisible: Boolean = false,
     onParagraphClick: ((ParagraphItem) -> Unit)? = null,
     onParagraphEdit: ((ParagraphItem) -> Unit)? = null,
@@ -49,11 +50,11 @@ fun ParagraphListLayout(
     onAddToList: ((ParagraphItem) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val categories = remember(paragraphs) {
-        listOf("전체") + paragraphs.map { it.category }.distinct().sorted()
-    }
-    
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         // 검색 바
         if (isFilterVisible) {
             OutlinedTextField(
@@ -96,10 +97,9 @@ fun ParagraphListLayout(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val categories = remember(paragraphs) {
-                        listOf("전체") + paragraphs.map { it.category }.distinct().sorted()
-                    }
-                    categories.forEach { category ->
+                    availableCategories.map { 
+                        if (it == "ALL") "전체" else it 
+                    }.forEach { category ->
                         FilterChip(
                             selected = category == selectedCategory,
                             onClick = { onCategoryChange(category) },

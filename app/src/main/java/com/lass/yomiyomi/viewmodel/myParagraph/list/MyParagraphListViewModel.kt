@@ -64,6 +64,9 @@ class MyParagraphListViewModel @Inject constructor(
     private val _currentParagraphListIds = MutableStateFlow<List<Int>>(emptyList())
     val currentParagraphListIds: StateFlow<List<Int>> = _currentParagraphListIds.asStateFlow()
 
+    private val _availableCategories = MutableStateFlow<List<String>>(emptyList())
+    val availableCategories: StateFlow<List<String>> = _availableCategories.asStateFlow()
+
     init {
         loadParagraphs()
         loadParagraphLists()
@@ -112,6 +115,9 @@ class MyParagraphListViewModel @Inject constructor(
                 // 문장 개수와 함께 조회
                 val paragraphList = myParagraphRepository.getParagraphsWithSentenceCounts()
                 _allParagraphs.value = paragraphList
+                
+                // 사용 가능한 카테고리 업데이트
+                _availableCategories.value = listOf("ALL") + paragraphList.map { it.category }.distinct().sorted()
                 
                 // 🔥 문단별 학습 진도도 함께 로드
                 val progressMap = mySentenceRepository.getLearningProgressByParagraph()

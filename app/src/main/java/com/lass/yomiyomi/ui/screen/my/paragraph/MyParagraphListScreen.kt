@@ -39,6 +39,7 @@ fun ParagraphListScreen(
     val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle()
     val paragraphLists by viewModel.paragraphLists.collectAsStateWithLifecycle()
     val paragraphListMappings by viewModel.paragraphListMappings.collectAsStateWithLifecycle()
+    val availableCategories by viewModel.availableCategories.collectAsStateWithLifecycle()
 
     var searchQuery by remember { mutableStateOf("") }
     var showInputDialog by remember { mutableStateOf(false) }
@@ -129,6 +130,7 @@ fun ParagraphListScreen(
                 viewModel.setSelectedList(listId)
             },
             paragraphLists = paragraphLists,
+            availableCategories = availableCategories,
             isFilterVisible = isFilterVisible,
             onParagraphClick = onParagraphClick,
             onParagraphEdit = { paragraph ->
