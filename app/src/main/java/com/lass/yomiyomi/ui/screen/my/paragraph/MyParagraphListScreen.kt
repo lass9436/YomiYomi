@@ -37,6 +37,7 @@ fun ParagraphListScreen(
     val sentenceCounts by viewModel.sentenceCounts.collectAsStateWithLifecycle()
     val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle()
     val paragraphLists by viewModel.paragraphLists.collectAsStateWithLifecycle()
+    val paragraphListMappings by viewModel.paragraphListMappings.collectAsStateWithLifecycle()
 
     var searchQuery by remember { mutableStateOf("") }
     var showInputDialog by remember { mutableStateOf(false) }
@@ -47,10 +48,20 @@ fun ParagraphListScreen(
     // 문단 리스트 관련 상태
     var showAddToListDialog by remember { mutableStateOf(false) }
     var targetParagraphForAdd by remember { mutableStateOf<ParagraphItem?>(null) }
-    val checkedListIds = remember { mutableStateListOf<Int>() }
+    val currentParagraphListIds by viewModel.currentParagraphListIds.collectAsStateWithLifecycle()
+    val checkedListIds = remember(currentParagraphListIds) { currentParagraphListIds.toMutableStateList() }
+
+    var showingDialogForParagraph by remember { mutableStateOf<ParagraphItem?>(null) }
 
     LaunchedEffect(searchQuery) {
         viewModel.searchParagraphs(searchQuery)
+    }
+
+    // 다이얼로그가 열릴 때 현재 문단의 리스트 ID들을 로드
+    LaunchedEffect(showAddToListDialog, targetParagraphForAdd) {
+        if (showAddToListDialog && targetParagraphForAdd != null) {
+            viewModel.loadParagraphListIds(targetParagraphForAdd!!.paragraphId)
+        }
     }
 
     Scaffold(
@@ -187,6 +198,11 @@ fun ParagraphListScreen(
                 } else {
                     checkedListIds.remove(listId)
                 }
+                // 체크박스 상태가 변경될 때마다 매핑 업데이트
+                viewModel.updateParagraphListMappings(
+                    paragraph = targetParagraphForAdd!!,
+                    selectedListIds = checkedListIds.toList()
+                )
             },
             onAddListClick = { name ->
                 viewModel.addNewParagraphList(name)
@@ -202,13 +218,46 @@ fun ParagraphListScreen(
                 targetParagraphForAdd = null
             },
             onConfirm = {
-                viewModel.addParagraphToLists(
-                    paragraph = targetParagraphForAdd!!,
-                    listIds = checkedListIds.toList()
-                )
                 showAddToListDialog = false
                 targetParagraphForAdd = null
             }
         )
+    }
+
+    // 다이얼로그 표시
+    showingDialogForParagraph?.let { paragraph ->
+        ParagraphListDialog(
+            paragraphLists = paragraphLists,
+            checkedListIds = paragraphListMappings[paragraph.paragraphId] ?: emptyList(),
+            onCheckedChange = { listId, checked ->
+                val currentChecked = paragraphListMappings[paragraph.paragraphId] ?: emptyList()
+                val newChecked = if (checked) {
+                    currentChecked + listId
+                } else {
+                    currentChecked - listId
+                }
+                viewModel.updateParagraphListMappings(paragraph, newChecked)
+            },
+            onAddListClick = { name ->
+                viewModel.addNewParagraphList(name)
+            },
+            onEditListClick = { listId, newName ->
+                viewModel.renameParagraphList(listId, newName)
+            },
+            onDeleteListClick = { listId ->
+                viewModel.deleteParagraphList(listId)
+            },
+            onDismiss = {
+                showingDialogForParagraph = null
+            },
+            onConfirm = {
+                showingDialogForParagraph = null
+            }
+        )
+    }
+
+    // + 버튼 클릭 핸들러
+    val onAddToListClick: (ParagraphItem) -> Unit = { paragraph ->
+        showingDialogForParagraph = paragraph
     }
 }

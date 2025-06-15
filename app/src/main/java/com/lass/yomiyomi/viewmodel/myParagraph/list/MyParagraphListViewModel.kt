@@ -53,6 +53,14 @@ class MyParagraphListViewModel @Inject constructor(
     private val _paragraphLists = MutableStateFlow<List<ParagraphListItem>>(emptyList())
     val paragraphLists: StateFlow<List<ParagraphListItem>> = _paragraphLists.asStateFlow()
 
+    // 현재 문단이 포함된 리스트 ID들
+    private val _currentParagraphListIds = MutableStateFlow<List<Int>>(emptyList())
+    val currentParagraphListIds: StateFlow<List<Int>> = _currentParagraphListIds.asStateFlow()
+
+    // 각 문단별 리스트 매핑 상태 (Map<문단ID, List<리스트ID>>)
+    private val _paragraphListMappings = MutableStateFlow<Map<Int, List<Int>>>(emptyMap())
+    val paragraphListMappings: StateFlow<Map<Int, List<Int>>> = _paragraphListMappings.asStateFlow()
+
     override val paragraphs: StateFlow<List<ParagraphItem>> = combine(
         _allParagraphs,
         _selectedCategory,
@@ -83,6 +91,7 @@ class MyParagraphListViewModel @Inject constructor(
     init {
         loadParagraphs()
         loadParagraphLists()
+        loadAllParagraphListMappings()
     }
 
     private fun loadParagraphs() {
@@ -272,6 +281,86 @@ class MyParagraphListViewModel @Inject constructor(
                 // 리스트 새로고침은 필요 없음 (매핑만 변경되었으므로)
             } catch (e: Exception) {
                 // Handle error
+            }
+        }
+    }
+
+    // 특정 문단이 포함된 리스트 ID들을 로드
+    fun loadParagraphListIds(paragraphId: Int) {
+        viewModelScope.launch {
+            try {
+                android.util.Log.d("YomiYomi", "Loading lists for paragraph: $paragraphId")
+                val lists = paragraphListMappingRepository.getListsByParagraph(paragraphId)
+                val listIds = lists.map { it.listId }
+                android.util.Log.d("YomiYomi", "Found lists: $listIds")
+                _currentParagraphListIds.value = listIds
+            } catch (e: Exception) {
+                android.util.Log.e("YomiYomi", "Error loading paragraph list IDs", e)
+                _currentParagraphListIds.value = emptyList()
+            }
+        }
+    }
+
+    // 모든 문단의 리스트 매핑 정보를 로드
+    private fun loadAllParagraphListMappings() {
+        viewModelScope.launch {
+            try {
+                android.util.Log.d("YomiYomi", "Loading all paragraph list mappings")
+                val mappings = mutableMapOf<Int, List<Int>>()
+                
+                // 모든 문단에 대해 매핑 정보를 가져옴
+                _allParagraphs.value.forEach { paragraph ->
+                    val lists = paragraphListMappingRepository.getListsByParagraph(paragraph.paragraphId)
+                    mappings[paragraph.paragraphId] = lists.map { it.listId }
+                }
+                
+                android.util.Log.d("YomiYomi", "Loaded mappings: $mappings")
+                _paragraphListMappings.value = mappings
+            } catch (e: Exception) {
+                android.util.Log.e("YomiYomi", "Error loading paragraph list mappings", e)
+            }
+        }
+    }
+
+    // 특정 문단의 리스트 매핑 정보를 업데이트
+    fun updateParagraphListMappings(paragraph: ParagraphItem, selectedListIds: List<Int>) {
+        viewModelScope.launch {
+            try {
+                android.util.Log.d("YomiYomi", "Updating mappings for paragraph ${paragraph.paragraphId}")
+                android.util.Log.d("YomiYomi", "Selected list IDs: $selectedListIds")
+                
+                val currentListIds = _paragraphListMappings.value[paragraph.paragraphId] ?: emptyList()
+                android.util.Log.d("YomiYomi", "Current list IDs: $currentListIds")
+
+                // 현재 매핑과 새로운 매핑을 비교
+                val toAdd = selectedListIds - currentListIds.toSet()
+                val toRemove = currentListIds - selectedListIds.toSet()
+
+                android.util.Log.d("YomiYomi", "Lists to add: $toAdd")
+                android.util.Log.d("YomiYomi", "Lists to remove: $toRemove")
+
+                // 새로운 매핑 추가
+                toAdd.forEach { listId ->
+                    val mapping = ParagraphListMappingItem(
+                        listId = listId,
+                        paragraphId = paragraph.paragraphId,
+                        sortOrder = 0,
+                        createdAt = System.currentTimeMillis()
+                    )
+                    paragraphListMappingRepository.addMapping(mapping)
+                }
+
+                // 기존 매핑 제거
+                toRemove.forEach { listId ->
+                    paragraphListMappingRepository.removeMapping(listId, paragraph.paragraphId)
+                }
+
+                // 상태 업데이트
+                val newMappings = _paragraphListMappings.value.toMutableMap()
+                newMappings[paragraph.paragraphId] = selectedListIds
+                _paragraphListMappings.value = newMappings
+            } catch (e: Exception) {
+                android.util.Log.e("YomiYomi", "Error updating paragraph list mappings", e)
             }
         }
     }

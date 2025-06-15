@@ -12,21 +12,37 @@ import com.lass.yomiyomi.domain.model.mapper.toParagraphListMapping
 class ParagraphListMappingRepository(context: Context) {
     private val mapDao = AppDatabase.getInstance(context).paragraphListMappingDao()
 
-    suspend fun addMapping(item: ParagraphListMappingItem) =
+    suspend fun addMapping(item: ParagraphListMappingItem) {
+        android.util.Log.d("YomiYomi", "Repository: Adding mapping - listId: ${item.listId}, paragraphId: ${item.paragraphId}")
         mapDao.insertMapping(item.toParagraphListMapping())
+    }
 
-    suspend fun removeMapping(listId: Int, paragraphId: Int) =
+    suspend fun removeMapping(listId: Int, paragraphId: Int) {
+        android.util.Log.d("YomiYomi", "Repository: Removing mapping - listId: $listId, paragraphId: $paragraphId")
         mapDao.deleteMappingByIds(listId, paragraphId)
+    }
 
-    suspend fun removeMappingsByList(listId: Int) =
+    suspend fun removeMappingsByList(listId: Int) {
+        android.util.Log.d("YomiYomi", "Repository: Removing all mappings for list: $listId")
         mapDao.deleteMappingsByListId(listId)
+    }
 
-    suspend fun removeMappingsByParagraph(paragraphId: Int) =
+    suspend fun removeMappingsByParagraph(paragraphId: Int) {
+        android.util.Log.d("YomiYomi", "Repository: Removing all mappings for paragraph: $paragraphId")
         mapDao.deleteMappingsByParagraphId(paragraphId)
+    }
 
-    suspend fun getParagraphsInList(listId: Int): List<ParagraphItem> =
-        mapDao.getParagraphsInList(listId).map { it.toParagraphItem() }
+    suspend fun getParagraphsInList(listId: Int): List<ParagraphItem> {
+        android.util.Log.d("YomiYomi", "Repository: Getting paragraphs in list: $listId")
+        val paragraphs = mapDao.getParagraphsInList(listId).map { it.toParagraphItem() }
+        android.util.Log.d("YomiYomi", "Repository: Found ${paragraphs.size} paragraphs in list $listId")
+        return paragraphs
+    }
 
-    suspend fun getListsByParagraph(paragraphId: Int): List<ParagraphListItem> =
-        mapDao.getListsByParagraphId(paragraphId).map { it.toParagraphListItem() }
+    suspend fun getListsByParagraph(paragraphId: Int): List<ParagraphListItem> {
+        android.util.Log.d("YomiYomi", "Repository: Getting lists for paragraph: $paragraphId")
+        val lists = mapDao.getListsByParagraphId(paragraphId).map { it.toParagraphListItem() }
+        android.util.Log.d("YomiYomi", "Repository: Found ${lists.size} lists for paragraph $paragraphId: ${lists.map { it.listId }}")
+        return lists
+    }
 }

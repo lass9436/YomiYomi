@@ -1,12 +1,15 @@
 package com.lass.yomiyomi.ui.component.dialog.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -15,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.lass.yomiyomi.domain.model.entity.ParagraphListItem
 
 /**
@@ -37,22 +41,41 @@ fun ParagraphListDialog(
     var editingName by remember { mutableStateOf("") }
     var deletingListId by remember { mutableStateOf<Int?>(null) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("문단 보관함 담기", style = MaterialTheme.typography.titleLarge) },
-        text = {
-            Column {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "문단 리스트 선택",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
                 // 새 리스트 추가 버튼
                 if (!showAddInput) {
                     TextButton(
                         onClick = { showAddInput = true },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp)
+                            .padding(vertical = 8.dp)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "추가")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("새 리스트 추가")
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "추가")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("새 리스트 추가")
+                        }
                     }
                 }
 
@@ -61,7 +84,7 @@ fun ParagraphListDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp),
+                            .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         OutlinedTextField(
@@ -98,58 +121,57 @@ fun ParagraphListDialog(
                 }
 
                 // 리스트 목록
-                LazyColumn(modifier = Modifier.heightIn(max = 240.dp)) {
-                    items(paragraphLists.size) { idx ->
-                        val list = paragraphLists[idx]
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f, fill = false)
+                ) {
+                    items(paragraphLists) { list ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp)
-                                .toggleable(
-                                    value = checkedListIds.contains(list.listId),
-                                    onValueChange = { checked ->
-                                        onCheckedChange(list.listId, checked)
-                                    }
-                                ),
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // 체크박스
-                            Checkbox(
-                                checked = checkedListIds.contains(list.listId),
-                                onCheckedChange = { checked ->
-                                    onCheckedChange(list.listId, checked)
-                                }
-                            )
-
-                            // 리스트 이름
-                            if (editingListId == list.listId) {
-                                OutlinedTextField(
-                                    value = editingName,
-                                    onValueChange = { editingName = it },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 8.dp),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            if (editingName.isNotBlank()) {
-                                                onEditListClick(list.listId, editingName)
-                                                editingListId = null
-                                                editingName = ""
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = checkedListIds.contains(list.listId),
+                                    onCheckedChange = { checked ->
+                                        onCheckedChange(list.listId, checked)
+                                    }
+                                )
+                                if (editingListId == list.listId) {
+                                    OutlinedTextField(
+                                        value = editingName,
+                                        onValueChange = { editingName = it },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(horizontal = 8.dp),
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                if (editingName.isNotBlank()) {
+                                                    onEditListClick(list.listId, editingName)
+                                                    editingListId = null
+                                                    editingName = ""
+                                                }
                                             }
-                                        }
+                                        )
                                     )
-                                )
-                            } else {
-                                Text(
-                                    text = list.name,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 8.dp)
-                                )
+                                } else {
+                                    Text(
+                                        text = list.name,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
                             }
-
+                            
                             // 편집/삭제 버튼
                             Row {
                                 IconButton(
@@ -165,9 +187,7 @@ fun ParagraphListDialog(
                                     )
                                 }
                                 IconButton(
-                                    onClick = {
-                                        deletingListId = list.listId
-                                    }
+                                    onClick = { deletingListId = list.listId }
                                 ) {
                                     Icon(
                                         Icons.Default.Delete,
@@ -179,19 +199,24 @@ fun ParagraphListDialog(
                         }
                     }
                 }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("확인")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("취소")
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("취소")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = onConfirm) {
+                        Text("확인")
+                    }
+                }
             }
         }
-    )
+    }
 
     // 삭제 확인 다이얼로그
     deletingListId?.let { listId ->
