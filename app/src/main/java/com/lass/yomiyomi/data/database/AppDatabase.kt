@@ -16,9 +16,13 @@ import com.lass.yomiyomi.data.model.MyWord
 import com.lass.yomiyomi.data.dao.MyKanjiDao
 import com.lass.yomiyomi.data.dao.MyParagraphDao
 import com.lass.yomiyomi.data.dao.MySentenceDao
+import com.lass.yomiyomi.data.dao.ParagraphListDao
+import com.lass.yomiyomi.data.dao.ParagraphListMappingDao
 import com.lass.yomiyomi.data.model.MyKanji
 import com.lass.yomiyomi.data.model.MySentence
 import com.lass.yomiyomi.data.model.MyParagraph
+import com.lass.yomiyomi.data.model.ParagraphList
+import com.lass.yomiyomi.data.model.ParagraphListMapping
 
 @Database(
     entities = [
@@ -29,8 +33,10 @@ import com.lass.yomiyomi.data.model.MyParagraph
         MyKanji::class,
         MyParagraph::class,
         MySentence::class,
+        ParagraphList::class,
+        ParagraphListMapping::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -42,6 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun myKanjiDao(): MyKanjiDao
     abstract fun mySentenceDao(): MySentenceDao
     abstract fun myParagraphDao(): MyParagraphDao
+    abstract fun paragraphListDao(): ParagraphListDao
+    abstract fun paragraphListMappingDao(): ParagraphListMappingDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
