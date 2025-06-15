@@ -96,7 +96,10 @@ fun ParagraphListLayout(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    listOf("전체", "문학", "뉴스", "에세이", "기타").forEach { category ->
+                    val categories = remember(paragraphs) {
+                        listOf("전체") + paragraphs.map { it.category }.distinct().sorted()
+                    }
+                    categories.forEach { category ->
                         FilterChip(
                             selected = category == selectedCategory,
                             onClick = { onCategoryChange(category) },
