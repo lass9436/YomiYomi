@@ -1,5 +1,10 @@
 package com.lass.yomiyomi.ui.layout
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
+import com.lass.yomiyomi.domain.model.entity.ParagraphListItem
 import com.lass.yomiyomi.domain.model.entity.SentenceItem
 import com.lass.yomiyomi.ui.component.card.ParagraphCard
 import com.lass.yomiyomi.ui.component.search.SearchTextField
@@ -21,7 +27,7 @@ import com.lass.yomiyomi.ui.component.loading.LoadingIndicator
 import com.lass.yomiyomi.ui.component.empty.EmptyView
 import com.lass.yomiyomi.ui.component.button.BackgroundTTSButton
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ParagraphListLayout(
     paragraphs: List<ParagraphItem>,
@@ -33,6 +39,9 @@ fun ParagraphListLayout(
     onSearchQueryChange: (String) -> Unit = {},
     selectedCategory: String = "전체",
     onCategoryChange: (String) -> Unit = {},
+    selectedListId: Int?,
+    onListChange: (Int?) -> Unit,
+    paragraphLists: List<ParagraphListItem>,
     isFilterVisible: Boolean = false,
     onParagraphClick: ((ParagraphItem) -> Unit)? = null,
     onParagraphEdit: ((ParagraphItem) -> Unit)? = null,
@@ -47,21 +56,97 @@ fun ParagraphListLayout(
     Column(modifier = modifier) {
         // 검색 바
         if (isFilterVisible) {
-            SearchTextField(
+            OutlinedTextField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
-                label = "문단 검색",
-                placeholder = "제목이나 설명으로 검색하세요"
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                placeholder = { Text("문단 검색") },
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "검색",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             )
         }
         
-        // 카테고리 필터
-        if (isFilterVisible) {
-            ParagraphFilterPanel(
-                categories = categories,
-                selectedCategory = selectedCategory,
-                onCategoryChange = onCategoryChange
-            )
+        // 필터 섹션
+        AnimatedVisibility(
+            visible = isFilterVisible,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                // 카테고리 선택
+                Text(
+                    "카테고리",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("전체", "문학", "뉴스", "에세이", "기타").forEach { category ->
+                        FilterChip(
+                            selected = category == selectedCategory,
+                            onClick = { onCategoryChange(category) },
+                            enabled = selectedListId == null,
+                            label = { Text(category) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        )
+                    }
+                }
+
+                // 문단 리스트 선택
+                Text(
+                    "문단 리스트",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // "전체" 옵션 추가
+                    FilterChip(
+                        selected = selectedListId == null,
+                        onClick = { onListChange(null) },
+                        enabled = selectedCategory == "전체",
+                        label = { Text("전체") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                    // 리스트 목록
+                    paragraphLists.forEach { list ->
+                        FilterChip(
+                            selected = list.listId == selectedListId,
+                            onClick = { onListChange(list.listId) },
+                            enabled = selectedCategory == "전체",
+                            label = { Text(list.name) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        )
+                    }
+                }
+            }
         }
         
         // 결과 개수 표시

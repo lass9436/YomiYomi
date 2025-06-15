@@ -30,6 +30,9 @@ class MyParagraphListViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow("ALL")
     override val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
 
+    private val _selectedListId = MutableStateFlow<Int?>(null)
+    val selectedListId: StateFlow<Int?> = _selectedListId.asStateFlow()
+
     private val _selectedLevel = MutableStateFlow<Level>(Level.ALL)
     val selectedLevel: StateFlow<Level> = _selectedLevel.asStateFlow()
 
@@ -71,12 +74,20 @@ class MyParagraphListViewModel @Inject constructor(
         _allParagraphs,
         _selectedCategory,
         _selectedLevel,
-        _searchQuery
-    ) { allParagraphs, category, level, query ->
-        var filteredParagraphs = if (category == "ALL") {
-            allParagraphs
-        } else {
-            allParagraphs.filter { it.category == category }
+        _searchQuery,
+        _selectedListId
+    ) { allParagraphs, category, level, query, selectedListId ->
+        var filteredParagraphs = allParagraphs
+
+        // 리스트 필터 적용
+        if (selectedListId != null) {
+            val paragraphsInList = paragraphListMappingRepository.getParagraphsInList(selectedListId)
+            val paragraphIds = paragraphsInList.map { it.paragraphId }.toSet()
+            filteredParagraphs = filteredParagraphs.filter { it.paragraphId in paragraphIds }
+        }
+        // 카테고리 필터 적용 (리스트가 선택되지 않은 경우에만)
+        else if (category != "ALL") {
+            filteredParagraphs = filteredParagraphs.filter { it.category == category }
         }
 
         if (level != Level.ALL) {
@@ -141,6 +152,8 @@ class MyParagraphListViewModel @Inject constructor(
 
     override fun setSelectedCategory(category: String) {
         _selectedCategory.value = category
+        // 카테고리를 선택하면 리스트 선택 해제
+        _selectedListId.value = null
     }
 
     fun setSelectedLevel(level: Level) {
@@ -326,6 +339,14 @@ class MyParagraphListViewModel @Inject constructor(
             } catch (e: Exception) {
                 // Handle error
             }
+        }
+    }
+
+    fun setSelectedList(listId: Int?) {
+        _selectedListId.value = listId
+        // 리스트를 선택하면 카테고리 선택 해제
+        if (listId != null) {
+            _selectedCategory.value = "ALL"
         }
     }
 } 

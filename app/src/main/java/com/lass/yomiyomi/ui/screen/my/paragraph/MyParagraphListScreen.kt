@@ -33,6 +33,7 @@ fun ParagraphListScreen(
     val paragraphs by viewModel.paragraphs.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val selectedListId by viewModel.selectedListId.collectAsStateWithLifecycle()
     val learningProgress by viewModel.learningProgress.collectAsStateWithLifecycle()
     val sentenceCounts by viewModel.sentenceCounts.collectAsStateWithLifecycle()
     val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle()
@@ -123,6 +124,11 @@ fun ParagraphListScreen(
             onCategoryChange = { category ->
                 viewModel.setSelectedCategory(if (category == "전체") "ALL" else category)
             },
+            selectedListId = selectedListId,
+            onListChange = { listId ->
+                viewModel.setSelectedList(listId)
+            },
+            paragraphLists = paragraphLists,
             isFilterVisible = isFilterVisible,
             onParagraphClick = onParagraphClick,
             onParagraphEdit = { paragraph ->
