@@ -205,9 +205,3 @@ fun ParagraphListDialog(
         )
     }
 }
-
-// 리스트 항목 UI 데이터 클래스, 필요시 프로젝트에 맞게 변경해도 됩니다.
-data class ParagraphListItem(
-    val listId: Int,
-    val name: String
-)
