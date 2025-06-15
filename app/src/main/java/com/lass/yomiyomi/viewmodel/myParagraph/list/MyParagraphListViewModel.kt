@@ -284,13 +284,10 @@ class MyParagraphListViewModel @Inject constructor(
     fun loadParagraphListIds(paragraphId: Int) {
         viewModelScope.launch {
             try {
-                android.util.Log.d("YomiYomi", "Loading lists for paragraph: $paragraphId")
                 val lists = paragraphListMappingRepository.getListsByParagraph(paragraphId)
                 val listIds = lists.map { it.listId }
-                android.util.Log.d("YomiYomi", "Found lists: $listIds")
                 _currentParagraphListIds.value = listIds
             } catch (e: Exception) {
-                android.util.Log.e("YomiYomi", "Error loading paragraph list IDs", e)
                 _currentParagraphListIds.value = emptyList()
             }
         }
@@ -300,23 +297,14 @@ class MyParagraphListViewModel @Inject constructor(
     private fun loadAllParagraphListMappings() {
         viewModelScope.launch {
             try {
-                android.util.Log.d("YomiYomi", "🔍 Starting loadAllParagraphListMappings")
-                
-                // 모든 매핑 정보를 한 번에 가져옴
                 val allMappings = paragraphListMappingRepository.getAllMappings()
-                android.util.Log.d("YomiYomi", "🔍 Loaded all mappings: $allMappings")
-                
-                // 문단 ID별로 그룹화
                 val mappings = allMappings.groupBy(
                     { it.paragraphId },
                     { it.listId }
                 )
-                
-                android.util.Log.d("YomiYomi", "🔍 Final mappings to be set: $mappings")
                 _paragraphListMappings.value = mappings
-                android.util.Log.d("YomiYomi", "🔍 After setting mappings: ${_paragraphListMappings.value}")
             } catch (e: Exception) {
-                android.util.Log.e("YomiYomi", "Error loading paragraph list mappings", e)
+                // Handle error
             }
         }
     }
@@ -325,22 +313,18 @@ class MyParagraphListViewModel @Inject constructor(
     fun updateParagraphListMappings(paragraph: ParagraphItem, selectedListIds: List<Int>) {
         viewModelScope.launch {
             try {
-                android.util.Log.d("YomiYomi", "🔄 Updating mappings for paragraph ${paragraph.paragraphId}")
-                android.util.Log.d("YomiYomi", "🔄 Selected list IDs: $selectedListIds")
-                
                 // 기존 매핑 삭제
                 paragraphListMappingRepository.removeMappingsByParagraph(paragraph.paragraphId)
                 
                 // 새로운 매핑 추가
                 selectedListIds.forEach { listId ->
-                    android.util.Log.d("YomiYomi", "🔄 Adding mapping: paragraphId=${paragraph.paragraphId}, listId=$listId")
                     paragraphListMappingRepository.addMapping(paragraph.paragraphId, listId)
                 }
                 
                 // 매핑 정보 새로고침
                 loadAllParagraphListMappings()
             } catch (e: Exception) {
-                android.util.Log.e("YomiYomi", "Error updating paragraph list mappings", e)
+                // Handle error
             }
         }
     }
