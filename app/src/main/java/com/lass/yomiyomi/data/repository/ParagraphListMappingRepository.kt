@@ -2,19 +2,27 @@ package com.lass.yomiyomi.data.repository
 
 import android.content.Context
 import com.lass.yomiyomi.data.database.AppDatabase
+import com.lass.yomiyomi.data.model.ParagraphListMapping
 import com.lass.yomiyomi.domain.model.entity.ParagraphItem
 import com.lass.yomiyomi.domain.model.entity.ParagraphListItem
 import com.lass.yomiyomi.domain.model.entity.ParagraphListMappingItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphListItem
 import com.lass.yomiyomi.domain.model.mapper.toParagraphListMapping
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ParagraphListMappingRepository(context: Context) {
     private val mapDao = AppDatabase.getInstance(context).paragraphListMappingDao()
 
-    suspend fun addMapping(item: ParagraphListMappingItem) {
-        android.util.Log.d("YomiYomi", "Repository: Adding mapping - listId: ${item.listId}, paragraphId: ${item.paragraphId}")
-        mapDao.insertMapping(item.toParagraphListMapping())
+    suspend fun addMapping(paragraphId: Int, listId: Int) {
+        val mapping = ParagraphListMapping(
+            listId = listId,
+            paragraphId = paragraphId,
+            sortOrder = 0,
+            createdAt = System.currentTimeMillis()
+        )
+        mapDao.insertMapping(mapping)
     }
 
     suspend fun removeMapping(listId: Int, paragraphId: Int) {
@@ -44,5 +52,12 @@ class ParagraphListMappingRepository(context: Context) {
         val lists = mapDao.getListsByParagraphId(paragraphId).map { it.toParagraphListItem() }
         android.util.Log.d("YomiYomi", "Repository: Found ${lists.size} lists for paragraph $paragraphId: ${lists.map { it.listId }}")
         return lists
+    }
+
+    // 모든 매핑 정보를 가져옴
+    suspend fun getAllMappings(): List<ParagraphListMapping> {
+        return withContext(Dispatchers.IO) {
+            mapDao.getAllMappings()
+        }
     }
 }

@@ -45,4 +45,8 @@ interface ParagraphListMappingDao {
         ORDER BY l.createdAt DESC
     """)
     suspend fun getListsByParagraphId(paragraphId: Int): List<ParagraphList>
+
+    // 모든 매핑 정보 조회
+    @Query("SELECT * FROM paragraph_list_mapping")
+    suspend fun getAllMappings(): List<ParagraphListMapping>
 }

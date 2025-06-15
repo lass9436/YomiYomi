@@ -48,8 +48,7 @@ fun ParagraphListScreen(
     // 문단 리스트 관련 상태
     var showAddToListDialog by remember { mutableStateOf(false) }
     var targetParagraphForAdd by remember { mutableStateOf<ParagraphItem?>(null) }
-    val currentParagraphListIds by viewModel.currentParagraphListIds.collectAsStateWithLifecycle()
-    val checkedListIds = remember(currentParagraphListIds) { currentParagraphListIds.toMutableStateList() }
+    val checkedListIds = remember { mutableStateListOf<Int>() }
 
     var showingDialogForParagraph by remember { mutableStateOf<ParagraphItem?>(null) }
 
@@ -191,18 +190,15 @@ fun ParagraphListScreen(
     if (showAddToListDialog && targetParagraphForAdd != null) {
         ParagraphListDialog(
             paragraphLists = paragraphLists,
-            checkedListIds = checkedListIds,
+            checkedListIds = paragraphListMappings[targetParagraphForAdd!!.paragraphId] ?: emptyList(),
             onCheckedChange = { listId, checked ->
-                if (checked) {
-                    if (listId !in checkedListIds) checkedListIds.add(listId)
+                val currentChecked = paragraphListMappings[targetParagraphForAdd!!.paragraphId] ?: emptyList()
+                val newChecked = if (checked) {
+                    currentChecked + listId
                 } else {
-                    checkedListIds.remove(listId)
+                    currentChecked - listId
                 }
-                // 체크박스 상태가 변경될 때마다 매핑 업데이트
-                viewModel.updateParagraphListMappings(
-                    paragraph = targetParagraphForAdd!!,
-                    selectedListIds = checkedListIds.toList()
-                )
+                viewModel.updateParagraphListMappings(targetParagraphForAdd!!, newChecked)
             },
             onAddListClick = { name ->
                 viewModel.addNewParagraphList(name)

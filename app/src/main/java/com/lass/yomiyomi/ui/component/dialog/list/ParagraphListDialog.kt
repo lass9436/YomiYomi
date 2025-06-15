@@ -126,7 +126,10 @@ fun ParagraphListDialog(
                         .fillMaxWidth()
                         .weight(1f, fill = false)
                 ) {
-                    items(paragraphLists) { list ->
+                    items(
+                        items = paragraphLists.sortedBy { it.listId },  // listId로 정렬하여 일관된 순서 보장
+                        key = { it.listId }  // 각 아이템의 고유 키 지정
+                    ) { list ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
