@@ -37,6 +37,7 @@ fun ParagraphListLayout(
     onParagraphClick: ((ParagraphItem) -> Unit)? = null,
     onParagraphEdit: ((ParagraphItem) -> Unit)? = null,
     onParagraphDelete: ((ParagraphItem) -> Unit)? = null,
+    onAddToList: ((ParagraphItem) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val categories = remember(paragraphs) {
@@ -117,7 +118,8 @@ fun ParagraphListLayout(
                         learningProgress = learningProgress[paragraph.paragraphId] ?: 0f,
                         onClick = onParagraphClick?.let { { it(paragraph) } },
                         onEdit = onParagraphEdit?.let { { it(paragraph) } },
-                        onDelete = onParagraphDelete?.let { { it(paragraph) } }
+                        onDelete = onParagraphDelete?.let { { it(paragraph) } },
+                        onAddToList = onAddToList?.let { { it(paragraph) } }
                     )
                 }
             }

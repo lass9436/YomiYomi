@@ -24,6 +24,7 @@ fun ParagraphCard(
     onClick: (() -> Unit)? = null,
     onEdit: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
+    onAddToList: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -90,14 +91,42 @@ fun ParagraphCard(
                     )
                 }
                 
-                // 문장 개수와 편집/삭제 버튼
+                // 문장 개수와 버튼들
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // 문장 개수 표시
+                    Icon(
+                        Icons.AutoMirrored.Filled.List,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "$sentenceCount/${paragraph.totalSentences}",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.outline
+                    )
 
-                    // 편집/삭제 버튼들
-                    if (onEdit != null || onDelete != null) {
+                    // 버튼들
+                    if (onEdit != null || onDelete != null || onAddToList != null) {
                         Spacer(modifier = Modifier.width(8.dp))
+
+                        // 리스트 추가 버튼
+                        onAddToList?.let {
+                            IconButton(
+                                onClick = it,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "리스트에 추가",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
+                        }
 
                         // 편집 버튼
                         onEdit?.let {
@@ -129,21 +158,6 @@ fun ParagraphCard(
                             }
                         }
                     }
-
-                    Icon(
-                        Icons.AutoMirrored.Filled.List,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Text(
-                        text = "${sentenceCount}문장",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.outline
-                    )
                 }
             }
             

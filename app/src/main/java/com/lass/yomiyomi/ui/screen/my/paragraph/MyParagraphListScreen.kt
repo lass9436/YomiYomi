@@ -36,19 +36,18 @@ fun ParagraphListScreen(
     val learningProgress by viewModel.learningProgress.collectAsStateWithLifecycle()
     val sentenceCounts by viewModel.sentenceCounts.collectAsStateWithLifecycle()
     val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle()
+    val paragraphLists by viewModel.paragraphLists.collectAsStateWithLifecycle()
 
     var searchQuery by remember { mutableStateOf("") }
-
     var showInputDialog by remember { mutableStateOf(false) }
     var editingParagraph by remember { mutableStateOf<ParagraphItem?>(null) }
     var deletingParagraph by remember { mutableStateOf<ParagraphItem?>(null) }
     var isFilterVisible by remember { mutableStateOf(false) }
 
-    // (2) 추가: 문단-리스트 추가용 상태
+    // 문단 리스트 관련 상태
     var showAddToListDialog by remember { mutableStateOf(false) }
     var targetParagraphForAdd by remember { mutableStateOf<ParagraphItem?>(null) }
-    val paragraphLists by viewModel.paragraphLists.collectAsStateWithLifecycle() // ViewModel에서 리스트 컬렉션 호출
-    val checkedListIds = remember { mutableStateListOf<Long>() } // 체크된 리스트 id들
+    val checkedListIds = remember { mutableStateListOf<Int>() }
 
     LaunchedEffect(searchQuery) {
         viewModel.searchParagraphs(searchQuery)
@@ -102,7 +101,6 @@ fun ParagraphListScreen(
             )
         }
     ) { paddingValues ->
-        // (3) ParagraphListLayout에 "onAddToListClick" 추가
         ParagraphListLayout(
             paragraphs = paragraphs,
             sentenceCounts = sentenceCounts,
@@ -124,8 +122,7 @@ fun ParagraphListScreen(
             onParagraphDelete = { paragraph ->
                 deletingParagraph = paragraph
             },
-            // (4) 새로운 파라미터: +버튼 눌렀을 때
-            onAddToListClick = { paragraph ->
+            onAddToList = { paragraph ->
                 targetParagraphForAdd = paragraph
                 checkedListIds.clear()
                 showAddToListDialog = true
@@ -134,6 +131,7 @@ fun ParagraphListScreen(
         )
     }
 
+    // 문단 입력/수정 다이얼로그
     ParagraphInputDialog(
         isOpen = showInputDialog,
         paragraph = editingParagraph,
@@ -152,6 +150,7 @@ fun ParagraphListScreen(
         }
     )
 
+    // 문단 삭제 확인 다이얼로그
     deletingParagraph?.let { paragraph ->
         AlertDialog(
             onDismissRequest = { deletingParagraph = null },
@@ -177,7 +176,7 @@ fun ParagraphListScreen(
         )
     }
 
-    // (5) 문단-리스트 추가용 다이얼로그
+    // 문단 리스트 추가 다이얼로그
     if (showAddToListDialog && targetParagraphForAdd != null) {
         ParagraphListDialog(
             paragraphLists = paragraphLists,
