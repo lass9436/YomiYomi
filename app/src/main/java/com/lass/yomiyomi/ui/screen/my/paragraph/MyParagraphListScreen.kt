@@ -17,6 +17,9 @@ import com.lass.yomiyomi.ui.layout.ParagraphListLayout
 import com.lass.yomiyomi.viewmodel.myParagraph.list.MyParagraphListViewModel
 import androidx.compose.ui.text.font.FontWeight
 
+// (1) 추가: 문단 리스트에 추가/편집/삭제 다이얼로그용 임포트
+import com.lass.yomiyomi.ui.component.dialog.list.ParagraphListDialog
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ParagraphListScreen(
@@ -25,35 +28,36 @@ fun ParagraphListScreen(
     modifier: Modifier = Modifier,
     viewModel: MyParagraphListViewModel = hiltViewModel()
 ) {
-    // 안드로이드 시스템 뒤로가기 버튼도 onBack과 같은 동작
     BackHandler { onBack() }
 
-    // ViewModel 상태 수집
     val paragraphs by viewModel.paragraphs.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val learningProgress by viewModel.learningProgress.collectAsStateWithLifecycle()
     val sentenceCounts by viewModel.sentenceCounts.collectAsStateWithLifecycle()
-    val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle() // 백그라운드 TTS용 문장 데이터
-    
-    // 검색 쿼리는 로컬 상태로 관리
+    val sentencesMap by viewModel.sentencesMap.collectAsStateWithLifecycle()
+
     var searchQuery by remember { mutableStateOf("") }
-    
-    // UI 상태
+
     var showInputDialog by remember { mutableStateOf(false) }
     var editingParagraph by remember { mutableStateOf<ParagraphItem?>(null) }
     var deletingParagraph by remember { mutableStateOf<ParagraphItem?>(null) }
-    var isFilterVisible by remember { mutableStateOf(false) } // 필터 표시 상태
-    
-    // 검색 쿼리 변경 시 ViewModel에 전달
+    var isFilterVisible by remember { mutableStateOf(false) }
+
+    // (2) 추가: 문단-리스트 추가용 상태
+    var showAddToListDialog by remember { mutableStateOf(false) }
+    var targetParagraphForAdd by remember { mutableStateOf<ParagraphItem?>(null) }
+    val paragraphLists by viewModel.paragraphLists.collectAsStateWithLifecycle() // ViewModel에서 리스트 컬렉션 호출
+    val checkedListIds = remember { mutableStateListOf<Long>() } // 체크된 리스트 id들
+
     LaunchedEffect(searchQuery) {
         viewModel.searchParagraphs(searchQuery)
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         "문단 학습",
                         color = MaterialTheme.colorScheme.tertiary,
@@ -63,7 +67,7 @@ fun ParagraphListScreen(
                 navigationIcon = {
                     IconButton(onClick = { onBack() }) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "뒤로 가기",
                             tint = MaterialTheme.colorScheme.tertiary
                         )
@@ -74,7 +78,7 @@ fun ParagraphListScreen(
                         onClick = { isFilterVisible = !isFilterVisible }
                     ) {
                         Icon(
-                            Icons.Default.Settings, 
+                            Icons.Default.Settings,
                             contentDescription = "필터 토글",
                             tint = if (isFilterVisible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
                         )
@@ -86,7 +90,7 @@ fun ParagraphListScreen(
                         }
                     ) {
                         Icon(
-                            Icons.Default.Add, 
+                            Icons.Default.Add,
                             contentDescription = "문단 추가",
                             tint = MaterialTheme.colorScheme.tertiary
                         )
@@ -98,11 +102,12 @@ fun ParagraphListScreen(
             )
         }
     ) { paddingValues ->
+        // (3) ParagraphListLayout에 "onAddToListClick" 추가
         ParagraphListLayout(
             paragraphs = paragraphs,
             sentenceCounts = sentenceCounts,
             learningProgress = learningProgress,
-            sentencesMap = sentencesMap, // 백그라운드 TTS용 문장 데이터 전달
+            sentencesMap = sentencesMap,
             isLoading = isLoading,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
@@ -119,11 +124,16 @@ fun ParagraphListScreen(
             onParagraphDelete = { paragraph ->
                 deletingParagraph = paragraph
             },
+            // (4) 새로운 파라미터: +버튼 눌렀을 때
+            onAddToListClick = { paragraph ->
+                targetParagraphForAdd = paragraph
+                checkedListIds.clear()
+                showAddToListDialog = true
+            },
             modifier = modifier.padding(paddingValues)
         )
     }
-    
-    // 문단 입력/편집 다이얼로그
+
     ParagraphInputDialog(
         isOpen = showInputDialog,
         paragraph = editingParagraph,
@@ -133,23 +143,20 @@ fun ParagraphListScreen(
         },
         onSave = { paragraph ->
             if (editingParagraph != null) {
-                // 편집 모드
                 viewModel.updateParagraph(paragraph)
             } else {
-                // 새로 추가 모드
                 viewModel.insertParagraph(paragraph)
             }
             showInputDialog = false
             editingParagraph = null
         }
     )
-    
-    // 삭제 확인 다이얼로그
+
     deletingParagraph?.let { paragraph ->
         AlertDialog(
             onDismissRequest = { deletingParagraph = null },
             title = { Text("문단 삭제") },
-            text = { 
+            text = {
                 Text("이 문단을 정말 삭제하시겠습니까?\n포함된 모든 문장도 함께 삭제됩니다.\n\n${paragraph.title}")
             },
             confirmButton = {
@@ -169,4 +176,40 @@ fun ParagraphListScreen(
             }
         )
     }
-} 
+
+    // (5) 문단-리스트 추가용 다이얼로그
+    if (showAddToListDialog && targetParagraphForAdd != null) {
+        ParagraphListDialog(
+            paragraphLists = paragraphLists,
+            checkedListIds = checkedListIds,
+            onCheckedChange = { listId, checked ->
+                if (checked) {
+                    if (listId !in checkedListIds) checkedListIds.add(listId)
+                } else {
+                    checkedListIds.remove(listId)
+                }
+            },
+            onAddListClick = { name ->
+                viewModel.addNewParagraphList(name)
+            },
+            onEditListClick = { listId, newName ->
+                viewModel.renameParagraphList(listId, newName)
+            },
+            onDeleteListClick = { listId ->
+                viewModel.deleteParagraphList(listId)
+            },
+            onDismiss = {
+                showAddToListDialog = false
+                targetParagraphForAdd = null
+            },
+            onConfirm = {
+                viewModel.addParagraphToLists(
+                    paragraph = targetParagraphForAdd!!,
+                    listIds = checkedListIds.toList()
+                )
+                showAddToListDialog = false
+                targetParagraphForAdd = null
+            }
+        )
+    }
+}
