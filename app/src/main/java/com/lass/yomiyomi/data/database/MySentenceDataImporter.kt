@@ -17,7 +17,8 @@ object MySentenceDataImporter {
         // raw 폴더의 리소스 파일 열기
         val inputStream = context.resources.openRawResource(R.raw.sentence_list)
         val reader = BufferedReader(InputStreamReader(inputStream))
-        val regex = Regex("""((?<=^|,)"(?:[^"]|"")*"|[^",]+)""") // CSV 데이터 분리용 정규식
+        val regex = Regex("""\"([^\"]*)\"|([^,]+)""")
+        //val regex = Regex("""((?<=^|,)"(?:[^"]|"")*"|[^",]+)""") // CSV 데이터 분리용 정규식
 
         reader.forEachLine { line ->
             if (line.startsWith("#") || line.startsWith("id,")) return@forEachLine // 주석 행과 헤더 행 건너뛰기
